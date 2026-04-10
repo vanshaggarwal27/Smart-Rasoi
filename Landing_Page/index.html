@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Cafeteria | Eat Smarter, Not Faster</title>
+    <!-- Google Fonts for typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+
+    <!-- Navigation Background -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="ph ph-leaf"></i>
+            <span>NutriSense AI</span>
+        </div>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+        </div>
+        <div class="auth-buttons-nav">
+            <a href="login.html" class="btn btn-nav-login">Login</a>
+            <a href="signup.html" class="btn btn-nav-signup">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- 1. Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content glass-card fade-in">
+            <div class="badge">Next Generation Cafeteria</div>
+            <h1>Eat Smarter, <br><span class="gradient-text">Not Faster</span></h1>
+            <p>Your AI-powered cafeteria system that understands your health, habits, and goals. Experience a preview below, and log in inside to unlock personalized daily meals.</p>
+            <div class="hero-buttons">
+                <a href="login.html" class="btn btn-primary"><i class="ph ph-sign-in"></i> Login to System</a>
+                <a href="signup.html" class="btn btn-secondary">Create Account</a>
+            </div>
+            <p class="small-text" style="margin-top: 1rem; font-size: 0.8rem; color: #aab5b5;">Or <a href="#demo" style="color: var(--rosy-brown);">try the mini-demo below</a></p>
+        </div>
+    </section>
+
+    <!-- 2. About / Overview Section -->
+    <section class="about fade-in" id="about">
+        <div class="section-header">
+            <h2>Welcome to NutriSense AI</h2>
+            <p style="max-width: 600px; margin: 0 auto;">We use data-driven AI to suggest meals that align with your body metrics and daily schedule. This isn't just a food menu—it's a personalized health system directly integrated into your campus cafeteria.</p>
+        </div>
+    </section>
+
+    <!-- 3. Features Section -->
+    <section class="features fade-in" id="features">
+        <div class="section-header">
+            <h2>What You Get Inside</h2>
+        </div>
+        <div class="bento-grid">
+            <div class="glass-card feature-card">
+                <i class="ph ph-magic-wand"></i>
+                <h3>AI Food Recommendations</h3>
+                <p>Tailored meals depending on your biometrics and goals.</p>
+            </div>
+            <div class="glass-card feature-card">
+                <i class="ph ph-heartbeat"></i>
+                <h3>Health & Calorie Tracking</h3>
+                <p>Automated logging every time you grab a meal.</p>
+            </div>
+            <div class="glass-card feature-card">
+                <i class="ph ph-qr-code"></i>
+                <h3>Smart Payments</h3>
+                <p>Frictionless checkout using integrated QR codes.</p>
+            </div>
+            <div class="glass-card feature-card">
+                <i class="ph ph-plant"></i>
+                <h3>Food Waste Reduction</h3>
+                <p>Optimized portion suggestions to help the environment.</p>
+            </div>
+            <div class="glass-card feature-card">
+                <i class="ph ph-drop"></i>
+                <h3>Cycle-Aware Suggestions</h3>
+                <p>Contextual macro adjustments based on hormonal phases.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. How It Works Section -->
+    <section class="how-it-works fade-in" id="how-it-works">
+        <div class="section-header">
+            <h2>The Experience</h2>
+        </div>
+        <div class="flow-container">
+            <div class="flow-step glass-card">
+                <i class="ph ph-user-circle"></i>
+                <h4>1. Login</h4>
+            </div>
+            <i class="ph ph-caret-right flow-arrow"></i>
+            <div class="flow-step glass-card">
+                <i class="ph ph-brain"></i>
+                <h4>2. Get AI Suggestions</h4>
+            </div>
+            <i class="ph ph-caret-right flow-arrow"></i>
+            <div class="flow-step glass-card">
+                <i class="ph ph-hand-tap"></i>
+                <h4>3. Select Food</h4>
+            </div>
+            <i class="ph ph-caret-right flow-arrow"></i>
+            <div class="flow-step glass-card">
+                <i class="ph ph-credit-card"></i>
+                <h4>4. Pay</h4>
+            </div>
+            <i class="ph ph-caret-right flow-arrow"></i>
+            <div class="flow-step glass-card">
+                <i class="ph ph-trend-up"></i>
+                <h4>5. Track Health</h4>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Mini Preview / Demo Section -->
+    <section class="preview fade-in" id="demo">
+        <div class="section-header">
+            <h2>Mini Demo</h2>
+            <p>See a tiny glimpse of how our engine thinks before you sign up.</p>
+        </div>
+        <div class="demo-wrapper glass-card">
+            <div class="demo-form">
+                <h3>Enter Quick Stats</h3>
+                <div class="input-group">
+                    <label>Weight (kg)</label>
+                    <input type="number" id="demo-weight" placeholder="e.g. 70" required>
+                </div>
+                <div class="input-group">
+                    <label>Height (cm)</label>
+                    <input type="number" id="demo-height" placeholder="e.g. 175" required>
+                </div>
+                <div class="input-group">
+                    <label>Current Mood</label>
+                    <select id="demo-mood">
+                        <option value="Happy">Happy & Active</option>
+                        <option value="Tired">Tired / Low Energy</option>
+                        <option value="Stressed">Stressed / Anxious</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;" onclick="runMiniDemo()">Generate Preview</button>
+            </div>
+            <div class="demo-output" id="demo-output">
+                <div id="output-placeholder">
+                    <i class="ph ph-chart-polar" style="font-size: 3rem; color: rgba(255,255,255,0.2); margin-bottom: 1rem;"></i>
+                    <p>Enter your details to see a sample AI calculation.</p>
+                </div>
+                <div id="output-result" style="display: none;">
+                    <h4><i class="ph ph-magic-wand"></i> AI Preview:</h4>
+                    <p><strong>BMI Est:</strong> <span id="res-bmi">--</span></p>
+                    <div class="mock-card">
+                        <h5>Recommended Energy Mix</h5>
+                        <p id="res-text">Calculated recommendation goes here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Impact Section -->
+    <section class="impact fade-in" id="impact">
+        <div class="section-header">
+            <h2>The Impact</h2>
+        </div>
+        <div class="impact-grid">
+            <div class="impact-column glass-card">
+                <h3><i class="ph ph-student"></i> For Students</h3>
+                <ul class="impact-list">
+                    <li><i class="ph ph-check-circle"></i> Healthier eating habits</li>
+                    <li><i class="ph ph-check-circle"></i> Better mental focus through customized macros</li>
+                    <li><i class="ph ph-check-circle"></i> Transparent calorie tracking</li>
+                </ul>
+            </div>
+            <div class="impact-column glass-card">
+                <h3><i class="ph ph-buildings"></i> For Cafeteria Admin</h3>
+                <ul class="impact-list">
+                    <li><i class="ph ph-check-circle"></i> Radically reduced food waste</li>
+                    <li><i class="ph ph-check-circle"></i> Predictive inventory planning</li>
+                    <li><i class="ph ph-check-circle"></i> Real-time popularity analytics</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Final CTA Section -->
+    <section class="final-cta fade-in">
+        <div class="cta-banner glass-card">
+            <h2>Start Your Smart Eating Journey</h2>
+            <p>Access your personalized health dashboard and make every meal count.</p>
+            <div class="hero-buttons">
+                <a href="login.html" class="btn btn-primary"><i class="ph ph-sign-in"></i> Login Here</a>
+                <a href="signup.html" class="btn btn-secondary">Sign Up Now</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 NutriSense AI. Preview Landing Page.</p>
+    </footer>
+
+    <script src="scripts/script.js"></script>
+</body>
+</html>
