@@ -68,7 +68,7 @@ const SmoothScrollHeroBackground: React.FC<ISmoothScrollHeroBackgroundProps> = (
 
 	return (
 		<motion.div
-			className="sticky top-0 h-screen w-full bg-beige z-0"
+			className="sticky top-0 h-screen w-full bg-white z-0"
 			style={{
 				clipPath,
 				willChange: "transform, opacity",
@@ -125,21 +125,21 @@ export const SmoothScrollHero: React.FC<ISmoothScrollHeroProps> = ({
 
 			{/* Overlay UI components can go here inside the scrolling Hero container */}
 			<div className="absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center">
-				<h1 className="text-5xl md:text-8xl font-black text-black text-center tracking-tight" style={{ 
-					textShadow: '0 4px 12px rgba(255,255,255,0.9), 0 0 40px rgba(255,255,255,1), 0 0 80px rgba(255,255,255,1)' 
+				<h1 className="text-5xl md:text-8xl font-black text-beige text-center tracking-tight" style={{ 
+					textShadow: '0 4px 12px rgba(10,51,35,0.7), 0 0 40px rgba(10,51,35,0.9), 0 0 80px rgba(10,51,35,1)' 
 				}}>
 					Eat Smarter, <br /><span className="text-moss">Not Faster</span>
 				</h1>
-				<p className="mt-6 text-lg md:text-2xl text-black font-semibold text-center max-w-2xl px-4" style={{ 
-					textShadow: '0 2px 8px rgba(255,255,255,1), 0 0 20px rgba(255,255,255,0.9)' 
+				<p className="mt-6 text-lg md:text-2xl text-beige/90 font-semibold text-center max-w-2xl px-4" style={{ 
+					textShadow: '0 2px 8px rgba(10,51,35,0.9), 0 0 20px rgba(10,51,35,0.8)' 
 				}}>
 					Your AI-powered cafeteria system that understands your health, habits, and goals.
 				</p>
 				<div className="mt-8 flex gap-4 pointer-events-auto">
-					<button className="px-8 py-4 bg-moss hover:bg-moss-hover text-midnight-darkest rounded-full font-bold transition-all shadow-lg text-lg">
+					<button className="px-8 py-4 bg-moss hover:bg-moss/80 text-forest rounded-full font-bold transition-all shadow-lg text-lg">
 						Login to System
 					</button>
-					<button className="px-8 py-4 bg-midnight/60 hover:bg-midnight/80 backdrop-blur-md text-beige border border-white/20 rounded-full font-bold transition-all shadow-lg text-lg">
+					<button className="px-8 py-4 bg-forest/40 hover:bg-forest/60 backdrop-blur-md text-beige border border-moss/30 rounded-full font-bold transition-all shadow-lg text-lg">
 						Create Account
 					</button>
 				</div>

@@ -9,6 +9,7 @@ export interface GlowCardProps {
   width?: string | number;
   height?: string | number;
   customSize?: boolean; // When true, ignores size prop and uses width/height or className
+  cardBackground?: string; // Optional explicit background color override
 }
 
 const glowColorMap = {
@@ -32,7 +33,8 @@ export const GlowCard: React.FC<GlowCardProps> = ({
   size = 'md',
   width,
   height,
-  customSize = false
+  customSize = false,
+  cardBackground
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
@@ -69,7 +71,7 @@ export const GlowCard: React.FC<GlowCardProps> = ({
       '--spread': spread.toString(),
       '--radius': '14',
       '--border': '3',
-      '--backdrop': 'hsl(0 0% 60% / 0.12)',
+      '--backdrop': cardBackground ?? 'hsl(0 0% 60% / 0.12)',
       '--backup-border': 'var(--backdrop)',
       '--size': '200',
       '--outer': '1',

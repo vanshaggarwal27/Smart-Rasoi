@@ -19,8 +19,8 @@ module.exports = {
     extend: {
       colors: {
         moss: {
-          DEFAULT: '#839958',
-          hover: '#6a7d45',
+          DEFAULT: '#93AB63',
+          hover: '#7A914E',
         },
         beige: {
           DEFAULT: '#F7F4D5',
@@ -31,12 +31,12 @@ module.exports = {
           hover: '#b57b72',
         },
         midnight: {
-          DEFAULT: '#105666',
-          darker: '#0b3944',
-          darkest: '#062026',
+          DEFAULT: '#196A7C',
+          darker: '#114D5C',
+          darkest: '#0B333D',
         },
         forest: {
-          DEFAULT: '#0A3323',
+          DEFAULT: '#1C4D35',
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

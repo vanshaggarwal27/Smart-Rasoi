@@ -70,7 +70,7 @@ const thirdColumnTestimonials = nutrisenseTestimonials.slice(6, 9);
 
 function App() {
   return (
-    <div className="bg-forest min-h-screen text-beige font-sans">
+    <div className="bg-white min-h-screen text-forest font-sans">
       {/* Navigation */}
       <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-center px-6 pt-5">
         {/* Centered pill - truly centered via absolute */}
@@ -106,17 +106,17 @@ function App() {
       {/* 2. About / Overview Section */}
       <section className="py-24 px-6" id="about">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-beige">Welcome to NutriSense</h2>
-          <p className="text-lg text-beige/80 leading-relaxed font-medium">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-forest">Welcome to NutriSense</h2>
+          <p className="text-lg text-forest/80 leading-relaxed font-medium">
             We use data-driven AI to suggest meals that align with your body metrics and daily schedule. This isn't just a food menu—it's a personalized health system directly integrated into your campus cafeteria.
           </p>
         </div>
       </section>
 
       {/* 3. Features Section */}
-      <section className="py-24 px-6 bg-midnight/30 border-y border-midnight/50" id="features">
+      <section className="py-24 px-6 bg-[#839958]" id="features">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">What You Get Inside</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-white">What You Get Inside</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <FeatureCard
               glowColor="green"
@@ -150,7 +150,7 @@ function App() {
             />
             <FeatureCard
               glowColor="orange"
-              icon={<Bell className="w-8 h-8 text-forest mb-4" />}
+              icon={<Bell className="w-8 h-8 text-moss mb-4" />}
               title="Allergy Alerts"
               desc="Instant warnings for foods containing your known allergens."
             />
@@ -177,22 +177,22 @@ function App() {
       </section>
 
       {/* 5. Impact Section */}
-      <section className="py-24 px-6 bg-midnight/30 border-y border-midnight/50" id="impact">
+      <section className="py-24 px-6 bg-[#839958]" id="impact">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-16">The Impact</h2>
+          <h2 className="text-3xl font-bold text-center mb-16 text-white">The Impact</h2>
           <div className="grid md:grid-cols-2 gap-8">
-            <GlowCard customSize={true} glowColor="green" className="flex flex-col items-center">
+            <GlowCard customSize={true} glowColor="green" cardBackground="#1C4D35" className="flex flex-col items-center border-moss/40 shadow-xl shadow-midnight/20">
               <GraduationCap className="w-12 h-12 text-moss mb-6" />
-              <h3 className="text-2xl font-semibold mb-6 text-forest relative z-10">For Students</h3>
+              <h3 className="text-2xl font-semibold mb-6 text-white relative z-10">For Students</h3>
               <ul className="space-y-4 w-full relative z-10">
                 <ImpactItem text="Healthier eating habits" />
                 <ImpactItem text="Better mental focus through customized macros" />
                 <ImpactItem text="Transparent calorie tracking" />
               </ul>
             </GlowCard>
-            <GlowCard customSize={true} glowColor="blue" className="flex flex-col items-center">
+            <GlowCard customSize={true} glowColor="blue" cardBackground="#1C4D35" className="flex flex-col items-center border-moss/40 shadow-xl shadow-midnight/20">
               <Building2 className="w-12 h-12 text-moss mb-6" />
-              <h3 className="text-2xl font-semibold mb-6 text-forest relative z-10">For Cafeteria Admin</h3>
+              <h3 className="text-2xl font-semibold mb-6 text-white relative z-10">For Cafeteria Admin</h3>
               <ul className="space-y-4 w-full relative z-10">
                 <ImpactItem text="Radically reduced food waste" />
                 <ImpactItem text="Predictive inventory planning" />
@@ -204,7 +204,7 @@ function App() {
       </section>
 
       {/* 6. Testimonials Section */}
-      <section className="py-24 px-6 bg-midnight/30 border-y border-midnight/50" id="testimonials">
+      <section className="py-24 px-6 bg-beige/40 border-y border-beige/60" id="testimonials">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col items-center justify-center mb-12">
             <div className="border border-moss/40 text-moss py-1 px-4 rounded-lg text-sm bg-moss/10 font-bold mb-4">
@@ -227,14 +227,14 @@ function App() {
 
       {/*  Final CTA Section */}
       <section className="py-32 px-6">
-        <div className="max-w-4xl mx-auto text-center p-12 rounded-3xl bg-midnight/40 border border-moss/30 shadow-xl shadow-midnight/50 backdrop-blur-sm">
-          <h2 className="text-4xl font-bold mb-4 text-beige">Start Your Smart Eating Journey</h2>
-          <p className="text-beige/80 font-medium mb-8 max-w-2xl mx-auto">Access your personalized health dashboard and make every meal count.</p>
+        <div className="max-w-4xl mx-auto text-center p-12 rounded-3xl bg-[#839958] border border-white/20 shadow-xl">
+          <h2 className="text-4xl font-bold mb-4 text-white">Start Your Smart Eating Journey</h2>
+          <p className="text-white/90 font-medium mb-8 max-w-2xl mx-auto">Access your personalized health dashboard and make every meal count.</p>
           <div className="flex gap-4 justify-center">
-            <button className="px-8 py-3 bg-moss hover:bg-moss-hover text-forest rounded-full font-bold transition-all shadow-lg flex items-center gap-2">
+            <button className="px-8 py-3 bg-white hover:bg-beige text-forest rounded-full font-bold transition-all shadow-lg flex items-center gap-2">
               <LogIn className="w-5 h-5" /> Login Here
             </button>
-            <button className="px-8 py-3 bg-beige/90 hover:bg-beige text-forest border-2 border-beige rounded-full font-bold transition-all shadow-lg">
+            <button className="px-8 py-3 bg-forest hover:bg-forest/90 text-white rounded-full font-bold transition-all shadow-lg">
               Sign Up Now
             </button>
           </div>
@@ -248,10 +248,10 @@ function App() {
 
 function FeatureCard({ icon, title, desc, glowColor = 'blue' }: { icon: React.ReactNode, title: string, desc: string, glowColor?: 'blue'|'purple'|'green'|'red'|'orange' }) {
   return (
-    <GlowCard customSize={true} glowColor={glowColor} className="hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full bg-forest/80 border-moss/30 shadow-lg shadow-midnight/20">
+    <GlowCard customSize={true} glowColor={glowColor} cardBackground="#1C4D35" className="hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full border-moss/40 shadow-xl shadow-midnight/20">
       <div className="relative z-10">{icon}</div>
-      <h3 className="text-xl font-bold mb-2 text-beige relative z-10">{title}</h3>
-      <p className="text-sm text-beige/80 font-medium relative z-10">{desc}</p>
+      <h3 className="text-xl font-bold mb-2 text-white relative z-10">{title}</h3>
+      <p className="text-sm text-white/80 font-medium relative z-10">{desc}</p>
     </GlowCard>
   )
 }
@@ -259,14 +259,14 @@ function FeatureCard({ icon, title, desc, glowColor = 'blue' }: { icon: React.Re
 function FlowStep({ icon, title, step }: { icon: React.ReactNode, title: string, step: number }) {
   return (
     <div className="flex flex-col items-center gap-4 group">
-      <div className="w-16 h-16 rounded-full bg-midnight/60 border border-moss/50 flex items-center justify-center text-moss group-hover:scale-110 group-hover:bg-moss group-hover:border-moss group-hover:text-forest transition-all shadow-lg">
+      <div className="w-16 h-16 rounded-full bg-white border border-moss/50 flex items-center justify-center text-moss group-hover:scale-110 group-hover:bg-moss group-hover:border-moss group-hover:text-white transition-all shadow-lg">
         <div className="[&>svg]:w-6 [&>svg]:h-6">
           {icon}
         </div>
       </div>
       <div className="text-center">
         <div className="text-xs text-moss flex font-bold tracking-wider mb-1 justify-center">STEP {step}</div>
-        <h4 className="font-bold text-beige">{title}</h4>
+        <h4 className="font-bold text-forest">{title}</h4>
       </div>
     </div>
   )
@@ -274,7 +274,7 @@ function FlowStep({ icon, title, step }: { icon: React.ReactNode, title: string,
 
 function ImpactItem({ text }: { text: string }) {
   return (
-    <li className="flex items-center gap-3 text-beige font-medium bg-midnight/40 p-3 rounded-lg border border-moss/30">
+    <li className="flex items-center gap-3 text-white font-medium bg-white/10 p-3 rounded-lg border border-moss/30">
       <CheckCircle2 className="w-5 h-5 text-moss shrink-0" />
       <span>{text}</span>
     </li>
