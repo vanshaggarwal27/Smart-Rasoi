@@ -9,6 +9,7 @@ import { useSettings, Supplement } from "@/hooks/useSettings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Check, Sunrise, Sun, Moon, Coffee, ChevronLeft, ChevronRight, Copy, Trash2 } from "lucide-react";
 import { CampusRewardsCard } from "@/components/CampusRewardsCard";
+import { BudgetTracker } from "@/components/BudgetTracker";
 import { Sparkles, IndianRupee, Thermometer, AlertCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -336,31 +337,9 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Student Insights Row */}
-          <div className="grid grid-cols-2 gap-4 px-1">
-            <div className="bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <IndianRupee className="h-4 w-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Budget</span>
-              </div>
-              <div className="space-y-1">
-                <p className="text-lg font-black text-foreground">₹2,450 <span className="text-[10px] text-muted-foreground font-medium">left</span></p>
-                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-primary/60" style={{ width: "45%" }} />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex flex-col gap-2">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Calendar className="h-4 w-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Day 12</span>
-              </div>
-              <div className="space-y-1">
-                <p className="text-lg font-black text-foreground">Cycle <span className="text-[10px] text-pink-500 font-black uppercase">Tracking</span></p>
-                <p className="text-[10px] text-muted-foreground font-medium italic">Peak Energy Window</p>
-              </div>
-            </div>
+          {/* Budget Tracking Section */}
+          <div className="px-1">
+            <BudgetTracker />
           </div>
 
           {enabledSupplements.length > 0 && (
