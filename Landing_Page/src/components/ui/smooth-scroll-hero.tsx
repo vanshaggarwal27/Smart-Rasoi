@@ -123,14 +123,14 @@ export const SmoothScrollHero: React.FC<ISmoothScrollHeroProps> = ({
 				finalClipPercentage={finalClipPercentage}
 			/>
 
-			{/* Overlay UI components can go here inside the scrolling Hero container */}
-			<div className="absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center">
-				<h1 className="text-5xl md:text-8xl font-black text-beige text-center tracking-tight" style={{ 
+			{/* Overlay UI components - made sticky to be visible correctly */}
+			<div className="sticky top-0 h-screen w-full z-20 pointer-events-none flex flex-col items-center justify-center">
+				<h1 className="text-5xl md:text-8xl font-black text-white text-center tracking-tight" style={{ 
 					textShadow: '0 4px 12px rgba(10,51,35,0.7), 0 0 40px rgba(10,51,35,0.9), 0 0 80px rgba(10,51,35,1)' 
 				}}>
 					Eat Smarter, <br /><span className="text-moss">Not Faster</span>
 				</h1>
-				<p className="mt-6 text-lg md:text-2xl text-beige/90 font-semibold text-center max-w-2xl px-4" style={{ 
+				<p className="mt-6 text-lg md:text-2xl text-white/90 font-semibold text-center max-w-2xl px-4" style={{ 
 					textShadow: '0 2px 8px rgba(10,51,35,0.9), 0 0 20px rgba(10,51,35,0.8)' 
 				}}>
 					Your AI-powered cafeteria system that understands your health, habits, and goals.
@@ -139,7 +139,7 @@ export const SmoothScrollHero: React.FC<ISmoothScrollHeroProps> = ({
 					<button className="px-8 py-4 bg-moss hover:bg-moss/80 text-forest rounded-full font-bold transition-all shadow-lg text-lg">
 						Login to System
 					</button>
-					<button className="px-8 py-4 bg-forest/40 hover:bg-forest/60 backdrop-blur-md text-beige border border-moss/30 rounded-full font-bold transition-all shadow-lg text-lg">
+					<button className="px-8 py-4 bg-forest/40 hover:bg-forest/60 backdrop-blur-md text-white border border-moss/30 rounded-full font-bold transition-all shadow-lg text-lg">
 						Create Account
 					</button>
 				</div>

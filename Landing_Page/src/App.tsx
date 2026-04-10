@@ -1,11 +1,21 @@
+import React from "react";
+import { 
+  motion, 
+  useScroll, 
+  useTransform, 
+  AnimatePresence 
+} from "framer-motion";
 import SmoothScrollHero from "@/components/ui/smooth-scroll-hero";
 import { GlowCard } from "@/components/ui/spotlight-card";
 import { MinimalFooter } from "@/components/ui/minimal-footer";
-import { PillBase } from "@/components/ui/3d-adaptive-navigation-bar";
+import { NavBar } from "@/components/ui/tube-light-navbar";
 import { TestimonialsColumn } from "@/components/ui/testimonials-columns-1";
-// The user prompt specifically says: "3. Use lucide-react icons for svgs or logos if component requires them"
-import { Sparkles, Activity, QrCode as LucideQrCode, Leaf as LucideLeaf, Droplet, UserCircle2, BrainCircuit, Pointer, CreditCard as LucideCreditCard, TrendingUp, GraduationCap, Building2, CheckCircle2, LogIn, Bell } from "lucide-react";
-
+import { 
+  Home, Sparkles, BrainCircuit, TrendingUp, MessageSquare,
+  Activity, QrCode, Leaf, Droplet, UserCircle2, 
+  Pointer, CreditCard, GraduationCap, Building2, 
+  CheckCircle2, LogIn, Bell 
+} from "lucide-react";
 
 const nutrisenseTestimonials = [
   {
@@ -68,33 +78,29 @@ const firstColumnTestimonials = nutrisenseTestimonials.slice(0, 3);
 const secondColumnTestimonials = nutrisenseTestimonials.slice(3, 6);
 const thirdColumnTestimonials = nutrisenseTestimonials.slice(6, 9);
 
+const navItems = [
+  { name: 'Home', url: '#', icon: Home },
+  { name: 'Features', url: '#features', icon: Sparkles },
+  { name: 'Experience', url: '#how-it-works', icon: BrainCircuit },
+  { name: 'Impact', url: '#impact', icon: TrendingUp },
+  { name: 'Testimonials', url: '#testimonials', icon: MessageSquare }
+]
+
 function App() {
   return (
-    <div className="bg-white min-h-screen text-forest font-sans">
-      {/* Navigation */}
-      <header className="fixed top-0 inset-x-0 z-50 flex items-center justify-center px-6 pt-5">
-        {/* Centered pill - truly centered via absolute */}
-        <div className="absolute left-1/2 -translate-x-1/2">
-          <PillBase />
-        </div>
-        {/* Auth buttons on the right */}
+    <div className="bg-white min-h-screen text-[#1C4D35] font-sans">
+      <header className="fixed top-0 inset-x-0 z-[150] flex items-center px-6 pt-5 pointer-events-none">
+        <NavBar items={navItems} className="pointer-events-auto" />
         <div className="ml-auto flex items-center gap-3">
           <a
-            href="/signin"
-            className="px-5 py-2.5 text-sm font-medium text-beige/80 hover:text-beige rounded-full border border-beige/20 hover:border-beige/40 backdrop-blur-md bg-beige/5 hover:bg-beige/10 transition-all duration-200"
+            href="/dashboard"
+            className="px-6 py-2.5 text-sm font-bold text-white rounded-full bg-[#1C4D35] hover:bg-[#1C4D35]/90 shadow-lg shadow-[#1C4D35]/20 transition-all duration-200 pointer-events-auto flex items-center gap-2"
           >
-            Sign In
-          </a>
-          <a
-            href="/signup"
-            className="px-5 py-2.5 text-sm font-semibold text-forest rounded-full bg-beige hover:bg-beige-dark shadow-lg shadow-beige/30 transition-all duration-200"
-          >
-            Sign Up
+            <Activity className="w-4 h-4" /> Dashboard
           </a>
         </div>
       </header>
 
-      {/* 1. Hero Section using SmoothScrollHero */}
       <SmoothScrollHero
         scrollHeight={1500}
         desktopImage="/hero-bg.png"
@@ -103,54 +109,52 @@ function App() {
         finalClipPercentage={75}
       />
 
-      {/* 2. About / Overview Section */}
-      <section className="py-24 px-6" id="about">
+      <section className="py-24 px-6 bg-white" id="about">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-forest">Welcome to NutriSense</h2>
-          <p className="text-lg text-forest/80 leading-relaxed font-medium">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-[#1C4D35]">Welcome to NutriSense</h2>
+          <p className="text-lg text-[#1C4D35]/80 leading-relaxed font-medium">
             We use data-driven AI to suggest meals that align with your body metrics and daily schedule. This isn't just a food menu—it's a personalized health system directly integrated into your campus cafeteria.
           </p>
         </div>
       </section>
 
-      {/* 3. Features Section */}
       <section className="py-24 px-6 bg-[#839958]" id="features">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-white">What You Get Inside</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-white uppercase tracking-widest">What You Get Inside</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <FeatureCard
               glowColor="green"
-              icon={<Sparkles className="w-8 h-8 text-moss mb-4" />}
+              icon={<Sparkles className="w-8 h-8 text-[#93AB63] mb-4" />}
               title="AI Food Recommendations"
               desc="Tailored meals depending on your biometrics and goals."
             />
             <FeatureCard
               glowColor="red"
-              icon={<Activity className="w-8 h-8 text-rosy mb-4" />}
+              icon={<Activity className="w-8 h-8 text-[#D3968C] mb-4" />}
               title="Health & Calorie Tracking"
               desc="Automated logging every time you grab a meal."
             />
             <FeatureCard
               glowColor="purple"
-              icon={<LucideQrCode className="w-8 h-8 text-beige mb-4" />}
+              icon={<QrCode className="w-8 h-8 text-white/50 mb-4" />}
               title="Smart Payments"
               desc="Frictionless checkout using integrated QR codes."
             />
             <FeatureCard
               glowColor="green"
-              icon={<LucideLeaf className="w-8 h-8 text-moss mb-4" />}
+              icon={<Leaf className="w-8 h-8 text-[#93AB63] mb-4" />}
               title="Food Waste Reduction"
               desc="Optimized portion suggestions to help the environment."
             />
             <FeatureCard
               glowColor="blue"
-              icon={<Droplet className="w-8 h-8 text-rosy mb-4" />}
+              icon={<Droplet className="w-8 h-8 text-[#196A7C] mb-4" />}
               title="Cycle-Aware Suggestions"
               desc="Contextual macro adjustments based on hormonal phases."
             />
             <FeatureCard
               glowColor="orange"
-              icon={<Bell className="w-8 h-8 text-moss mb-4" />}
+              icon={<Bell className="w-8 h-8 text-[#93AB63] mb-4" />}
               title="Allergy Alerts"
               desc="Instant warnings for foods containing your known allergens."
             />
@@ -158,31 +162,55 @@ function App() {
         </div>
       </section>
 
-      {/* 4. How It Works Section */}
-      <section className="py-24 px-6" id="how-it-works">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">The Experience</h2>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <FlowStep icon={<UserCircle2 />} title="Login" step={1} />
-            <div className="w-1 h-8 md:w-8 md:h-1 bg-moss/30" />
-            <FlowStep icon={<BrainCircuit />} title="AI Suggestions" step={2} />
-            <div className="w-1 h-8 md:w-8 md:h-1 bg-moss/30" />
-            <FlowStep icon={<Pointer />} title="Select Food" step={3} />
-            <div className="w-1 h-8 md:w-8 md:h-1 bg-moss/30" />
-            <FlowStep icon={<LucideCreditCard />} title="Pay" step={4} />
-            <div className="w-1 h-8 md:w-8 md:h-1 bg-moss/30" />
-            <FlowStep icon={<TrendingUp />} title="Track Health" step={5} />
+      <section className="relative px-6 bg-white" id="how-it-works">
+        {/* Sticky Container */}
+        <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row items-center justify-center overflow-hidden">
+          
+          {/* Left Side: Device Visual */}
+          <div className="relative w-full md:w-1/2 flex justify-center items-center h-full">
+            <div className="relative w-[280px] h-[580px] bg-forest rounded-[3rem] border-[8px] border-forest/10 shadow-[0_0_60px_rgba(28,77,53,0.3)] flex flex-col overflow-hidden">
+              <div className="absolute top-0 inset-x-0 h-6 bg-forest flex justify-center items-end pb-1">
+                <div className="w-16 h-1 bg-white/20 rounded-full" />
+              </div>
+
+              {/* Dynamic Screen Content */}
+              <div className="flex-1 mt-6 px-4 py-6 bg-white rounded-t-[2.5rem] relative overflow-hidden">
+                <ExperienceScreenSwitcher />
+              </div>
+            </div>
+
+            {/* Floating elements for depth */}
+            <div className="absolute top-1/4 -left-10 w-24 h-24 bg-moss/20 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-1/4 -right-10 w-32 h-32 bg-midnight/20 rounded-full blur-3xl animate-pulse delay-700" />
+          </div>
+
+          {/* Right Side: Text Narrative */}
+          <div className="w-full md:w-1/2 h-full flex flex-col justify-center px-12 z-10 pointer-events-none">
+            <div className="max-w-md">
+              <div className="inline-block px-4 py-1.5 rounded-full bg-moss/10 text-moss font-bold text-xs uppercase tracking-widest mb-6">
+                Live Interaction
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-forest leading-tight mb-8">
+                Your Day, <br />
+                <span className="text-moss italic">Redefined.</span>
+              </h2>
+              <p className="text-lg text-forest/60 font-medium leading-relaxed">
+                Experience the seamless fusion of AI and nutrition. Scroll to walk through the journey.
+              </p>
+            </div>
           </div>
         </div>
+
+        {/* Scroll triggers (Invisible spacers that trigger the state changes) */}
+        <div className="h-[300vh] w-full" />
       </section>
 
-      {/* 5. Impact Section */}
       <section className="py-24 px-6 bg-[#839958]" id="impact">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-16 text-white">The Impact</h2>
+          <h2 className="text-3xl font-bold text-center mb-16 text-white uppercase tracking-widest">The Impact</h2>
           <div className="grid md:grid-cols-2 gap-8">
-            <GlowCard customSize={true} glowColor="green" cardBackground="#1C4D35" className="flex flex-col items-center border-moss/40 shadow-xl shadow-midnight/20">
-              <GraduationCap className="w-12 h-12 text-moss mb-6" />
+            <GlowCard customSize={true} glowColor="green" cardBackground="#1C4D35" className="flex flex-col items-center border-[#93AB63]/40 shadow-xl">
+              <GraduationCap className="w-12 h-12 text-[#93AB63] mb-6" />
               <h3 className="text-2xl font-semibold mb-6 text-white relative z-10">For Students</h3>
               <ul className="space-y-4 w-full relative z-10">
                 <ImpactItem text="Healthier eating habits" />
@@ -190,8 +218,8 @@ function App() {
                 <ImpactItem text="Transparent calorie tracking" />
               </ul>
             </GlowCard>
-            <GlowCard customSize={true} glowColor="blue" cardBackground="#1C4D35" className="flex flex-col items-center border-moss/40 shadow-xl shadow-midnight/20">
-              <Building2 className="w-12 h-12 text-moss mb-6" />
+            <GlowCard customSize={true} glowColor="blue" cardBackground="#1C4D35" className="flex flex-col items-center border-[#93AB63]/40 shadow-xl">
+              <Building2 className="w-12 h-12 text-[#93AB63] mb-6" />
               <h3 className="text-2xl font-semibold mb-6 text-white relative z-10">For Cafeteria Admin</h3>
               <ul className="space-y-4 w-full relative z-10">
                 <ImpactItem text="Radically reduced food waste" />
@@ -203,21 +231,17 @@ function App() {
         </div>
       </section>
 
-      {/* 6. Testimonials Section */}
-      <section className="py-24 px-6 bg-beige/40 border-y border-beige/60" id="testimonials">
-        <div className="max-w-5xl mx-auto">
+      <section className="py-24 px-6 bg-white" id="testimonials">
+        <div className="max-w-6xl mx-auto">
           <div className="flex flex-col items-center justify-center mb-12">
-            <div className="border border-moss/40 text-moss py-1 px-4 rounded-lg text-sm bg-moss/10 font-bold mb-4">
+            <div className="border border-[#93AB63]/40 text-[#93AB63] py-1 px-4 rounded-lg text-sm bg-[#93AB63]/10 font-bold mb-4">
               Testimonials
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-forest">
-              What students & staff say
+            <h2 className="text-3xl md:text-5xl font-bold text-center text-[#1C4D35]">
+              Real Stories from NMIMS
             </h2>
-            <p className="text-forest/70 text-center mt-4 max-w-xl font-medium">
-              Hear directly from the people using NutriSense every day across campus.
-            </p>
           </div>
-          <div className="flex justify-center gap-6 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)] max-h-[700px] overflow-hidden">
+          <div className="flex justify-center gap-6 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)] max-h-[750px] overflow-hidden">
             <TestimonialsColumn testimonials={firstColumnTestimonials} duration={15} />
             <TestimonialsColumn testimonials={secondColumnTestimonials} className="hidden md:block" duration={19} />
             <TestimonialsColumn testimonials={thirdColumnTestimonials} className="hidden lg:block" duration={17} />
@@ -225,17 +249,16 @@ function App() {
         </div>
       </section>
 
-      {/*  Final CTA Section */}
-      <section className="py-32 px-6">
-        <div className="max-w-4xl mx-auto text-center p-12 rounded-3xl bg-[#839958] border border-white/20 shadow-xl">
+      <section className="py-32 px-6 bg-[#839958]">
+        <div className="max-w-4xl mx-auto text-center p-12 rounded-3xl bg-[#1C4D35] border border-white/20 shadow-2xl">
           <h2 className="text-4xl font-bold mb-4 text-white">Start Your Smart Eating Journey</h2>
-          <p className="text-white/90 font-medium mb-8 max-w-2xl mx-auto">Access your personalized health dashboard and make every meal count.</p>
+          <p className="text-white/80 font-medium mb-8 max-w-2xl mx-auto">Access your personalized health dashboard and make every meal count.</p>
           <div className="flex gap-4 justify-center">
-            <button className="px-8 py-3 bg-white hover:bg-beige text-forest rounded-full font-bold transition-all shadow-lg flex items-center gap-2">
-              <LogIn className="w-5 h-5" /> Login Here
+            <button className="px-8 py-4 bg-white hover:bg-beige text-[#1C4D35] rounded-full font-bold transition-all shadow-lg flex items-center gap-2">
+              <LogIn className="w-5 h-5" /> Login to Dashboard
             </button>
-            <button className="px-8 py-3 bg-forest hover:bg-forest/90 text-white rounded-full font-bold transition-all shadow-lg">
-              Sign Up Now
+            <button className="px-8 py-4 bg-[#93AB63] hover:bg-[#93AB63]/90 text-[#1C4D35] rounded-full font-bold transition-all shadow-lg">
+              Create Account
             </button>
           </div>
         </div>
@@ -243,42 +266,168 @@ function App() {
 
       <MinimalFooter />
     </div>
-  )
+  );
 }
 
-function FeatureCard({ icon, title, desc, glowColor = 'blue' }: { icon: React.ReactNode, title: string, desc: string, glowColor?: 'blue'|'purple'|'green'|'red'|'orange' }) {
+function ExperienceScreenSwitcher() {
+  const { scrollYProgress } = useScroll();
+  
+  // Map scroll progress (0 to 1) to screen index (0 to 3)
+  const screenIndex = useTransform(scrollYProgress, [0.4, 0.55, 0.7, 0.85], [0, 1, 2, 3]);
+  const [index, setIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    return screenIndex.on("change", (latest) => {
+      setIndex(Math.min(Math.round(latest), 3));
+    });
+  }, [screenIndex]);
+
+  const screens = [
+    {
+      id: "scan",
+      title: "Tap to Begin",
+      content: (
+        <div className="flex flex-col items-center justify-center h-full gap-6">
+          <div className="w-32 h-32 bg-moss/20 rounded-3xl flex items-center justify-center relative">
+            <motion.div 
+               animate={{ scale: [1, 1.2, 1] }} 
+               transition={{ duration: 2, repeat: Infinity }}
+               className="absolute inset-0 bg-moss/10 rounded-3xl"
+            />
+            <QrCode className="w-16 h-16 text-moss" />
+          </div>
+          <p className="text-center text-forest/40 text-xs font-bold uppercase tracking-widest mt-4">Scanner Active</p>
+        </div>
+      )
+    },
+    {
+      id: "analysis",
+      title: "AI Analysis",
+      content: (
+        <div className="flex flex-col h-full gap-4">
+          <div className="flex items-center gap-3 p-3 bg-moss/10 rounded-xl border border-moss/20">
+            <BrainCircuit className="w-6 h-6 text-moss" />
+            <div className="text-sm font-bold text-forest">Scanning Biometrics...</div>
+          </div>
+          {[1, 2, 3].map(i => (
+            <motion.div 
+              key={i}
+              initial={{ width: 0 }}
+              animate={{ width: "100%" }}
+              transition={{ delay: i * 0.2 }}
+              className="h-2 bg-forest/5 rounded-full overflow-hidden"
+            >
+              <div className="h-full bg-moss w-2/3" />
+            </motion.div>
+          ))}
+          <div className="mt-auto p-4 bg-forest rounded-2xl text-white">
+            <div className="text-[10px] uppercase font-bold text-moss mb-1">Recommendation</div>
+            <div className="text-sm font-bold">Suggested: Protein-Rich Thali</div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: "selection",
+      title: "Choose Plate",
+      content: (
+        <div className="flex flex-col h-full gap-3 overflow-y-auto">
+          {[
+            { name: "Healthy Bowl", cal: "450", p: "High" },
+            { name: "Kadhai Paneer", cal: "620", p: "Med" },
+            { name: "Fruit Salad", cal: "210", p: "Low" }
+          ].map((item, i) => (
+            <div key={i} className="p-3 border border-forest/10 rounded-xl flex justify-between items-center hover:bg-forest hover:text-white transition-colors cursor-pointer group">
+              <div>
+                <div className="text-sm font-bold">{item.name}</div>
+                <div className="text-[10px] opacity-60 uppercase font-bold tracking-tighter">{item.cal} CAL • Protein: {item.p}</div>
+              </div>
+              <div className="w-6 h-6 rounded-full border border-forest/20 group-hover:border-white/40" />
+            </div>
+          ))}
+          <div className="mt-auto pt-4 border-t border-forest/5">
+             <button className="w-full py-3 bg-moss text-forest font-bold rounded-xl text-sm shadow-lg">Confirm Selection</button>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: "stats",
+      title: "Impact",
+      content: (
+        <div className="flex flex-col h-full items-center justify-center gap-6">
+           <div className="text-center">
+             <div className="text-5xl font-black text-forest mb-2">92<span className="text-2xl">%</span></div>
+             <div className="text-[10px] font-bold text-moss uppercase tracking-widest">Health Score</div>
+           </div>
+           
+           <div className="w-full space-y-3">
+             <div className="flex justify-between text-[10px] font-bold text-forest/40 uppercase">
+               <span>Calories</span>
+               <span>520/2200</span>
+             </div>
+             <div className="h-2 bg-forest/5 rounded-full overflow-hidden">
+               <div className="h-full bg-midnight w-1/4" />
+             </div>
+           </div>
+
+           <div className="p-4 bg-moss/10 rounded-2xl border border-moss/20 w-full">
+              <div className="flex items-center gap-3 text-forest">
+                <CheckCircle2 className="w-5 h-5 text-moss" />
+                <span className="text-xs font-bold">Plate Optimized for Focus</span>
+              </div>
+           </div>
+        </div>
+      )
+    }
+  ];
+
   return (
-    <GlowCard customSize={true} glowColor={glowColor} cardBackground="#1C4D35" className="hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full border-moss/40 shadow-xl shadow-midnight/20">
+    <div className="h-full flex flex-col pt-4">
+      <div className="flex justify-between items-center mb-8 px-2">
+        <h4 className="font-black text-forest uppercase tracking-tighter text-lg">{screens[index].title}</h4>
+        <div className="flex gap-1">
+          {screens.map((_, i) => (
+             <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === index ? 'w-4 bg-moss' : 'w-1.5 bg-forest/10'}`} />
+          ))}
+        </div>
+      </div>
+      
+      <div className="flex-1 relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0"
+          >
+            {screens[index].content}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+function FeatureCard({ icon, title, desc, glowColor = 'blue' }: { icon: React.ReactNode, title: string, desc: string, glowColor?: any }) {
+  return (
+    <GlowCard customSize={true} glowColor={glowColor} cardBackground="#1C4D35" className="hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full border-[#93AB63]/40 shadow-xl">
       <div className="relative z-10">{icon}</div>
       <h3 className="text-xl font-bold mb-2 text-white relative z-10">{title}</h3>
       <p className="text-sm text-white/80 font-medium relative z-10">{desc}</p>
     </GlowCard>
-  )
-}
-
-function FlowStep({ icon, title, step }: { icon: React.ReactNode, title: string, step: number }) {
-  return (
-    <div className="flex flex-col items-center gap-4 group">
-      <div className="w-16 h-16 rounded-full bg-white border border-moss/50 flex items-center justify-center text-moss group-hover:scale-110 group-hover:bg-moss group-hover:border-moss group-hover:text-white transition-all shadow-lg">
-        <div className="[&>svg]:w-6 [&>svg]:h-6">
-          {icon}
-        </div>
-      </div>
-      <div className="text-center">
-        <div className="text-xs text-moss flex font-bold tracking-wider mb-1 justify-center">STEP {step}</div>
-        <h4 className="font-bold text-forest">{title}</h4>
-      </div>
-    </div>
-  )
+  );
 }
 
 function ImpactItem({ text }: { text: string }) {
   return (
-    <li className="flex items-center gap-3 text-white font-medium bg-white/10 p-3 rounded-lg border border-moss/30">
-      <CheckCircle2 className="w-5 h-5 text-moss shrink-0" />
+    <li className="flex items-center gap-3 text-white font-medium bg-white/5 p-3 rounded-lg border border-white/10 group hover:bg-white/10 transition-colors">
+      <CheckCircle2 className="w-5 h-5 text-[#93AB63] shrink-0" />
       <span>{text}</span>
     </li>
-  )
+  );
 }
 
 export default App;
