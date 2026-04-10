@@ -93,7 +93,7 @@ function App() {
         <NavBar items={navItems} className="pointer-events-auto" />
         <div className="ml-auto flex items-center gap-3">
           <a
-            href="/dashboard"
+            href="http://localhost:3001/"
             className="px-6 py-2.5 text-sm font-bold text-white rounded-full bg-[#1C4D35] hover:bg-[#1C4D35]/90 shadow-lg shadow-[#1C4D35]/20 transition-all duration-200 pointer-events-auto flex items-center gap-2"
           >
             <Activity className="w-4 h-4" /> Dashboard
@@ -254,12 +254,12 @@ function App() {
           <h2 className="text-4xl font-bold mb-4 text-white">Start Your Smart Eating Journey</h2>
           <p className="text-white/80 font-medium mb-8 max-w-2xl mx-auto">Access your personalized health dashboard and make every meal count.</p>
           <div className="flex gap-4 justify-center">
-            <button className="px-8 py-4 bg-white hover:bg-beige text-[#1C4D35] rounded-full font-bold transition-all shadow-lg flex items-center gap-2">
+            <a href="http://localhost:3001/" className="px-8 py-4 bg-white hover:bg-beige text-[#1C4D35] rounded-full font-bold transition-all shadow-lg flex items-center gap-2">
               <LogIn className="w-5 h-5" /> Login to Dashboard
-            </button>
-            <button className="px-8 py-4 bg-[#93AB63] hover:bg-[#93AB63]/90 text-[#1C4D35] rounded-full font-bold transition-all shadow-lg">
+            </a>
+            <a href="http://localhost:3001/" className="flex items-center px-8 py-4 bg-[#93AB63] hover:bg-[#93AB63]/90 text-[#1C4D35] rounded-full font-bold transition-all shadow-lg">
               Create Account
-            </button>
+            </a>
           </div>
         </div>
       </section>
