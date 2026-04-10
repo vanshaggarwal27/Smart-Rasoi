@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Skeleton as BoneyardSkeleton } from "boneyard-js/react";
-
 import { useNavigate } from "react-router-dom";
 import { useSettings, Supplement } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, Bell, Plus, X, Calculator, RefreshCw } from "lucide-react";
+import { LogOut, Bell, Plus, X, Calculator, RefreshCw, Check } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -51,10 +50,15 @@ const Profile = () => {
     caffeine_intake: "moderate",
     monthly_budget: 5000,
     cycle_tracking_enabled: false,
+    period_cycle_length: 28,
+    last_period_date: new Date().toISOString().split('T')[0],
+    period_length: 5,
   });
 
   const [supplements, setSupplements] = useState<Supplement[]>([]);
   const [newSupplementName, setNewSupplementName] = useState("");
+  const [showMacros, setShowMacros] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     if (settings) {
@@ -89,6 +93,12 @@ const Profile = () => {
         monthly_budget: Number(settings.monthly_budget) || 5000,
         // @ts-ignore
         cycle_tracking_enabled: settings.cycle_tracking_enabled ?? false,
+        // @ts-ignore
+        period_cycle_length: Number((settings as any).period_cycle_length) || 28,
+        // @ts-ignore
+        last_period_date: (settings as any).last_period_date || new Date().toISOString().split('T')[0],
+        // @ts-ignore
+        period_length: Number((settings as any).period_length) || 5,
       });
       setSupplements((settings.supplements as unknown as Supplement[]) || []);
     }
@@ -123,10 +133,16 @@ const Profile = () => {
     updateSettings.mutate(
       {
         ...form,
+        profile_completed: true,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       },
       {
-        onSuccess: () => toast({ title: "Settings saved!" }),
+        onSuccess: () => {
+          localStorage.setItem('hide_profile_banner', 'true');
+          toast({ title: "Profile updated!" });
+          setIsSaved(true);
+          setTimeout(() => setIsSaved(false), 2000);
+        },
       },
     );
   };
@@ -163,467 +179,541 @@ const Profile = () => {
     saveSupplements(supplements.filter((s) => s.id !== id));
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-12 w-full rounded-xl" />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <BoneyardSkeleton name="profile-screen" loading={isLoading}>
       <div className="space-y-6">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-black text-foreground uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            HEALTH PROFILE
-          </h1>
-          <p className="text-xs text-muted-foreground italic px-1">
-             Your personalized nutritional plan for academic and physical wellness.
-          </p>
+      <div className="space-y-1">
+        <h1 className="text-2xl font-black text-foreground uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+          HEALTH PROFILE
+        </h1>
+        <p className="text-xs text-muted-foreground italic px-1">
+           Your personalized nutritional plan for academic and physical wellness.
+        </p>
+      </div>
+
+      {/* Account */}
+      <div className="bg-card rounded-xl p-4 space-y-1">
+        <p className="text-sm text-muted-foreground">Signed in as</p>
+        <p className="text-card-foreground font-medium">{user?.email}</p>
+        {user?.email === "yuvrajbhardwaj2005yb@gmail.com" && (
+          <Button
+            onClick={() => navigate("/admin")}
+            className="w-full mt-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold border-none shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+          >
+            ADMIN DASHBOARD
+          </Button>
+        )}
+      </div>
+
+      {/* Theme and Nut3lla Tips */}
+      <div className="bg-card rounded-xl p-4 flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <span className="text-card-foreground font-medium">Dark Mode Appearance</span>
+          <Switch
+            checked={theme === "dark"}
+            onCheckedChange={handleThemeToggle}
+          />
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-card-foreground font-medium">
+            AI Wellness Tips & Motivation
+          </span>
+          <Switch
+            checked={form.nut3lla_tips_enabled}
+            onCheckedChange={(c) => {
+              setForm((prev) => ({ ...prev, nut3lla_tips_enabled: c }));
+              updateSettings.mutate({ nut3lla_tips_enabled: c });
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Physical Stats */}
+      <div className="bg-card rounded-xl p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
+            Biometric Data
+          </h2>
+          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+            <Calculator className="h-4 w-4 text-primary" />
+          </div>
         </div>
 
-        {/* Account */}
-        <div className="bg-card rounded-xl p-4 space-y-1">
-          <p className="text-sm text-muted-foreground">Signed in as</p>
-          <p className="text-card-foreground font-medium">{user?.email}</p>
-          {user?.email === "yuvrajbhardwaj2005yb@gmail.com" && (
-            <Button
-              onClick={() => navigate("/admin")}
-              className="w-full mt-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold border-none shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-            >
-              ADMIN DASHBOARD
-            </Button>
-          )}
-        </div>
-
-        {/* Theme and Nut3lla Tips */}
-        <div className="bg-card rounded-xl p-4 flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <span className="text-card-foreground font-medium">Dark Mode Appearance</span>
-            <Switch
-              checked={theme === "dark"}
-              onCheckedChange={handleThemeToggle}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-card-foreground font-medium">
-              AI Wellness Tips & Motivation
-            </span>
-            <Switch
-              checked={form.nut3lla_tips_enabled}
-              onCheckedChange={(c) => {
-                setForm((prev) => ({ ...prev, nut3lla_tips_enabled: c }));
-                updateSettings.mutate({ nut3lla_tips_enabled: c });
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Physical Stats */}
-        <div className="bg-card rounded-xl p-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
-              Biometric Data
-            </h2>
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-              <Calculator className="h-4 w-4 text-primary" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Gender</Label>
-              <Select
-                value={form.gender}
-                onValueChange={(v) => setForm((f) => ({ ...f, gender: v }))}
-              >
-                <SelectTrigger className="h-9 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="z-[200]">
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Primary Goal</Label>
-              <Select
-                value={form.goal}
-                onValueChange={(v) => setForm((f) => ({ ...f, goal: v }))}
-              >
-                <SelectTrigger className="h-9 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="z-[200]">
-                  <SelectItem value="bulk">Enhanced Performance (Active)</SelectItem>
-                  <SelectItem value="cut">Weight Management</SelectItem>
-                  <SelectItem value="maintain">General Wellness</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Weight (kg)</Label>
-              <Input
-                type="number"
-                value={form.weight_kg}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, weight_kg: Number(e.target.value) }))
-                }
-                className="h-9"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Height (cm)</Label>
-              <Input
-                type="number"
-                value={form.height_cm}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, height_cm: Number(e.target.value) }))
-                }
-                className="h-9"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Age</Label>
-              <Input
-                type="number"
-                value={form.age}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, age: Number(e.target.value) }))
-                }
-                className="h-9"
-              />
-            </div>
-          </div>
-
+        <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">
-              Campus Activity Level
-            </Label>
+            <Label className="text-xs text-muted-foreground">Gender</Label>
             <Select
-              value={String(form.activity_level)}
-              onValueChange={(v) =>
-                setForm((f) => ({ ...f, activity_level: Number(v) }))
-              }
+              value={form.gender}
+              onValueChange={(v) => setForm((f) => ({ ...f, gender: v }))}
             >
               <SelectTrigger className="h-9 text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="z-[200]">
-                <SelectItem value="1.2">Sedentary (Focusing on Studies)</SelectItem>
-                <SelectItem value="1.375">Light Activity (Commuting)</SelectItem>
-                <SelectItem value="1.55">Moderate (Walking + Occasional Gym)</SelectItem>
-                <SelectItem value="1.725">High (Athlete / Active Lifestyle)</SelectItem>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
               </SelectContent>
             </Select>
           </div>
-
-          <button
-            className="w-full flex items-center justify-center gap-2 h-9 text-[10px] font-bold border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors tracking-wider uppercase text-primary"
-            onClick={handleRecalculate}
-          >
-            <RefreshCw className="h-3 w-3" /> RE-OPTIMIZE PLAN
-          </button>
+          <div className="space-y-1.5">
+            <Label className="text-xs text-muted-foreground">Primary Goal</Label>
+            <Select
+              value={form.goal}
+              onValueChange={(v) => setForm((f) => ({ ...f, goal: v }))}
+            >
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="z-[200]">
+                <SelectItem value="bulk">Enhanced Performance (Active)</SelectItem>
+                <SelectItem value="cut">Weight Management</SelectItem>
+                <SelectItem value="maintain">General Wellness</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        {/* Health & Lifestyle */}
-        <div className="bg-card rounded-xl p-4 space-y-4">
-          <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
-            Medical & Wellness Context
-          </h2>
-          
+        <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Health Conditions / Allergies</Label>
+            <Label className="text-xs text-muted-foreground">Weight (kg)</Label>
             <Input
-              placeholder="e.g. Diabetes, Gluten Free, Lactose Intolerance..."
-              value={form.health_conditions}
-              onChange={(e) => setForm((f) => ({ ...f, health_conditions: e.target.value }))}
+              type="number"
+              value={form.weight_kg}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, weight_kg: Number(e.target.value) }))
+              }
               className="h-9"
             />
           </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Sleep (Hours)</Label>
-              <Input
-                type="number"
-                value={form.sleep_hours}
-                onChange={(e) => setForm((f) => ({ ...f, sleep_hours: Number(e.target.value) }))}
-                className="h-9"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Caffeine Usage</Label>
-              <Select
-                value={form.caffeine_intake}
-                onValueChange={(v) => setForm((f) => ({ ...f, caffeine_intake: v }))}
-              >
-                <SelectTrigger className="h-9 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="moderate">Moderate</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-2 border-t border-border/40">
-            <div className="space-y-0.5">
-              <span className="text-card-foreground font-medium text-sm">Menstrual Cycle Intelligence</span>
-              <p className="text-[10px] text-muted-foreground">Adjust recommendations based on cycle phase.</p>
-            </div>
-            <Switch
-              checked={form.cycle_tracking_enabled}
-              onCheckedChange={(c) => setForm((prev) => ({ ...prev, cycle_tracking_enabled: c }))}
-            />
-          </div>
-        </div>
-
-        {/* Budget Tracking */}
-        <div className="bg-card rounded-xl p-4 space-y-4">
-          <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
-            Financial Budgeting
-          </h2>
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Monthly Food Budget (₹)</Label>
+            <Label className="text-xs text-muted-foreground">Height (cm)</Label>
             <Input
               type="number"
-              value={form.monthly_budget}
-              onChange={(e) => setForm((f) => ({ ...f, monthly_budget: Number(e.target.value) }))}
-              className="h-9 font-bold text-primary"
+              value={form.height_cm}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, height_cm: Number(e.target.value) }))
+              }
+              className="h-9"
             />
-            <p className="text-[10px] text-muted-foreground italic">We'll help you find meals that fit your wallet.</p>
           </div>
-        </div>
-
-        {/* Macro Targets */}
-        <div className="bg-card rounded-xl p-4 space-y-3">
-          <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
-            Macro Targets
-          </h2>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-muted-foreground">Calories</label>
-              <Input
-                type="number"
-                value={form.calorie_target}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    calorie_target: parseFloat(e.target.value) || 0,
-                  })
-                }
-              />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Protein (g)</label>
-              <Input
-                type="number"
-                value={form.protein_target}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    protein_target: parseFloat(e.target.value) || 0,
-                  })
-                }
-              />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Carbs (g)</label>
-              <Input
-                type="number"
-                value={form.carb_target}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    carb_target: parseFloat(e.target.value) || 0,
-                  })
-                }
-              />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Fats (g)</label>
-              <Input
-                type="number"
-                value={form.fat_target}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    fat_target: parseFloat(e.target.value) || 0,
-                  })
-                }
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Supplements Management */}
-        <div className="bg-card rounded-xl p-4 space-y-3">
-          <div>
-            <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
-              My Supplements
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Toggle on to show on dashboard for daily tracking.
-            </p>
-          </div>
-
-          {supplements.length > 0 && (
-            <div className="space-y-2">
-              {supplements.map((s) => (
-                <div
-                  key={s.id}
-                  className="flex items-center justify-between gap-3 py-1"
-                >
-                  <span className="text-card-foreground text-sm flex-1">
-                    {s.name}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={s.enabled}
-                      onCheckedChange={() => toggleSupplementEnabled(s.id)}
-                    />
-                    <button
-                      onClick={() => deleteSupplementItem(s.id)}
-                      className="p-1 text-muted-foreground hover:text-destructive transition-colors"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="flex gap-2 pt-1">
+          <div className="space-y-1.5">
+            <Label className="text-xs text-muted-foreground">Age</Label>
             <Input
-              placeholder="e.g. Creatine 5g, Whey Protein..."
-              value={newSupplementName}
-              onChange={(e) => setNewSupplementName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleAddSupplement()}
-              className="flex-1 h-9 text-sm"
+              type="number"
+              value={form.age}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, age: Number(e.target.value) }))
+              }
+              className="h-9"
             />
-            <Button
-              size="sm"
-              onClick={handleAddSupplement}
-              disabled={!newSupplementName.trim()}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
           </div>
         </div>
 
-        {/* Reminders Management */}
-        <div className="bg-card rounded-xl p-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
-              Reminders
-            </h2>
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-              <Bell className="h-4 w-4 text-primary" />
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <span className="text-card-foreground font-medium text-sm">
-                  Meal Reminders
-                </span>
-                <p className="text-[10px] text-muted-foreground line-clamp-1">
-                  Reminder to log after breakfast, lunch, and dinner times.
-                </p>
-              </div>
-              <Switch
-                checked={form.meal_reminders_enabled}
-                onCheckedChange={(c) =>
-                  setForm((prev) => ({ ...prev, meal_reminders_enabled: c }))
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <span className="text-card-foreground font-medium text-sm">
-                  Supplement Reminders
-                </span>
-                <p className="text-[10px] text-muted-foreground line-clamp-1">
-                  Notify at scheduled time for supplements.
-                </p>
-              </div>
-              <Switch
-                checked={form.supp_reminders_enabled}
-                onCheckedChange={(c) =>
-                  setForm((prev) => ({ ...prev, supp_reminders_enabled: c }))
-                }
-              />
-            </div>
-
-            <div className="pt-2 border-t border-border/50">
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                Custom Schedule Time
-              </label>
-              <Input
-                type="time"
-                className="mt-1 h-9 bg-background border-border"
-                style={{ WebkitAppearance: "none" }}
-                value={form.notification_time}
-                onChange={(e) =>
-                  setForm({ ...form, notification_time: e.target.value })
-                }
-              />
-              <p className="text-[10px] text-muted-foreground mt-1.5 italic">
-                This time is used for your supplement and streak reminders.
-              </p>
-            </div>
-          </div>
-
-          {isSupported && (
-            <div className="flex items-center justify-between pt-2 border-t border-border/50">
-              <div className="flex items-center gap-2">
-                <div
-                  className={`p-1.5 rounded-lg ${isSubscribed ? "bg-green-500/10 text-green-500" : "bg-muted text-muted-foreground"}`}
-                >
-                  <Bell className="h-3.5 w-3.5" />
-                </div>
-                <span className="text-card-foreground text-sm font-medium">
-                  Device Notifications
-                </span>
-              </div>
-              <Switch
-                checked={isSubscribed}
-                onCheckedChange={async (checked) => {
-                  if (checked) {
-                    const ok = await subscribe();
-                    if (ok) toast({ title: "Notifications enabled! 🔔" });
-                    else if (permission === "denied")
-                      toast({
-                        title: "Notifications blocked",
-                        description: "Enable them in your browser settings.",
-                        variant: "destructive",
-                      });
-                  } else {
-                    await unsubscribe();
-                    toast({ title: "Notifications disabled" });
-                  }
-                }}
-              />
-            </div>
-          )}
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">
+            Campus Activity Level
+          </Label>
+          <Select
+            value={String(form.activity_level)}
+            onValueChange={(v) =>
+              setForm((f) => ({ ...f, activity_level: Number(v) }))
+            }
+          >
+            <SelectTrigger className="h-9 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="z-[200]">
+              <SelectItem value="1.2">Sedentary (Focusing on Studies)</SelectItem>
+              <SelectItem value="1.375">Light Activity (Commuting)</SelectItem>
+              <SelectItem value="1.55">Moderate (Walking + Occasional Gym)</SelectItem>
+              <SelectItem value="1.725">High (Athlete / Active Lifestyle)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        <Button onClick={handleSave} className="w-full">
-          Save Settings
-        </Button>
-
-        <Button variant="outline" className="w-full" onClick={signOut}>
-          <LogOut className="h-4 w-4" /> Sign Out
+        <Button
+          variant="outline"
+          className="w-full h-9 text-[10px] font-bold border-primary/20 hover:bg-primary/5 transition-colors tracking-wider"
+          onClick={handleRecalculate}
+        >
+          <RefreshCw className="h-3 w-3 mr-2" /> RE-OPTIMIZE PLAN
         </Button>
       </div>
+
+      {/* Health & Lifestyle */}
+      <div className="bg-card rounded-xl p-4 space-y-4">
+        <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
+          Medical & Wellness Context
+        </h2>
+        
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Health Conditions / Allergies</Label>
+          <Input
+            placeholder="e.g. Diabetes, Gluten Free, Lactose Intolerance..."
+            value={form.health_conditions}
+            onChange={(e) => setForm((f) => ({ ...f, health_conditions: e.target.value }))}
+            className="h-9"
+          />
+        </div>
+
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <Label className="text-xs text-muted-foreground">Sleep (Hours)</Label>
+            <Input
+              type="number"
+              value={form.sleep_hours}
+              onChange={(e) => setForm((f) => ({ ...f, sleep_hours: Number(e.target.value) }))}
+              className="h-9"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs text-muted-foreground">Caffeine Usage</Label>
+            <Select
+              value={form.caffeine_intake}
+              onValueChange={(v) => setForm((f) => ({ ...f, caffeine_intake: v }))}
+            >
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="moderate">Moderate</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {form.gender === "female" && (
+          <div className="pt-2 border-t border-border/40 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <span className="text-card-foreground font-medium text-sm">Menstrual Cycle Intelligence</span>
+                <p className="text-[10px] text-muted-foreground">Adjust recommendations based on cycle phase.</p>
+              </div>
+              <Switch
+                checked={form.cycle_tracking_enabled}
+                onCheckedChange={(c) => setForm((prev) => ({ ...prev, cycle_tracking_enabled: c }))}
+              />
+            </div>
+            
+            {form.cycle_tracking_enabled && (
+             <div className="pt-2 border-t border-border/20 space-y-3">
+                 <div className="space-y-1.5">
+                   <Label className="text-xs text-muted-foreground">Period Start Date</Label>
+                   <Input 
+                     type="date"
+                     value={form.last_period_date}
+                     onChange={(e) => setForm({ ...form, last_period_date: e.target.value })}
+                     className="h-9 w-full"
+                   />
+                 </div>
+
+                 <div className="grid grid-cols-2 gap-3">
+                   <div className="space-y-1.5">
+                     <Label className="text-xs text-muted-foreground">Period Duration (Days)</Label>
+                     <Input 
+                       type="number"
+                       value={form.period_length}
+                       onChange={(e) => setForm({ ...form, period_length: Number(e.target.value) })}
+                       className="h-9"
+                     />
+                   </div>
+                   
+                   <div className="space-y-1.5">
+                     <Label className="text-xs text-muted-foreground">Avg Cycle Length</Label>
+                     <Input 
+                       type="number"
+                       value={form.period_cycle_length}
+                       onChange={(e) => setForm({ ...form, period_cycle_length: Number(e.target.value) })}
+                       className="h-9"
+                     />
+                   </div>
+                 </div>
+             </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Budget Tracking */}
+      <div className="bg-card rounded-xl p-4 space-y-4">
+        <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
+          Financial Budgeting
+        </h2>
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Monthly Food Budget (₹)</Label>
+          <Input
+            type="number"
+            value={form.monthly_budget}
+            onChange={(e) => setForm((f) => ({ ...f, monthly_budget: Number(e.target.value) }))}
+            className="h-9 font-bold text-primary"
+          />
+          <p className="text-[10px] text-muted-foreground italic">We'll help you find meals that fit your wallet.</p>
+        </div>
+      </div>
+
+      {/* Macro Targets */}
+      <div className="bg-card rounded-xl p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
+            Custom Macro Targets
+          </h2>
+          <Switch
+            checked={showMacros}
+            onCheckedChange={setShowMacros}
+          />
+        </div>
+        
+        {showMacros && (
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            <div>
+              <label className="text-xs text-muted-foreground">Calories</label>
+            <Input
+              type="number"
+              value={form.calorie_target}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  calorie_target: parseFloat(e.target.value) || 0,
+                })
+              }
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">Protein (g)</label>
+            <Input
+              type="number"
+              value={form.protein_target}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  protein_target: parseFloat(e.target.value) || 0,
+                })
+              }
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">Carbs (g)</label>
+            <Input
+              type="number"
+              value={form.carb_target}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  carb_target: parseFloat(e.target.value) || 0,
+                })
+              }
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">Fats (g)</label>
+            <Input
+              type="number"
+              value={form.fat_target}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  fat_target: parseFloat(e.target.value) || 0,
+                })
+              }
+            />
+          </div>
+        </div>
+        )}
+      </div>
+
+      {/* Supplements Management */}
+      <div className="bg-card rounded-xl p-4 space-y-3">
+        <div>
+          <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
+            My Supplements
+          </h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Toggle on to show on dashboard for daily tracking.
+          </p>
+        </div>
+
+        {supplements.length > 0 && (
+          <div className="space-y-2">
+            {supplements.map((s) => (
+              <div
+                key={s.id}
+                className="flex items-center justify-between gap-3 py-1"
+              >
+                <span className="text-card-foreground text-sm flex-1">
+                  {s.name}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={s.enabled}
+                    onCheckedChange={() => toggleSupplementEnabled(s.id)}
+                  />
+                  <button
+                    onClick={() => deleteSupplementItem(s.id)}
+                    className="p-1 text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex gap-2 pt-1">
+          <Input
+            placeholder="e.g. Creatine 5g, Whey Protein..."
+            value={newSupplementName}
+            onChange={(e) => setNewSupplementName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAddSupplement()}
+            className="flex-1 h-9 text-sm"
+          />
+          <Button
+            size="sm"
+            onClick={handleAddSupplement}
+            disabled={!newSupplementName.trim()}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Reminders Management */}
+      <div className="bg-card rounded-xl p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
+            Reminders
+          </h2>
+          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+            <Bell className="h-4 w-4 text-primary" />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <span className="text-card-foreground font-medium text-sm">
+                Meal Reminders
+              </span>
+              <p className="text-[10px] text-muted-foreground line-clamp-1">
+                Reminder to log after breakfast, lunch, and dinner times.
+              </p>
+            </div>
+            <Switch
+              checked={form.meal_reminders_enabled}
+              onCheckedChange={(c) =>
+                setForm((prev) => ({ ...prev, meal_reminders_enabled: c }))
+              }
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <span className="text-card-foreground font-medium text-sm">
+                Supplement Reminders
+              </span>
+              <p className="text-[10px] text-muted-foreground line-clamp-1">
+                Notify at scheduled time for supplements.
+              </p>
+            </div>
+            <Switch
+              checked={form.supp_reminders_enabled}
+              onCheckedChange={(c) =>
+                setForm((prev) => ({ ...prev, supp_reminders_enabled: c }))
+              }
+            />
+          </div>
+
+          <div className="pt-2 border-t border-border/50">
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+              Custom Schedule Time
+            </label>
+            <Input
+              type="time"
+              className="mt-1 h-9 bg-background border-border"
+              style={{ WebkitAppearance: "none" }}
+              value={form.notification_time}
+              onChange={(e) =>
+                setForm({ ...form, notification_time: e.target.value })
+              }
+            />
+            <p className="text-[10px] text-muted-foreground mt-1.5 italic">
+              This time is used for your supplement and streak reminders.
+            </p>
+          </div>
+        </div>
+
+        {isSupported && (
+          <div className="flex items-center justify-between pt-2 border-t border-border/50">
+            <div className="flex items-center gap-2">
+              <div
+                className={`p-1.5 rounded-lg ${isSubscribed ? "bg-green-500/10 text-green-500" : "bg-muted text-muted-foreground"}`}
+              >
+                <Bell className="h-3.5 w-3.5" />
+              </div>
+              <span className="text-card-foreground text-sm font-medium">
+                Device Notifications
+              </span>
+            </div>
+            <Switch
+              checked={isSubscribed}
+              onCheckedChange={async (checked) => {
+                if (checked) {
+                  const ok = await subscribe();
+                  if (ok) toast({ title: "Notifications enabled! 🔔" });
+                  else if (permission === "denied")
+                    toast({
+                      title: "Notifications blocked",
+                      description: "Enable them in your browser settings.",
+                      variant: "destructive",
+                    });
+                } else {
+                  await unsubscribe();
+                  toast({ title: "Notifications disabled" });
+                }
+              }}
+            />
+          </div>
+        )}
+      </div>
+
+      <Button 
+        onClick={handleSave} 
+        disabled={updateSettings.isPending || isSaved}
+        className={`w-full transition-all duration-300 ${
+          isSaved ? "bg-green-500 hover:bg-green-600 text-white" : ""
+        }`}
+      >
+        {isSaved ? (
+          <>
+            <Check className="h-5 w-5 mr-2 animate-in zoom-in" /> Details Saved
+          </>
+        ) : updateSettings.isPending ? (
+          "Saving..."
+        ) : (
+          "Save Details"
+        )}
+      </Button>
+
+      <Button variant="outline" className="w-full" onClick={signOut}>
+        <LogOut className="h-4 w-4" /> Sign Out
+      </Button>
+    </div>
     </BoneyardSkeleton>
   );
-
 };
 
 export default Profile;

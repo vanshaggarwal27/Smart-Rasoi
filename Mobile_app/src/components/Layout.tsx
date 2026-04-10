@@ -14,6 +14,7 @@ import {
   Image as ImageIcon,
   Loader2,
   ChevronRight,
+  Camera,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { AnimatedLogo } from "./AnimatedLogo";
@@ -45,7 +46,7 @@ const leftNav = [
 
 const rightNav = [
   { path: "/payment", icon: Wallet, label: "Wallet" },
-  { path: "/profile", icon: Settings, label: "Settings" },
+  { path: "/profile", icon: Settings, label: "Edit Profile" },
 ];
 
 export const Layout = ({ children }: { children: ReactNode }) => {
@@ -564,14 +565,14 @@ Android - Browser Menu > Add to Homescreen > Install`;
             );
           })}
 
-          {/* Centre Scan Button */}
+          {/* Centre AI Vision Button */}
           <button
-            onClick={() => navigate("/scan")}
+            onClick={() => navigate("/vision-scan")}
             className="flex flex-col items-center justify-end pb-1 relative z-20"
-            aria-label="Scan Barcode"
+            aria-label="AI Vision Scan"
           >
             <div className="-mt-5 flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/40 transition-all active:scale-95 hover:brightness-110">
-              <ScanBarcode className="h-6 w-6" />
+              <Camera className="h-6 w-6" />
             </div>
           </button>
 

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Skeleton as BoneyardSkeleton } from "boneyard-js/react";
 
 import { useFoods, Food } from "@/hooks/useFoods";
+import { useSettings } from "@/hooks/useSettings";
+import { generateMealPlan, UserProfile, MenuItem as MealMenuItem } from "@/lib/mealPlanner";
 import { useDailyLog } from "@/hooks/useDailyLog";
 import { useMealEntries } from "@/hooks/useMealEntries";
 import { Button } from "@/components/ui/button";
@@ -18,7 +20,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, ChevronRight, Sunrise, Sun, Moon, Coffee, Search, Trash2 } from "lucide-react";
+import { Plus, ChevronRight, Sunrise, Sun, Moon, Coffee, Search, Trash2, Wand2, ChefHat, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Category = "All" | "Fruits" | "Drinks" | "Snacks" | "Meals";
@@ -50,6 +52,7 @@ const defaultForm: FoodForm = {
 
 const CafeMenu = () => {
   const { foods, isLoading: foodsLoading, addFood, updateFood, deleteFood } = useFoods();
+  const { settings } = useSettings();
   const { log, isLoading: logLoading, ensureLog } = useDailyLog();
   const { addEntry, isLoading: entriesLoading } = useMealEntries(log?.id);
   const { toast } = useToast();
@@ -64,6 +67,13 @@ const CafeMenu = () => {
   const [selectedSource, setSelectedSource] = useState<"user" | "preset" | "barcode">("preset");
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [isVegOnly, setIsVegOnly] = useState(() => localStorage.getItem("diet_preference") !== "non-veg");
+
+  // Planner States
+  const [showPlanner, setShowPlanner] = useState(false);
+  const [budget, setBudget] = useState("400");
+  const [generatedPlan, setGeneratedPlan] = useState<any>(null);
+  const [isPlanning, setIsPlanning] = useState(false);
+  const [planMealType, setPlanMealType] = useState("lunch");
 
   const { isGuest } = useAuth();
   const [showGuestPrompt, setShowGuestPrompt] = useState(false);
@@ -141,6 +151,76 @@ const CafeMenu = () => {
     });
     setEditId(f.id);
     setShowForm(true);
+  };
+
+  const handleGeneratePlan = () => {
+    if (!settings && !isGuest) {
+      toast({ title: "Profile Missing", description: "Cannot load profile."});
+      return;
+    }
+    setIsPlanning(true);
+    setTimeout(() => {
+      try {
+        const goalMap: Record<string, string> = { "weight-loss": "fatloss", "maintenance": "maintain", "muscle-gain": "muscle" };
+        const s = settings as any;
+        const profile: UserProfile = {
+          age: s?.age || 20,
+          weight: s?.weight_kg || 70,
+          height: s?.height_cm || 170,
+          gender: s?.gender || "male",
+          goal: (goalMap[(s?.goal || "")] || s?.goal || "maintain") as any,
+          activity_level: "moderate", 
+          budget: parseFloat(budget) || 400
+        };
+        
+        const cafeteria_menu: MealMenuItem[] = foods
+          .filter(f => f.source === "preset" || f.source === "user")
+          .map(f => ({
+            id: f.id,
+            name: f.name,
+            calories: f.calories,
+            protein: f.protein,
+            carbs: f.carbs,
+            fats: f.fats,
+            price: Math.round(f.calories * 0.15) || 50 // Mocking price for now
+          }));
+          
+          if(cafeteria_menu.length === 0) throw new Error("No foods available");
+
+          const plan = generateMealPlan(profile, cafeteria_menu, 5);
+          setGeneratedPlan(plan);
+      } catch (err: any) {
+        console.error(err);
+        toast({ title: "Error", description: err.message || "Failed to generate plan.", variant: "destructive" });
+      } finally {
+        setIsPlanning(false);
+      }
+    }, 150);
+  };
+
+  const handleLogPlan = async () => {
+    if (!generatedPlan || !generatedPlan.selected_food_items) return;
+    const items = generatedPlan.selected_food_items;
+    const logData = await ensureLog();
+    
+    for (const f of items) {
+      addEntry.mutate({
+        daily_log_id: logData.id,
+        meal_type: planMealType,
+        food_id: f.id || null,
+        quantity: 1,
+        food_name: f.name,
+        calories: f.calories,
+        protein: f.protein,
+        carbs: f.carbs,
+        fats: f.fats,
+        serving_size: 100, 
+        serving_unit: "g"
+      });
+    }
+    toast({ title: "Meal plan logged!" });
+    setShowPlanner(false);
+    setGeneratedPlan(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -262,16 +342,26 @@ const CafeMenu = () => {
         {/* Header */}
         <div className="flex items-center justify-between px-1">
           <h1 className="text-2xl font-bold tracking-tight">Cafeteria Menu</h1>
-          {selectedSource !== "preset" && (
+          <div className="flex items-center gap-2">
             <Button
               size="icon"
               variant="outline"
-              onClick={() => isGuest ? setShowGuestPrompt(true) : openAdd()}
-              className="h-9 w-9 rounded-xl border-primary/20 bg-background/50 backdrop-blur-sm transition-all active:scale-95 shadow-lg shadow-black/5 text-primary"
+              onClick={() => { setGeneratedPlan(null); setShowPlanner(true); }}
+              className="h-9 w-9 rounded-xl border-primary bg-primary/10 transition-all active:scale-95 shadow-lg shadow-black/5 text-primary"
             >
-              <Plus className="h-4 w-4" />
+              <Wand2 className="h-4 w-4" />
             </Button>
-          )}
+            {selectedSource !== "preset" && (
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={() => isGuest ? setShowGuestPrompt(true) : openAdd()}
+                className="h-9 w-9 rounded-xl border-primary/20 bg-background/50 backdrop-blur-sm transition-all active:scale-95 shadow-lg shadow-black/5 text-primary"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Source Filter */}
@@ -767,6 +857,100 @@ const CafeMenu = () => {
               >
                 Register Meal
               </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* AI Planner Modal */}
+        <Dialog open={showPlanner} onOpenChange={setShowPlanner}>
+          <DialogContent className="w-[calc(100%-2.5rem)] max-w-[400px] rounded-[2rem] p-6 border-none shadow-2xl overflow-y-auto max-h-[85vh]">
+            <DialogHeader className="mb-4">
+               <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                 <ChefHat className="h-5 w-5 text-primary" /> AI Meal Planner
+               </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6">
+              {!generatedPlan ? (
+                <>
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Budget (₹)</Label>
+                    <Input
+                      type="number"
+                      value={budget}
+                      onChange={(e) => setBudget(e.target.value)}
+                      className="h-14 text-xl font-bold rounded-2xl bg-muted/30 border-none px-4 shadow-inner"
+                      placeholder="e.g. 400"
+                    />
+                    <p className="text-[10px] text-muted-foreground px-1 leading-relaxed hidden sm:block">
+                      The AI calculates your optimal daily caloric and macro needs, then searches our menu combinations to find a high-protein spread that fits right inside your budget.
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={handleGeneratePlan}
+                    disabled={isPlanning || !budget}
+                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-primary/30 transition-all active:scale-[0.98] bg-gradient-to-r from-primary to-orange-500"
+                  >
+                    {isPlanning ? "Generating..." : "Generate Optimal Plan"}
+                  </Button>
+                </>
+              ) : (
+                <div className="space-y-4 animate-in fade-in zoom-in-95 duration-300">
+                  <div className="bg-muted/30 rounded-2xl p-4 border border-primary/20 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-3 opacity-10">
+                      <Wand2 className="h-24 w-24" />
+                    </div>
+                    <div className="relative z-10">
+                      <div className="flex justify-between items-center mb-2">
+                         <span className="text-[10px] font-black uppercase tracking-widest text-primary">Generated Plan</span>
+                         <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">₹{generatedPlan.total_price}</span>
+                      </div>
+                      <div className="flex gap-4 mb-4">
+                        <div className="space-y-0.5">
+                           <span className="text-sm font-black">{generatedPlan.total_calories}</span>
+                           <span className="block text-[8px] font-bold text-muted-foreground uppercase">Kcal</span>
+                        </div>
+                        <div className="space-y-0.5">
+                           <span className="text-sm font-black">{generatedPlan.total_protein}g</span>
+                           <span className="block text-[8px] font-bold text-muted-foreground uppercase">Protein</span>
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        {generatedPlan.selected_food_items.map((item: any, i: number) => (
+                           <div key={i} className="flex justify-between items-center bg-background rounded-lg p-2 shadow-sm text-xs font-semibold">
+                             <span className="truncate pr-2">{item.name}</span>
+                             <span className="opacity-60 shrink-0">{item.calories}kcal</span>
+                           </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Controls to Log */}
+                  <div className="space-y-2 pt-2">
+                    <div className="flex gap-2">
+                      {["breakfast", "lunch", "dinner", "snack"].map(m => (
+                        <button
+                          key={m}
+                          onClick={() => setPlanMealType(m)}
+                          className={`flex-1 p-2 rounded-xl border transition-all text-[9px] font-black uppercase tracking-wider ${
+                            planMealType === m ? "bg-primary border-primary text-primary-foreground" : "bg-card border-muted text-muted-foreground"
+                          }`}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                       <Button variant="outline" onClick={() => setGeneratedPlan(null)} className="h-12 w-12 shrink-0 rounded-2xl border-none bg-muted hover:bg-muted/80">
+                          <ArrowLeft className="h-5 w-5" />
+                       </Button>
+                       <Button onClick={handleLogPlan} className="flex-1 h-12 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+                         Log Everything
+                       </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>

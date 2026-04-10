@@ -2,6 +2,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
+const VALID_SUPABASE_KEYS = [
+  "calorie_target", "carb_target", "fat_target", "protein_target", 
+  "nut3lla_tips_enabled", "tutorial_completed", "supplements", "theme", "notification_time"
+];
+
 export interface Supplement {
   id: string;
   name: string;
@@ -47,7 +52,11 @@ export const useSettings = () => {
         .eq("user_id", user.id)
         .maybeSingle();
       if (error) throw error;
-      return data;
+      
+      const localProfileStr = localStorage.getItem(`profile_${user.id}`);
+      const localProfile = localProfileStr ? JSON.parse(localProfileStr) : {};
+
+      return { ...data, ...localProfile };
     },
   });
 
@@ -60,11 +69,30 @@ export const useSettings = () => {
         return newSettings;
       }
 
-      const { error } = await supabase
-        .from("user_settings")
-        .update(updates)
-        .eq("user_id", user!.id);
-      if (error) throw error;
+      const supabaseUpdates: any = {};
+      const localUpdates: any = {};
+      
+      Object.keys(updates).forEach((key) => {
+        if (VALID_SUPABASE_KEYS.includes(key)) {
+          supabaseUpdates[key] = updates[key];
+        } else {
+          localUpdates[key] = updates[key];
+        }
+      });
+
+      if (Object.keys(supabaseUpdates).length > 0) {
+        const { error } = await supabase
+          .from("user_settings")
+          .update(supabaseUpdates)
+          .eq("user_id", user!.id);
+        if (error) throw error;
+      }
+
+      if (Object.keys(localUpdates).length > 0) {
+        const currentLocalStr = localStorage.getItem(`profile_${user!.id}`);
+        const currentLocal = currentLocalStr ? JSON.parse(currentLocalStr) : {};
+        localStorage.setItem(`profile_${user!.id}`, JSON.stringify({ ...currentLocal, ...localUpdates }));
+      }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["user_settings"] }),
   });

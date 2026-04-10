@@ -113,7 +113,9 @@ const Payment = () => {
           cart: checkoutCart,
           amount: totalAmount,
           userId: user?.id,
-          studentName: user?.user_metadata?.full_name || user?.email?.split('@')[0] || "Student"
+          userEmail: user?.email,
+          studentName: user?.user_metadata?.full_name || user?.email?.split('@')[0] || "Student",
+          studentId: user?.email?.split('@')[0]?.toUpperCase() || "STU-001"
         },
       });
 

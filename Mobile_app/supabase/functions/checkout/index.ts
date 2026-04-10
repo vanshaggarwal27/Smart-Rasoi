@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     const body = await req.json()
-    const { cart, userId, studentName } = body
+    const { cart, userId, studentName, userEmail, studentId } = body
 
     if (!userId || !cart || Object.keys(cart).length === 0) {
       return new Response(
@@ -66,6 +66,7 @@ Deno.serve(async (req) => {
     })
 
     // 3. Record "Pending" Order in Supabase
+    // Modern table for the App
     const { error: dbError } = await supabase
       .from('food_orders')
       .insert({
@@ -77,9 +78,54 @@ Deno.serve(async (req) => {
         stripe_session_id: session.id
       })
 
-    if (dbError) {
-      console.error('Database logging failed:', dbError.message)
-      // We continue since Stripe session is already created, but we log the error
+    // User-specified legacy table (orders)
+    let bigintUserId = null;
+    try {
+      if (userEmail) {
+        const { data: uData } = await supabase
+          .from('users')
+          .select('user_id')
+          .eq('email', userEmail)
+          .maybeSingle();
+        
+        if (uData) {
+          bigintUserId = uData.user_id;
+        } else {
+          // Auto-migrate user to public.users if not exists
+          const { data: nUser } = await supabase
+            .from('users')
+            .insert({ 
+              name: studentName, 
+              email: userEmail, 
+              role: 'student',
+              created_at: new Date().toISOString()
+            })
+            .select('user_id')
+            .maybeSingle();
+          if (nUser) bigintUserId = nUser.user_id;
+        }
+      }
+    } catch (e) {
+      console.error("User mapping failed:", e);
+    }
+
+    const foodItemsText = Object.values(cart)
+      .map((item: any) => `${item.food.name} x${item.quantity}`)
+      .join(', ');
+
+    const { error: legacyError } = await supabase
+      .from('orders')
+      .insert({
+        user_id: bigintUserId,
+        total_amount: totalAmount,
+        order_time: new Date().toISOString(),
+        status: 'pending',
+        student_id: studentId || userId.substring(0, 8),
+        food_items: foodItemsText
+      });
+
+    if (dbError || legacyError) {
+      console.error('Database logging failed:', dbError?.message || legacyError?.message)
     }
 
     return new Response(

@@ -92,7 +92,7 @@ export function MinimalFooter() {
 		},
 	];
 	return (
-		<footer className="relative bg-midnight/20 text-beige border-t border-moss/50">
+		<footer className="relative bg-[#1C4D35] text-beige border-t border-moss/50">
 			<div className="bg-[radial-gradient(35%_80%_at_30%_0%,rgba(131,153,88,0.15),transparent)] w-full">
 				<div className="grid max-w-6xl mx-auto grid-cols-6 gap-6 px-10 py-16 md:px-16">
 					<div className="col-span-6 flex flex-col gap-5 md:col-span-4">
