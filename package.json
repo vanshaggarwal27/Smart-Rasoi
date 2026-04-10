@@ -1,0 +1,14 @@
+{
+  "name": "nmims_hackathon",
+  "version": "1.0.0",
+  "description": "Smart Cafeteria System Root",
+  "scripts": {
+    "dev": "concurrently \"npm run start --prefix Backend\" \"npm run dev --prefix Frontend\"",
+    "frontend": "npm run dev --prefix Frontend",
+    "backend": "npm start --prefix Backend",
+    "install:all": "npm install --prefix Backend && npm install --prefix Frontend"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
