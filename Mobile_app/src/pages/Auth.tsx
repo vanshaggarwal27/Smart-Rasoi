@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { GraduationCap } from "lucide-react";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,7 +17,7 @@ const Auth = () => {
   const navigate = useNavigate();
 
   const migrateGuestData = async (userId: string) => {
-    const guestData = localStorage.getItem("fitnutt_guest_settings");
+    const guestData = localStorage.getItem("portal_guest_settings");
     if (guestData) {
       try {
         const settings = JSON.parse(guestData);
@@ -34,7 +35,7 @@ const Auth = () => {
           .eq("user_id", userId);
         
         if (!error) {
-          localStorage.removeItem("fitnutt_guest_settings");
+          localStorage.removeItem("portal_guest_settings");
         }
       } catch (e) {
         console.error("Migration failed", e);
@@ -132,11 +133,18 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="flex flex-col items-center gap-3">
-          <img src="/fitnutt-logo.png" alt="FitNutt" className="h-20 w-20" />
-          <h1 className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            FitNutt
+          <div className="h-20 w-20 bg-primary/10 rounded-2xl flex items-center justify-center mb-2 shadow-xl shadow-primary/10 border border-primary/20">
+            <GraduationCap className="h-12 w-12 text-primary" />
+          </div>
+          <h1 className="text-4xl font-black text-foreground tracking-tight text-center leading-none uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+            Student<br />Portal
           </h1>
-          <p className="text-muted-foreground text-sm">Lean bulking, your way.</p>
+          <div className="bg-primary/5 px-4 py-1.5 rounded-full border border-primary/10">
+            <p className="text-primary text-xs font-bold uppercase tracking-widest">Campus Ecosystem</p>
+          </div>
+          <p className="text-muted-foreground text-sm text-center max-w-[250px]">
+            Log in using your <span className="text-foreground font-semibold italic">institutional ID</span> to access personalized cafeteria and health services.
+          </p>
         </div>
 
         <form onSubmit={handleAuth} className="space-y-4">

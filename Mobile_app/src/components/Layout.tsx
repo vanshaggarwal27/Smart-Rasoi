@@ -4,13 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Home,
   BookOpen,
-  Apple,
-  Dumbbell,
+  Utensils,
   Settings,
   ScanBarcode,
   CalendarDays,
   Share2,
   Copy,
+  Wallet,
   Image as ImageIcon,
   Loader2,
   ChevronRight,
@@ -40,11 +40,11 @@ import { useDate } from "@/contexts/DateContext";
 
 const leftNav = [
   { path: "/", icon: Home, label: "Home", tour: "nav-diary" },
-  { path: "/foods", icon: Apple, label: "Fuel", tour: "nav-foods" },
+  { path: "/foods", icon: Utensils, label: "Menu", tour: "nav-foods" },
 ];
 
 const rightNav = [
-  { path: "/schedule", icon: CalendarDays, label: "Schedule" },
+  { path: "/payment", icon: Wallet, label: "Wallet" },
   { path: "/profile", icon: Settings, label: "Settings" },
 ];
 
@@ -91,10 +91,10 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (isGuest) {
       const trackGuest = async () => {
-        let fingerprint = localStorage.getItem("fitnutt_guest_id");
+        let fingerprint = localStorage.getItem("portal_guest_id");
         if (!fingerprint) {
           fingerprint = crypto.randomUUID();
-          localStorage.setItem("fitnutt_guest_id", fingerprint);
+          localStorage.setItem("portal_guest_id", fingerprint);
         }
 
         // Use a session-length key to only ping once per browser load
@@ -175,7 +175,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
       const prev = new Date(activeLogs[i + 1].date);
       curr.setHours(0, 0, 0, 0);
       prev.setHours(0, 0, 0, 0);
-
+ 
       const diff = Math.floor(
         (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24),
       );
@@ -226,7 +226,6 @@ export const Layout = ({ children }: { children: ReactNode }) => {
       const toPngLocal = (module as any).toPng;
 
       // iOS Safari "Warm up" - The first call often fails to render images properly
-      // By calling it once and ignoring the result, we force the browser to paint the buffer.
       try {
         await toPngLocal(cardRef.current, { cacheBust: true });
       } catch (e) {
@@ -247,20 +246,20 @@ export const Layout = ({ children }: { children: ReactNode }) => {
 
       if (isMobile && navigator.share) {
         const blob = await (await fetch(dataUrl)).blob();
-        const file = new File([blob], `fitnutt-progress-${displayDate}.png`, {
+        const file = new File([blob], `portal-progress-${displayDate}.png`, {
           type: "image/png",
         });
 
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           await navigator.share({
             files: [file],
-            title: "My FitNutt Progress",
-            text: `Just hit my macros for ${displayDate === new Date().toISOString().split("T")[0] ? "today" : displayDate}. Join the grind! 💪🏻 #FitNutt`,
+            title: "Campus Health Progress",
+            text: `Just balanced my nutrition for ${displayDate === new Date().toISOString().split("T")[0] ? "today" : displayDate}. Staying sharp! 🎓 #StudentHealth`,
           });
         } else {
           // Fallback if file sharing isn't supported on this specific mobile browser
           const link = document.createElement("a");
-          link.download = `fitnutt-progress-${displayDate}.png`;
+          link.download = `portal-progress-${displayDate}.png`;
           link.href = dataUrl;
           link.click();
           toast({
@@ -271,7 +270,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
       } else {
         // Direct download for desktop
         const link = document.createElement("a");
-        link.download = `fitnutt-progress-${displayDate}.png`;
+        link.download = `portal-progress-${displayDate}.png`;
         link.href = dataUrl;
         link.click();
         toast({
@@ -280,7 +279,6 @@ export const Layout = ({ children }: { children: ReactNode }) => {
         });
       }
     } catch (err: any) {
-      // If the user cancelled the share (on mobile), common on iPhone, don't show an error
       if (err.name === "AbortError") {
         console.log("Share aborted by user");
         return;
@@ -299,10 +297,10 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   };
 
   const handleInviteFriends = () => {
-    const text = `Stop overcomplicating your fitness. Use FitNutt to track your fuel and training. 🚀
-
-Join the pack: https://fitnutt.netlify.app
-
+    const text = `Join the Campus Health Portal. Track your nutrition, check the cafe menu, and unlock student perks. 🎓
+ 
+Join the community: https://fitnutt.netlify.app
+ 
 📲 How to install (PWA):
 iOS - Share > Add to Homescreen
 Android - Browser Menu > Add to Homescreen > Install`;
@@ -311,9 +309,8 @@ Android - Browser Menu > Add to Homescreen > Install`;
 
     if (isMobile && navigator.share) {
       navigator.share({
-        title: "Join FitNutt",
+        title: "Access Student Portal",
         text,
-        // URL removed here as it's already in the 'text' string and many apps append it twice
       });
     } else {
       navigator.clipboard.writeText(text);
@@ -363,7 +360,7 @@ Android - Browser Menu > Add to Homescreen > Install`;
       updates.total_xp = (s.total_xp || 0) + xpBoost;
       updates.logo_easter_egg_triggered = true;
       setEasterEggMessage(
-        "LEZZGOO! I love that energy! You've been pumping that logo like a pro. Keep it up, you just jumped a LEVEL! 💪",
+        "BRIGHT MIND! You've found a hidden access point. Your dedication to the portal is noted. Academic credit boosted! 🎓",
       );
     }
     // Trigger 2: 5 Day Streak
@@ -372,7 +369,7 @@ Android - Browser Menu > Add to Homescreen > Install`;
       updates.total_xp = (s.total_xp || 0) + xpBoost;
       updates.streak_easter_egg_triggered = true;
       setEasterEggMessage(
-        "UNREAL CONSISTENCY! 5 days of absolute dedication. You're a genetic freak! I'm jumping you 5 LEVELS ahead. Stay hungry! 🔥",
+        "SCHOLARLY DISCIPLINE! 5 days of absolute focus. You're setting the standard for campus health. Privilege level jumping 5 tiers! 🚀",
       );
     }
 
@@ -389,10 +386,10 @@ Android - Browser Menu > Add to Homescreen > Install`;
           <div className="flex items-center gap-2">
             <AnimatedLogo className="h-8 w-8" onToggle={handleLogoToggle} />
             <span
-              className="font-bold text-lg text-foreground"
+              className="font-bold text-lg text-foreground uppercase tracking-tight"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              FitNutt
+              Student Portal
             </span>
           </div>
           <button
@@ -404,6 +401,7 @@ Android - Browser Menu > Add to Homescreen > Install`;
           </button>
         </div>
       </header>
+
 
       {/* Share Progress Dialog */}
       <Dialog open={isShareOpen} onOpenChange={setIsShareOpen}>

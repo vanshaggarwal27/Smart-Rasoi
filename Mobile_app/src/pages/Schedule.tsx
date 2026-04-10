@@ -3,10 +3,10 @@ import { usePlaybook } from "@/hooks/usePlaybook";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDailyLog } from "@/hooks/useDailyLog";
-import { PumpLevelCard } from "@/components/PumpLevelCard";
+import { CampusRewardsCard } from "@/components/CampusRewardsCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { Nut3llaPrompt } from "@/components/Nut3llaPrompt";
-import { Dumbbell, Pencil, Trash2, Plus, Check, RotateCcw, CheckCircle2 } from "lucide-react";
+import { BookOpen, Pencil, Trash2, Plus, Check, RotateCcw, CheckCircle2 } from "lucide-react";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -48,7 +48,7 @@ const Schedule = () => {
   return (
     <div className="space-y-6">
         <div className="flex items-center justify-between px-1">
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">The Playbook</h1>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">Academic Planner</h1>
           <div className="flex gap-2">
             {editMode && (
               <Button 
@@ -77,9 +77,9 @@ const Schedule = () => {
           </div>
         </div>
 
-        {/* Pump Level Overview */}
+        {/* Status Card */}
         <div className="px-1">
-          <PumpLevelCard variant="compact" />
+          <CampusRewardsCard variant="compact" />
         </div>
 
         {/* Day selector */}
@@ -102,15 +102,15 @@ const Schedule = () => {
           ))}
         </div>
 
-        {/* Workout card */}
+        {/* Study card */}
         <div className="bg-card rounded-[2rem] p-6 shadow-xl border border-primary/5 space-y-6">
           {/* Day title */}
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-              <Dumbbell className="h-5 w-5" />
+              <BookOpen className="h-5 w-5" />
             </div>
             <div className="flex-1">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">Training Protocol</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">Study Plan</span>
               {editMode ? (
                 <Input
                   value={day.title}
@@ -118,12 +118,12 @@ const Schedule = () => {
                   className="text-lg font-bold h-9 border-dashed mt-1"
                 />
               ) : (
-                <h2 className="text-xl font-black italic text-card-foreground tracking-tight">{day.title}</h2>
+                <h2 className="text-xl font-black italic text-card-foreground tracking-tight">{day.title.replace('Workout', 'Sessions')}</h2>
               )}
             </div>
           </div>
 
-          {/* Exercises */}
+          {/* Tasks */}
           <div className="space-y-3">
             {day.exercises.map((ex, i) => {
               const isCompleted = completedExercises.includes(ex.name);
@@ -145,13 +145,13 @@ const Schedule = () => {
                         <Input
                           value={ex.name}
                           onChange={(e) => updateExercise(selected, i, { ...ex, name: e.target.value })}
-                          placeholder="Exercise name"
+                          placeholder="Task name"
                           className="h-9 text-sm rounded-xl"
                         />
                         <Input
                           value={ex.sets}
                           onChange={(e) => updateExercise(selected, i, { ...ex, sets: e.target.value })}
-                          placeholder="Sets / reps"
+                          placeholder="Duration / Goal"
                           className="h-9 text-sm rounded-xl"
                         />
                       </div>
@@ -189,21 +189,21 @@ const Schedule = () => {
               );
             })}
 
-            {/* Add exercise row (edit mode only) */}
+            {/* Add task row (edit mode only) */}
             {editMode && (
               <div className="flex items-center gap-2 pt-4 border-t border-dashed border-border">
                 <div className="flex-1 grid grid-cols-2 gap-2">
                   <Input
                     value={newExercise.name}
                     onChange={(e) => setNewExercise({ ...newExercise, name: e.target.value })}
-                    placeholder="New exercise..."
+                    placeholder="New task..."
                     className="h-9 text-sm rounded-xl"
                     onKeyDown={(e) => e.key === "Enter" && handleAddExercise()}
                   />
                   <Input
                     value={newExercise.sets}
                     onChange={(e) => setNewExercise({ ...newExercise, sets: e.target.value })}
-                    placeholder="Sets / reps..."
+                    placeholder="Goal..."
                     className="h-9 text-sm rounded-xl"
                     onKeyDown={(e) => e.key === "Enter" && handleAddExercise()}
                   />
@@ -222,7 +222,7 @@ const Schedule = () => {
 
       {showGuestPrompt && (
         <Nut3llaPrompt 
-          description="Followin' the protocol is smart, but customize your own path requires you to be a Resident. Sign up to save your own custom routines."
+          description="Staying organized is key! Sign up with your Institutional ID to customize your study planner and track academic milestones."
           onClose={() => setShowGuestPrompt(false)}
         />
       )}

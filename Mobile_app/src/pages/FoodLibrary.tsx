@@ -45,7 +45,7 @@ const defaultForm: FoodForm = {
   is_veg: true,
 };
 
-const Fuel = () => {
+const CafeMenu = () => {
   const { foods, addFood, updateFood, deleteFood } = useFoods();
   const { log, ensureLog } = useDailyLog();
   const { addEntry } = useMealEntries(log?.id);
@@ -111,17 +111,17 @@ const Fuel = () => {
         const newFood = await addFood.mutateAsync({ ...payload, source: "user" });
         if (newFood?.id) setEditId(newFood.id);
       }
-      toast({ title: editId ? "Food updated!" : "Food added to library!" });
+      toast({ title: editId ? "Item updated!" : "Added to menu!" });
     } catch (err) {
-      toast({ title: "Failed to save food", variant: "destructive" });
+      toast({ title: "Failed to save item", variant: "destructive" });
     }
   };
 
   const handleDelete = () => {
     if (!editId) return;
-    if (confirm("Are you sure you want to delete this food?")) {
+    if (confirm("Are you sure you want to remove this item?")) {
       deleteFood.mutate(editId);
-      toast({ title: "Food deleted" });
+      toast({ title: "Item removed" });
       setShowForm(false);
     }
   };
@@ -129,11 +129,10 @@ const Fuel = () => {
   const handleLogDirectly = async (mealType: string) => {
     const logData = await ensureLog();
     
-    // Log directly to the meal entry WITHOUT creating a library food record
     addEntry.mutate({
       daily_log_id: logData.id,
       meal_type: mealType,
-      food_id: editId || null, // Keep the ID if we're editing an existing library food, but it's optional now
+      food_id: editId || null,
       quantity: 1,
       food_name: form.name,
       calories: Number(form.calories) || 0,
@@ -156,7 +155,6 @@ const Fuel = () => {
       meal_type: logForm.mealType,
       food_id: loggingFood.id,
       quantity: parseFloat(logForm.quantity) || 1,
-      // Snapshot the current nutrition data from the library
       food_name: loggingFood.name,
       calories: loggingFood.calories,
       protein: loggingFood.protein,
@@ -187,7 +185,7 @@ const Fuel = () => {
     <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between px-1">
-          <h1 className="text-2xl font-bold tracking-tight">Fuel Library</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Cafeteria Menu</h1>
           <Button
             size="icon"
             variant="outline"
@@ -201,9 +199,9 @@ const Fuel = () => {
         {/* Source Filter */}
         <div className="flex gap-2 w-full px-1">
           {[
-            { id: "user", label: "My Foods" },
-            { id: "preset", label: "Pre-built" },
-            { id: "barcode", label: "Scanned" }
+            { id: "user", label: "My Favorites" },
+            { id: "preset", label: "Cafeteria" },
+            { id: "barcode", label: "Scan Item" }
           ].map((s) => (
             <button
               key={s.id}
@@ -241,7 +239,7 @@ const Fuel = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search..."
+              placeholder="Search dishes..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 h-10 bg-card/50 rounded-xl border-none ring-1 ring-muted"
@@ -263,7 +261,7 @@ const Fuel = () => {
         <div className="space-y-2.5 px-1 pb-4">
           {filtered.length === 0 ? (
             <div className="text-center py-12 border border-dashed rounded-2xl border-muted">
-              <p className="text-muted-foreground text-sm font-medium">No results found.</p>
+              <p className="text-muted-foreground text-sm font-medium">No dishes found in this category.</p>
             </div>
           ) : (
             filtered.map((f) => (
@@ -316,14 +314,14 @@ const Fuel = () => {
           <DialogContent className="w-[calc(100%-2.5rem)] max-w-[360px] rounded-3xl p-6 border-none shadow-2xl">
             <DialogHeader className="mb-4">
               <DialogTitle className="text-xl font-bold tracking-tight">
-                {editId ? "Edit Item" : "New Item"}
+                {editId ? "Edit Dish" : "New Dish"}
               </DialogTitle>
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="flex items-center gap-4">
                 <div className="flex-1 space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Name</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Dish Name</Label>
                   <Input
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -345,7 +343,7 @@ const Fuel = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Serving</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Portion</Label>
                   <div className="flex gap-1">
                     <Input
                       type="number"
@@ -361,7 +359,7 @@ const Fuel = () => {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Calories</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Energy (Kcal)</Label>
                   <Input
                     type="number"
                     value={form.calories}
@@ -462,7 +460,7 @@ const Fuel = () => {
             </DialogHeader>
             <div className="space-y-6">
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Amount</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Quantity</Label>
                 <div className="flex items-center gap-3 bg-muted/30 p-4 rounded-xl">
                   <Input
                     type="number"
@@ -493,7 +491,7 @@ const Fuel = () => {
                 ))}
               </div>
               <Button onClick={executeLog} className="w-full h-12 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-primary/20">
-                Confirm Log
+                Register Meal
               </Button>
             </div>
           </DialogContent>
@@ -501,7 +499,7 @@ const Fuel = () => {
 
         {showGuestPrompt && (
           <Nut3llaPrompt 
-            description="Loggin' pre-built fuels is fine, but if you want to create your own custom kitchen, you'll need to join the Nut3lla Protocol."
+            description="Explore the cafeteria selection freely! To build your own 'Institutional Kitchen' with custom favorites, please join the Student Portal."
             onClose={() => setShowGuestPrompt(false)}
           />
         )}
@@ -509,4 +507,4 @@ const Fuel = () => {
   );
 };
 
-export default Fuel;
+export default CafeMenu;

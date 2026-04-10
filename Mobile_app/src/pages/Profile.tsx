@@ -44,6 +44,11 @@ const Profile = () => {
     goal: "bulk",
     meal_reminders_enabled: false,
     supp_reminders_enabled: true,
+    health_conditions: "",
+    sleep_hours: 7,
+    caffeine_intake: "moderate",
+    monthly_budget: 5000,
+    cycle_tracking_enabled: false,
   });
 
   const [supplements, setSupplements] = useState<Supplement[]>([]);
@@ -72,6 +77,16 @@ const Profile = () => {
         goal: settings.goal || "bulk",
         meal_reminders_enabled: settings.meal_reminders_enabled ?? false,
         supp_reminders_enabled: settings.supp_reminders_enabled ?? true,
+        // @ts-ignore
+        health_conditions: settings.health_conditions || "",
+        // @ts-ignore
+        sleep_hours: Number(settings.sleep_hours) || 7,
+        // @ts-ignore
+        caffeine_intake: settings.caffeine_intake || "moderate",
+        // @ts-ignore
+        monthly_budget: Number(settings.monthly_budget) || 5000,
+        // @ts-ignore
+        cycle_tracking_enabled: settings.cycle_tracking_enabled ?? false,
       });
       setSupplements((settings.supplements as unknown as Supplement[]) || []);
     }
@@ -158,7 +173,14 @@ const Profile = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-foreground">Settings</h1>
+      <div className="space-y-1">
+        <h1 className="text-2xl font-black text-foreground uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+          HEALTH PROFILE
+        </h1>
+        <p className="text-xs text-muted-foreground italic px-1">
+           Your personalized nutritional plan for academic and physical wellness.
+        </p>
+      </div>
 
       {/* Account */}
       <div className="bg-card rounded-xl p-4 space-y-1">
@@ -177,7 +199,7 @@ const Profile = () => {
       {/* Theme and Nut3lla Tips */}
       <div className="bg-card rounded-xl p-4 flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <span className="text-card-foreground font-medium">Dark Mode</span>
+          <span className="text-card-foreground font-medium">Dark Mode Appearance</span>
           <Switch
             checked={theme === "dark"}
             onCheckedChange={handleThemeToggle}
@@ -185,7 +207,7 @@ const Profile = () => {
         </div>
         <div className="flex items-center justify-between">
           <span className="text-card-foreground font-medium">
-            Nut3lla Tips & Motivation
+            AI Wellness Tips & Motivation
           </span>
           <Switch
             checked={form.nut3lla_tips_enabled}
@@ -201,7 +223,7 @@ const Profile = () => {
       <div className="bg-card rounded-xl p-4 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
-            Physical Stats
+            Biometric Data
           </h2>
           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
             <Calculator className="h-4 w-4 text-primary" />
@@ -225,7 +247,7 @@ const Profile = () => {
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Goal</Label>
+            <Label className="text-xs text-muted-foreground">Primary Goal</Label>
             <Select
               value={form.goal}
               onValueChange={(v) => setForm((f) => ({ ...f, goal: v }))}
@@ -234,8 +256,9 @@ const Profile = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="z-[200]">
-                <SelectItem value="bulk">Bulk (+Lean Mass)</SelectItem>
-                <SelectItem value="cut">Cut (-Body Fat)</SelectItem>
+                <SelectItem value="bulk">Enhanced Performance (Active)</SelectItem>
+                <SelectItem value="cut">Weight Management</SelectItem>
+                <SelectItem value="maintain">General Wellness</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -279,7 +302,7 @@ const Profile = () => {
 
         <div className="space-y-1.5">
           <Label className="text-xs text-muted-foreground">
-            Activity Level
+            Campus Activity Level
           </Label>
           <Select
             value={String(form.activity_level)}
@@ -291,10 +314,10 @@ const Profile = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="z-[200]">
-              <SelectItem value="1.2">Sedentary (Desk Job)</SelectItem>
-              <SelectItem value="1.375">Lightly Active (Gym 1-3x)</SelectItem>
-              <SelectItem value="1.55">Moderately Active (Gym 3-5x)</SelectItem>
-              <SelectItem value="1.725">Very Active (Gym 6-7x)</SelectItem>
+              <SelectItem value="1.2">Sedentary (Focusing on Studies)</SelectItem>
+              <SelectItem value="1.375">Light Activity (Commuting)</SelectItem>
+              <SelectItem value="1.55">Moderate (Walking + Occasional Gym)</SelectItem>
+              <SelectItem value="1.725">High (Athlete / Active Lifestyle)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -304,8 +327,83 @@ const Profile = () => {
           className="w-full h-9 text-[10px] font-bold border-primary/20 hover:bg-primary/5 transition-colors tracking-wider"
           onClick={handleRecalculate}
         >
-          <RefreshCw className="h-3 w-3 mr-2" /> RECALCULATE TARGETS
+          <RefreshCw className="h-3 w-3 mr-2" /> RE-OPTIMIZE PLAN
         </Button>
+      </div>
+
+      {/* Health & Lifestyle */}
+      <div className="bg-card rounded-xl p-4 space-y-4">
+        <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
+          Medical & Wellness Context
+        </h2>
+        
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Health Conditions / Allergies</Label>
+          <Input
+            placeholder="e.g. Diabetes, Gluten Free, Lactose Intolerance..."
+            value={form.health_conditions}
+            onChange={(e) => setForm((f) => ({ ...f, health_conditions: e.target.value }))}
+            className="h-9"
+          />
+        </div>
+
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <Label className="text-xs text-muted-foreground">Sleep (Hours)</Label>
+            <Input
+              type="number"
+              value={form.sleep_hours}
+              onChange={(e) => setForm((f) => ({ ...f, sleep_hours: Number(e.target.value) }))}
+              className="h-9"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs text-muted-foreground">Caffeine Usage</Label>
+            <Select
+              value={form.caffeine_intake}
+              onValueChange={(v) => setForm((f) => ({ ...f, caffeine_intake: v }))}
+            >
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="moderate">Moderate</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-2 border-t border-border/40">
+          <div className="space-y-0.5">
+            <span className="text-card-foreground font-medium text-sm">Menstrual Cycle Intelligence</span>
+            <p className="text-[10px] text-muted-foreground">Adjust recommendations based on cycle phase.</p>
+          </div>
+          <Switch
+            checked={form.cycle_tracking_enabled}
+            onCheckedChange={(c) => setForm((prev) => ({ ...prev, cycle_tracking_enabled: c }))}
+          />
+        </div>
+      </div>
+
+      {/* Budget Tracking */}
+      <div className="bg-card rounded-xl p-4 space-y-4">
+        <h2 className="text-sm font-semibold text-card-foreground uppercase tracking-wide">
+          Financial Budgeting
+        </h2>
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">Monthly Food Budget (₹)</Label>
+          <Input
+            type="number"
+            value={form.monthly_budget}
+            onChange={(e) => setForm((f) => ({ ...f, monthly_budget: Number(e.target.value) }))}
+            className="h-9 font-bold text-primary"
+          />
+          <p className="text-[10px] text-muted-foreground italic">We'll help you find meals that fit your wallet.</p>
+        </div>
       </div>
 
       {/* Macro Targets */}

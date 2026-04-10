@@ -112,7 +112,7 @@ const Admin = () => {
               <h1 className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                 Admin Dashboard
               </h1>
-              <p className="text-muted-foreground">Real-time performance metrics across FitNutt.</p>
+              <p className="text-muted-foreground">Campus Ecosystem Oversight & Nutritional Analytics.</p>
             </div>
             
             <div className="flex bg-card p-1 rounded-xl ring-1 ring-muted/20">
@@ -149,10 +149,10 @@ const Admin = () => {
             {/* Summary Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: "Residents", val: stats?.summary.total_users, sub: `${stats?.summary.active_residents_today} Active Today`, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
-                { label: "Guests Today", val: stats?.summary.active_guests_today, sub: `${stats?.summary.total_guests_ever} Overall`, icon: Activity, color: "text-green-500", bg: "bg-green-500/10" },
-                { label: "Fuel Logged", val: stats?.summary.total_logs_all_time, sub: `${stats?.summary.total_logs_today} Today`, icon: Utensils, color: "text-amber-500", bg: "bg-amber-500/10" },
-                { label: "Kcal Logged", val: Math.round(stats?.summary.total_calories_all_time || 0).toLocaleString(), sub: `${Math.round(stats?.summary.total_calories_today || 0).toLocaleString()} today`, icon: Flame, color: "text-red-500", bg: "bg-red-500/10" },
+                { label: "Students", val: stats?.summary.total_users, sub: `${stats?.summary.active_residents_today} Active Today`, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
+                { label: "Visitors Today", val: stats?.summary.active_guests_today, sub: `${stats?.summary.total_guests_ever} Overall`, icon: Activity, color: "text-green-500", bg: "bg-green-500/10" },
+                { label: "Meals Logged", val: stats?.summary.total_logs_all_time, sub: `${stats?.summary.total_logs_today} Today`, icon: Utensils, color: "text-amber-500", bg: "bg-amber-500/10" },
+                { label: "Kcal Tracked", val: Math.round(stats?.summary.total_calories_all_time || 0).toLocaleString(), sub: `${Math.round(stats?.summary.total_calories_today || 0).toLocaleString()} today`, icon: Flame, color: "text-red-500", bg: "bg-red-500/10" },
               ].map((s, i) => (
                 <Card key={i} className="p-4 border-border bg-card/40 flex flex-col gap-2 relative overflow-hidden">
                   <div className="relative z-10 flex flex-col gap-2">
@@ -225,10 +225,10 @@ const Admin = () => {
                 </div>
               </Card>
 
-              {/* Top Fuel */}
+              {/* Top Meals */}
               <Card className="p-6 border-border bg-card/40">
                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2 mb-6">
-                  <Utensils className="h-4 w-4 text-primary" /> Trending Fuel
+                  <Utensils className="h-4 w-4 text-primary" /> Popular Selections
                 </h3>
                 <div className="space-y-4">
                   {stats?.top_items.length ? stats.top_items.map((item, i) => (
@@ -236,7 +236,7 @@ const Admin = () => {
                       <div className="flex items-center gap-3">
                         <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-[10px] font-bold">#{i+1}</div>
                         <span className="text-sm font-medium text-foreground/80 truncate max-w-[150px]">
-                          {item.name || "Unknown Fuel"}
+                          {item.name || "Unknown Item"}
                         </span>
                       </div>
                       <span className="text-xs font-black text-primary group-hover:translate-x-1 transition-transform">{item.count} logs</span>
@@ -248,13 +248,13 @@ const Admin = () => {
               </Card>
             </div>
 
-            {/* Rank Distribution */}
+            {/* Reward Tier Distribution */}
             <Card className="p-6 border-border bg-card/40">
               <div className="flex items-center justify-between mb-8">
                 <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2">
-                  <Award className="h-4 w-4 text-primary" /> Rank Distribution
+                  <Award className="h-4 w-4 text-primary" /> Reward Tier Distribution
                 </h3>
-                <p className="text-[10px] font-bold text-muted-foreground uppercase">Power Levels</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase">Campus Standing</p>
               </div>
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
@@ -279,7 +279,7 @@ const Admin = () => {
         )}
 
         <footer className="pt-10 border-t border-border/40 flex justify-between items-center">
-          <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-[0.2em]">FitNutt Control v2.0</p>
+          <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-[0.2em]">Portal Control v2.0</p>
           <div className="flex items-center gap-2 text-[10px] text-primary font-bold animate-pulse">
             <div className="h-1.5 w-1.5 rounded-full bg-primary" /> LIVE SYSTEM
           </div>

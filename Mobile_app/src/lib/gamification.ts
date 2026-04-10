@@ -34,21 +34,21 @@ export const calculateLevel = (totalXp: number): LevelInfo => {
 };
 
 export const getRankTitle = (level: number): string => {
-  if (level >= 50) return "GOD OF IRON";
-  if (level >= 40) return "TITAN";
-  if (level >= 30) return "GENETIC FREAK";
-  if (level >= 20) return "IRON LEGEND";
-  if (level >= 15) return "MASS BUILDER";
-  if (level >= 10) return "PUMP APPRENTICE";
-  if (level >= 5) return "IRON INITIATE";
-  return "GYM NOVICE";
+  if (level >= 50) return "CAFE SOVEREIGN";
+  if (level >= 40) return "CAMPUS LEGEND";
+  if (level >= 30) return "CAFE CONNOISSEUR";
+  if (level >= 20) return "DEAN'S LIST DINER";
+  if (level >= 15) return "GOURMET SCHOLAR";
+  if (level >= 10) return "SAVVY STUDENT";
+  if (level >= 5) return "REGULAR DINER";
+  return "CAFE EXPLORER";
 };
 
 export const XP_REWARDS = {
-  LOG_FOOD: 20,
-  LOG_SUPPLEMENT: 10,
-  COMPLETE_EXERCISE: 50,
-  DAILY_GOAL_MET: 100
+  LOG_MEAL: 20,
+  DAILY_CHECKIN: 10,
+  COMPLETE_TASK: 50,
+  BUDGET_MET: 100
 };
 
 export const calculateXpForLevelJump = (currentXp: number, jumps: number): number => {

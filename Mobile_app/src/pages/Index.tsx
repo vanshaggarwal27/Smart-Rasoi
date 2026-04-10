@@ -6,7 +6,8 @@ import { useMealEntries } from "@/hooks/useMealEntries";
 import { useSettings, Supplement } from "@/hooks/useSettings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Check, Sunrise, Sun, Moon, Coffee, ChevronLeft, ChevronRight, Copy, Trash2 } from "lucide-react";
-import { PumpLevelCard } from "@/components/PumpLevelCard";
+import { CampusRewardsCard } from "@/components/CampusRewardsCard";
+import { Sparkles, IndianRupee, Thermometer, AlertCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -280,7 +281,83 @@ const Index = () => {
         )}
 
         <div className="px-1">
-          <PumpLevelCard />
+          <CampusRewardsCard />
+        </div>
+
+        {/* AI Recommendations */}
+        <div className="px-1 space-y-4">
+          <div className="bg-gradient-to-br from-primary/20 via-background to-secondary/10 rounded-3xl p-6 border border-primary/20 relative overflow-hidden group shadow-xl shadow-primary/5">
+            <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-40 transition-opacity">
+              <Sparkles className="h-16 w-16 text-primary rotate-12" />
+            </div>
+            
+            <div className="relative z-10 flex flex-col gap-3">
+              <div className="flex items-center gap-2 text-primary">
+                <Sparkles className="h-4 w-4" />
+                <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">AI Recommendation Engine</h2>
+              </div>
+              
+              <div className="space-y-1">
+                <h3 className="text-xl font-bold text-foreground">Grilled Chicken & Quinoa</h3>
+                <p className="text-muted-foreground text-xs leading-relaxed italic">
+                   "Our AI engine dynamically adapts food recommendations."
+                </p>
+                <p className="text-muted-foreground text-[10px] leading-relaxed">
+                   Based on your <span className="text-primary font-medium uppercase font-black">DNA Profile</span> and <span className="text-foreground italic">moderate caffeine intake</span>.
+                </p>
+              </div>
+
+              <div className="flex gap-4 pt-2">
+                <div className="bg-background/50 backdrop-blur-sm px-3 py-2 rounded-xl border border-border/50">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold">Protein</p>
+                  <p className="text-sm font-black text-primary">42g</p>
+                </div>
+                <div className="bg-background/50 backdrop-blur-sm px-3 py-2 rounded-xl border border-border/50">
+                  <p className="text-[10px] text-muted-foreground uppercase font-bold">Calories</p>
+                  <p className="text-sm font-black text-primary">580</p>
+                </div>
+              </div>
+
+              {settings?.cycle_tracking_enabled && (
+                <div className="flex items-center gap-2 bg-pink-500/10 text-pink-500 px-3 py-1.5 rounded-lg border border-pink-500/20 mt-2">
+                   <Thermometer className="h-3 w-3" />
+                   <span className="text-[10px] font-bold uppercase tracking-wider">Follicular Phase: Increase complex carbs</span>
+                </div>
+              )}
+
+              <div className="flex items-center gap-2 bg-amber-500/10 text-amber-500 px-3 py-1.5 rounded-lg border border-amber-500/20 mt-1">
+                 <AlertCircle className="h-3 w-3" />
+                 <span className="text-[10px] font-bold uppercase tracking-wider">Warning: High sodium content detected</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Student Insights Row */}
+        <div className="grid grid-cols-2 gap-4 px-1">
+          <div className="bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <IndianRupee className="h-4 w-4" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Budget</span>
+            </div>
+            <div className="space-y-1">
+              <p className="text-lg font-black text-foreground">₹2,450 <span className="text-[10px] text-muted-foreground font-medium">left</span></p>
+              <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-primary/60" style={{ width: "45%" }} />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Calendar className="h-4 w-4" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Day 12</span>
+            </div>
+            <div className="space-y-1">
+              <p className="text-lg font-black text-foreground">Cycle <span className="text-[10px] text-pink-500 font-black uppercase">Tracking</span></p>
+              <p className="text-[10px] text-muted-foreground font-medium italic">Peak Energy Window</p>
+            </div>
+          </div>
         </div>
 
         {enabledSupplements.length > 0 && (
@@ -305,12 +382,12 @@ const Index = () => {
         )}
 
         <div className="space-y-4 pb-4">
-          <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em] px-1">Fuel Timeline</h2>
+          <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em] px-1">Campus Cafe Activity</h2>
           {entriesLoading ? (
             <Skeleton className="h-20 w-full rounded-xl" />
           ) : entries.length === 0 ? (
             <div className="bg-card/50 backdrop-blur-sm border border-dashed border-primary/20 rounded-2xl p-6 text-center">
-              <p className="text-muted-foreground text-sm font-medium italic">No fuel logged yet. Time to eat! 🥩</p>
+              <p className="text-muted-foreground text-sm font-medium italic">No cafe visits logged yet. Grab a bite! 🍔</p>
             </div>
           ) : (
             Object.entries(
@@ -349,8 +426,8 @@ const Index = () => {
                                 onSuccess: () => {
                                   setDeletingEntryId(null);
                                   toast({
-                                    title: "Fuel Removed",
-                                    description: "Your macros have been updated.",
+                                    title: "Meal Removed",
+                                    description: "Your daily nutrition log has been updated.",
                                   });
                                 }
                               });

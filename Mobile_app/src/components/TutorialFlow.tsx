@@ -20,30 +20,30 @@ interface Step {
 
 const tutorialSteps: Step[] = [
   { 
-    message: "YO! I'm Nut3lla. Welcome to FitNutt. I literally never stop pumping iron. We're about to get you shredded. Ready for a quick tour?",
+    message: "YO! I'm Nut3lla. Welcome to the Student Health Portal. I help students stay fit during exams and beyond. Ready for a quick tour?",
     position: "center",
     interactionType: "none"
   },
   { 
-    message: "This is your Dashboard! These rings track your daily progress. TAP THEM to see what I mean!",
+    message: "This is your Dashboard! These rings track your daily health metrics. TAP THEM to see your progress data!",
     target: '[data-tour="macro-rings"]',
     position: "bottom",
     interactionType: "click"
   },
   { 
-    message: "This is your Daily Diary. Click the Home icon to log every single bite. Accountability is the secret sauce!",
+    message: "This is your Daily Journal. Click the Home icon to log your cafeteria meals. Staying consistent is key to focus!",
     target: '[data-tour="nav-diary"]',
     position: "top",
     interactionType: "click"
   },
   { 
-    message: "And here's the Food Library. TAP IT now! This is your database of mass-building fuel.",
+    message: "And here's the Cafeteria Menu. TAP IT now! Check out today's student specials and nutritional info.",
     target: '[data-tour="nav-foods"]',
     position: "top",
     interactionType: "click"
   },
   { 
-    message: "Alright, enough talk. It's time to build your customized fitness protocol. Give me your stats, and I'll crunch the macros.",
+    message: "Alright, enough talk. It's time to build your customized health plan. Give me your stats, and I'll calculate your needs.",
     position: "center",
     interactionType: "none"
   }
@@ -103,7 +103,7 @@ export const TutorialFlow = ({ onComplete }: { onComplete: () => void }) => {
 
   const handleFinish = async () => {
     if (!weightKg || !heightCm || !age) {
-      toast({ title: "Uh oh", description: "Nut3lla needs ALL your stats to crunch the numbers!", variant: "destructive" });
+      toast({ title: "Uh oh", description: "Nut3lla needs ALL your stats to personalize your profile!", variant: "destructive" });
       return;
     }
     setIsSubmitting(true);
@@ -142,8 +142,8 @@ export const TutorialFlow = ({ onComplete }: { onComplete: () => void }) => {
         }).eq('user_id', user.id);
       } else {
         // For guest mode, save to localStorage
-        const guestSettings = JSON.parse(localStorage.getItem('fitnutt_guest_settings') || '{}');
-        localStorage.setItem('fitnutt_guest_settings', JSON.stringify({
+        const guestSettings = JSON.parse(localStorage.getItem('portal_guest_settings') || '{}');
+        localStorage.setItem('portal_guest_settings', JSON.stringify({
           ...guestSettings,
           tutorial_completed: true,
           calorie_target: targets.calories,
@@ -158,7 +158,7 @@ export const TutorialFlow = ({ onComplete }: { onComplete: () => void }) => {
           goal
         }));
       }
-      toast({ title: "Fitness Protocol Locked In! 🔒" });
+      toast({ title: "Health Profile Saved! 🎓" });
       onComplete();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -171,8 +171,8 @@ export const TutorialFlow = ({ onComplete }: { onComplete: () => void }) => {
     if (user) {
       await supabase.from('user_settings').update({ tutorial_completed: true }).eq('user_id', user.id);
     } else {
-      const guestSettings = JSON.parse(localStorage.getItem('fitnutt_guest_settings') || '{}');
-      localStorage.setItem('fitnutt_guest_settings', JSON.stringify({ ...guestSettings, tutorial_completed: true }));
+      const guestSettings = JSON.parse(localStorage.getItem('portal_guest_settings') || '{}');
+      localStorage.setItem('portal_guest_settings', JSON.stringify({ ...guestSettings, tutorial_completed: true }));
     }
     onComplete();
   };
@@ -300,7 +300,7 @@ export const TutorialFlow = ({ onComplete }: { onComplete: () => void }) => {
         {step === tutorialSteps.length - 1 && (
           <div className="w-full max-w-sm mt-8 bg-card/95 backdrop-blur-xl border-2 border-primary/20 p-6 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] animate-in fade-in zoom-in slide-in-from-bottom-12 duration-700 z-20 pointer-events-auto overflow-y-auto max-h-[70vh] border-t-primary/40">
             <div className="text-center space-y-1 mb-6">
-              <h3 className="text-2xl font-black font-sans text-foreground tracking-tighter uppercase italic italic-none">The Protocol</h3>
+              <h3 className="text-2xl font-black font-sans text-foreground tracking-tighter uppercase italic italic-none">Health Profile</h3>
               <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em]">Finalize Your Stats</p>
             </div>
             
@@ -321,8 +321,8 @@ export const TutorialFlow = ({ onComplete }: { onComplete: () => void }) => {
                   <Select value={goal} onValueChange={setGoal}>
                     <SelectTrigger className="h-10 bg-background/50 border-border/50 rounded-xl text-xs"><SelectValue /></SelectTrigger>
                     <SelectContent className="z-[200]">
-                      <SelectItem value="bulk">Bulk (+Lean)</SelectItem>
-                      <SelectItem value="cut">Cut (-Fat)</SelectItem>
+                      <SelectItem value="bulk">Performance (Active)</SelectItem>
+                      <SelectItem value="cut">Weight Management</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -354,10 +354,10 @@ export const TutorialFlow = ({ onComplete }: { onComplete: () => void }) => {
                 <Select value={activity} onValueChange={setActivity}>
                   <SelectTrigger className="h-10 bg-background/50 border-border/50 rounded-xl text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent className="z-[200]">
-                    <SelectItem value="1.2">Sedentary (Desk Job)</SelectItem>
-                    <SelectItem value="1.375">Lightly Active (Gym 1-3x)</SelectItem>
-                    <SelectItem value="1.55">Moderately Active (Gym 3-5x)</SelectItem>
-                    <SelectItem value="1.725">Very Active (Gym 6-7x)</SelectItem>
+                    <SelectItem value="1.2">Sedentary (Classes/Exams)</SelectItem>
+                    <SelectItem value="1.375">Lightly Active (Walking Campus)</SelectItem>
+                    <SelectItem value="1.55">Moderately Active (Daily Sports)</SelectItem>
+                    <SelectItem value="1.725">Very Active (Competitive Sports)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -368,7 +368,7 @@ export const TutorialFlow = ({ onComplete }: { onComplete: () => void }) => {
                   onClick={handleFinish} 
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "CRUNCH MY PROTOCOL"}
+                  {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "INITIALIZE MY PORTAL"}
                 </Button>
                 <button 
                   onClick={handleSkip}

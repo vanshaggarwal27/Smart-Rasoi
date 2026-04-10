@@ -12,10 +12,10 @@ interface Nut3llaPromptProps {
 }
 
 export const Nut3llaPrompt = ({ 
-  title = "Resident Access Required", 
+  title = "Student Access Required", 
   description, 
   icon = <Lock className="h-5 w-5 text-amber-500" />,
-  actionText = "Join the Protocol",
+  actionText = "Join the Portal",
   onClose 
 }: Nut3llaPromptProps) => {
   const navigate = useNavigate();
