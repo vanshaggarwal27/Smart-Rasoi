@@ -18,8 +18,11 @@ import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import BarcodeScanner from "./pages/BarcodeScanner";
-import PumpRank from "./pages/PumpRank";
+import CampusRewards from "./pages/CampusRewards";
 import NotFound from "./pages/NotFound";
+import Payment from "./pages/Payment";
+import Success from "./pages/Success";
+
 
 const queryClient = new QueryClient();
 
@@ -36,9 +39,9 @@ const GlobalSplash = ({ children }: { children: React.ReactNode }) => {
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [isUnmounted, setIsUnmounted] = useState(false);
 
-  // Normal splash timer (2.5s)
+  // Normal splash timer (0.8s)
   useEffect(() => {
-    const timer = setTimeout(() => setMinSplashDone(true), 2500);
+    const timer = setTimeout(() => setMinSplashDone(true), 800);
     return () => clearTimeout(timer);
   }, []);
 
@@ -69,21 +72,24 @@ const GlobalSplash = ({ children }: { children: React.ReactNode }) => {
             <div className="relative h-24 w-24">
               <img
                 src="/fitnutt-logo.png"
-                alt="Loading Up"
+                alt="Connecting"
                 className="absolute inset-0 h-24 w-24 animate-logo-pump-up"
               />
               <img
                 src="/fitnutt-logo-down.png"
-                alt="Loading Down"
+                alt="Initializing"
                 className="absolute inset-0 h-24 w-24 animate-logo-pump-down"
               />
             </div>
-            <h1
-              className="text-2xl font-bold text-foreground animate-pulse"
-              style={{ fontFamily: "'Space Grotesk', sans-serif" }}
-            >
-              FitNutt
-            </h1>
+            <div className="text-center space-y-1">
+              <h1
+                className="text-2xl font-black text-foreground uppercase tracking-tight"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              >
+                <span className="font-bold text-xs text-foreground uppercase tracking-widest">Nutrisense</span>
+              </h1>
+              <p className="text-[10px] font-bold text-primary tracking-[0.3em] uppercase opacity-70">Initializing Health Ecosystem</p>
+            </div>
           </div>
         </div>
       )}
@@ -152,10 +158,18 @@ const App = () => (
                               }
                             />
                             <Route
-                              path="/pump-rank"
+                              path="/rewards"
                               element={
                                 <ProtectedRoute allowGuest>
-                                  <PumpRank />
+                                  <CampusRewards />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/payment"
+                              element={
+                                <ProtectedRoute>
+                                  <Payment />
                                 </ProtectedRoute>
                               }
                             />
@@ -167,7 +181,16 @@ const App = () => (
                                 </ProtectedRoute>
                               }
                             />
+                             <Route
+                              path="/payment-success"
+                              element={
+                                <ProtectedRoute>
+                                  <Success />
+                                </ProtectedRoute>
+                              }
+                            />
                             <Route path="*" element={<NotFound />} />
+
                           </Routes>
                         </Layout>
                       }

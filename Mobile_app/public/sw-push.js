@@ -1,6 +1,6 @@
 // Push notification service worker handler
 self.addEventListener("push", (event) => {
-  let data = { title: "FitNutt", body: "Supplement reminder!", icon: "/fitnutt-logo.png", url: "/" };
+  let data = { title: "Nutri Sense", body: "Don't forget to track your nutrition!", icon: "/nutrisense-logo.png", url: "/" };
   try {
     if (event.data) {
       const parsed = event.data.json();

@@ -8,7 +8,7 @@ export interface Supplement {
   enabled: boolean;
 }
 
-const GUEST_SETTINGS_KEY = "fitnutt_guest_settings";
+const GUEST_SETTINGS_KEY = "fitnutt_portal_settings";
 
 const INITIAL_GUEST_SETTINGS = {
   calorie_target: 2000,
@@ -31,6 +31,8 @@ export const useSettings = () => {
   const settingsQuery = useQuery({
     queryKey: ["user_settings", user?.id || "guest"],
     enabled: true,
+    staleTime: 1000 * 60 * 10, // 10 minutes
+    gcTime: 1000 * 60 * 30,    // 30 minutes
     queryFn: async () => {
       if (isGuest) {
         const local = localStorage.getItem(GUEST_SETTINGS_KEY);

@@ -92,6 +92,8 @@ CREATE TABLE public.user_settings (
     notification_time TEXT NOT NULL DEFAULT '20:30',
     theme TEXT NOT NULL DEFAULT 'light',
     supplements JSONB NOT NULL DEFAULT '[]',
+    wallet_balance NUMERIC NOT NULL DEFAULT 0,
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -126,4 +128,14 @@ CREATE TRIGGER update_user_settings_updated_at BEFORE UPDATE ON public.user_sett
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$ BEGIN INSERT INTO public.user_settings (user_id) VALUES (NEW.id); RETURN NEW; END; $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
-CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- 12. Wallet Functions
+CREATE OR REPLACE FUNCTION public.increment_wallet_balance(user_id UUID, amount NUMERIC)
+RETURNS VOID LANGUAGE plpgsql SECURITY DEFINER AS $$
+BEGIN
+    UPDATE public.user_settings
+    SET wallet_balance = wallet_balance + amount
+    WHERE user_settings.user_id = $1;
+END;
+$$;
+

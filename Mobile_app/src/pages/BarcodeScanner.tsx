@@ -153,7 +153,7 @@ const BarcodeScanner = () => {
       },
       {
         onSuccess: () => {
-          toast({ title: "Added to library! 🎉" });
+          toast({ title: "Added to favorites! 🎉" });
           navigate("/foods");
         },
       }
@@ -167,7 +167,7 @@ const BarcodeScanner = () => {
         <button onClick={() => { stopScanner(); navigate("/foods"); }} className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h1 className="text-xl font-bold tracking-tight">Barcode Scanner</h1>
+        <h1 className="text-xl font-bold tracking-tight">Product Scanner</h1>
       </div>
 
       <main className="flex-1 flex flex-col items-center justify-start pt-4 px-4 pb-8 max-w-lg mx-auto w-full space-y-4">
@@ -195,7 +195,7 @@ const BarcodeScanner = () => {
             {scanState === "loading" && (
               <div className="absolute inset-0 z-20 bg-black/70 flex flex-col items-center justify-center gap-3">
                 <Loader2 className="h-10 w-10 text-primary animate-spin" />
-                <p className="text-white font-medium">Fetching nutrition data…</p>
+                <p className="text-white font-medium">Fetching product data…</p>
               </div>
             )}
             
@@ -239,7 +239,7 @@ const BarcodeScanner = () => {
                   <Camera className="w-4 h-4 mr-2" /> Camera
                 </Button>
                 <Button className="flex-1" disabled={manualCode.length < 5 || scanState === "loading"} onClick={submitManualCode}>
-                  {scanState === "loading" ? <Loader2 className="animate-spin h-4 w-4" /> : "Search Food"}
+                  {scanState === "loading" ? <Loader2 className="animate-spin h-4 w-4" /> : "Check Item"}
                 </Button>
               </div>
             </div>
@@ -340,7 +340,7 @@ const BarcodeScanner = () => {
                 <RotateCcw className="h-4 w-4 mr-2" /> Rescan
               </Button>
               <Button className="flex-1 h-12 shadow-lg shadow-primary/20" onClick={handleSave} disabled={!form.name}>
-                Save to Library
+                Save to Favorites
               </Button>
             </div>
           </div>
@@ -349,7 +349,7 @@ const BarcodeScanner = () => {
 
       {showGuestPrompt && (
         <Nut3llaPrompt 
-          description="You can scan anything to check its fuel content, but to save it to your permanent library, you'll need to join the Nut3lla Protocol."
+          description="You can scan anything to check its nutritional content, but to save it to your permanent favorites, you'll need to join the Student Portal."
           onClose={() => setShowGuestPrompt(false)}
         />
       )}

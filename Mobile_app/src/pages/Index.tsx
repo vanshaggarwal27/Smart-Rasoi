@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import { Skeleton as BoneyardSkeleton } from 'boneyard-js/react';
+
 import { useDate } from "@/contexts/DateContext";
 import { TutorialFlow } from "@/components/TutorialFlow";
 import { useDailyLog } from "@/hooks/useDailyLog";
@@ -6,7 +8,8 @@ import { useMealEntries } from "@/hooks/useMealEntries";
 import { useSettings, Supplement } from "@/hooks/useSettings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Check, Sunrise, Sun, Moon, Coffee, ChevronLeft, ChevronRight, Copy, Trash2 } from "lucide-react";
-import { PumpLevelCard } from "@/components/PumpLevelCard";
+import { CampusRewardsCard } from "@/components/CampusRewardsCard";
+import { Sparkles, IndianRupee, Thermometer, AlertCircle, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -183,219 +186,298 @@ const Index = () => {
     .sort((a, b) => (b.amount || 0) - (a.amount || 0));
 
   return (
-    <div className="space-y-6">
-        <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => shiftDate(-1)}
-              className="h-8 w-8 text-muted-foreground transition-all hover:bg-muted active:scale-90"
-              disabled={currentDate <= (user?.created_at?.split("T")[0] || todayStr())}
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
-            <h1 className="text-xl font-bold text-foreground min-w-[110px] text-center" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              {currentDate === todayStr()
-                ? "Today"
-                : new Date(currentDate).toLocaleDateString(undefined, {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                  })}
-            </h1>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => shiftDate(1)}
-              className="h-8 w-8 text-muted-foreground transition-all hover:bg-muted active:scale-90"
-              disabled={currentDate >= todayStr()}
-            >
-              <ChevronRight className="h-5 w-5" />
-            </Button>
-          </div>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={() => setShowCopy(true)}
-            className="h-9 w-9 rounded-xl border-primary/20 bg-background/50 backdrop-blur-sm transition-all active:scale-95 shadow-lg shadow-black/5 text-primary"
-            title="Copy"
-          >
-            <Copy className="h-4 w-4" /> 
-          </Button>
-        </div>
-
-        <div className="flex justify-around py-2" data-tour="macro-rings">
-          <MacroRing 
-            label="Calories" current={totals.calories} target={targets.calories} color="hsl(var(--primary))" 
-            isSelected={expandedMacro === "Calories"} onClick={() => setExpandedMacro(expandedMacro === "Calories" ? null : "Calories")}
-          />
-          <MacroRing 
-            label="Protein" current={totals.protein} target={targets.protein} color="hsl(18, 82%, 41%)" 
-            isSelected={expandedMacro === "Protein"} onClick={() => setExpandedMacro(expandedMacro === "Protein" ? null : "Protein")}
-          />
-          <MacroRing 
-            label="Carbs" current={totals.carbs} target={targets.carbs} color="hsl(220, 13%, 38%)" 
-            isSelected={expandedMacro === "Carbs"} onClick={() => setExpandedMacro(expandedMacro === "Carbs" ? null : "Carbs")}
-          />
-          <MacroRing 
-            label="Fats" current={totals.fats} target={targets.fats} color="hsl(0, 0%, 60%)" 
-            isSelected={expandedMacro === "Fats"} onClick={() => setExpandedMacro(expandedMacro === "Fats" ? null : "Fats")}
-          />
-        </div>
-
-        {expandedMacro && (
-          <div className="bg-card/40 backdrop-blur-md rounded-2xl p-5 border border-primary/10 animate-in slide-in-from-top-4 duration-500 overflow-hidden relative">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">{expandedMacro} Breakdown</h3>
-              <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-                {Math.round(totals[expandedMacro.toLowerCase() as keyof typeof totals])} / {targets[expandedMacro.toLowerCase() as keyof typeof targets]} {expandedMacro === "Calories" ? "KCAL" : "G"}
-              </div>
-            </div>
-            <div className="space-y-3 pr-1">
-              {macroDetails.length > 0 ? (
-                macroDetails.map((m, idx) => (
-                  <div key={idx} className="flex justify-between items-center group">
-                    <span className="text-sm font-medium text-foreground/80">{m.name}</span>
-                    <div className="flex items-center gap-2">
-                       <div className="h-1.5 w-24 bg-muted rounded-full overflow-hidden">
-                         <div 
-                          className="h-full bg-primary/60 transition-all duration-1000"
-                          style={{ width: `${Math.min((m.amount / totals[expandedMacro!.toLowerCase() as keyof typeof totals]) * 100, 100)}%` }}
-                         />
-                       </div>
-                       <span className="text-[11px] font-black text-primary/80 min-w-[40px] text-right">
-                         {Math.round(m.amount)}{expandedMacro === "Calories" ? "" : "g"}
-                       </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-4 text-xs font-medium italic text-muted-foreground">
-                  No {expandedMacro.toLowerCase()} sources logged yet.
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        <div className="px-1">
-          <PumpLevelCard />
-        </div>
-
-        {enabledSupplements.length > 0 && (
-          <div className="bg-card rounded-xl p-4 space-y-3 shadow-md border border-primary/5">
-            <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em]">Supplements</h2>
-            {enabledSupplements.map((s) => (
-              <div key={s.id} className="flex items-center justify-between">
-                <span className="text-card-foreground font-medium">{s.name}</span>
-                <button
-                  onClick={() => toggleCustomSupplement.mutate(s.id)}
-                  className={`h-7 w-7 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ease-out ${
-                    supplementsTaken[s.id]
-                      ? "bg-primary border-primary text-primary-foreground scale-110 shadow-lg shadow-primary/20"
-                      : "bg-muted/30 border-muted-foreground/20 text-transparent scale-100"
-                  }`}
-                >
-                  <Check strokeWidth={3.5} className={`h-4 w-4 transition-transform duration-300 ${supplementsTaken[s.id] ? "scale-100" : "scale-0"}`} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="space-y-4 pb-4">
-          <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em] px-1">Fuel Timeline</h2>
-          {entriesLoading ? (
-            <Skeleton className="h-20 w-full rounded-xl" />
-          ) : entries.length === 0 ? (
-            <div className="bg-card/50 backdrop-blur-sm border border-dashed border-primary/20 rounded-2xl p-6 text-center">
-              <p className="text-muted-foreground text-sm font-medium italic">No fuel logged yet. Time to eat! 🥩</p>
-            </div>
-          ) : (
-            Object.entries(
-              entries.reduce((acc: Record<string, typeof entries>, e) => {
-                (acc[e.meal_type] = acc[e.meal_type] || []).push(e);
-                return acc;
-              }, {})
-            ).map(([type, items]) => {
-              const config = mealTypeConfig[type] || { label: type, icon: Coffee };
-              const Icon = config.icon;
-              
-              return (
-                <div key={type} className="bg-card rounded-2xl p-4 shadow-sm border border-primary/5 space-y-3">
-                  <div className="flex items-center gap-2 text-primary">
-                    <Icon className="h-4 w-4" />
-                    <h3 className="text-[10px] font-black uppercase tracking-widest">{config.label}</h3>
-                  </div>
-                  <div className="space-y-2">
-                    {items.map((item) => (
-                      <div 
-                        key={item.id} 
-                        onClick={() => setDeletingEntryId(deletingEntryId === item.id ? null : item.id)}
-                        className="flex justify-between items-center text-sm border-l-2 border-primary/20 pl-3 cursor-pointer group hover:border-primary/50 transition-colors"
-                      >
-                        <span className="text-foreground font-medium">{item.food_name}</span>
-                        <div className="flex items-center gap-3 relative h-6 w-24 justify-end overflow-hidden">
-                          <div className={`flex items-center gap-3 transition-opacity duration-300 ${deletingEntryId === item.id ? "opacity-0" : "opacity-100"}`}>
-                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">×{item.quantity}</span>
-                            <span className="text-[11px] font-black italic text-primary/70">{Math.round((item.calories || 0) * item.quantity)} KCAL</span>
-                          </div>
-                          <button
-                            disabled={removeEntry.isPending}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              removeEntry.mutate(item.id, {
-                                onSuccess: () => {
-                                  setDeletingEntryId(null);
-                                  toast({
-                                    title: "Fuel Removed",
-                                    description: "Your macros have been updated.",
-                                  });
-                                }
-                              });
-                            }}
-                            className={`absolute right-0 p-2 flex items-center justify-center text-red-500 hover:text-red-400 transition-all duration-500 transform ${
-                              deletingEntryId === item.id ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
-                            } ${removeEntry.isPending ? "opacity-50 cursor-not-allowed" : ""}`}
-                            title="Delete"
-                          >
-                            <Trash2 className={`h-5 w-5 ${removeEntry.isPending ? "animate-pulse" : ""}`} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        {/* Copy Dialog */}
-        <Dialog open={showCopy} onOpenChange={setShowCopy}>
-          <DialogContent className="w-[calc(100%-2.5rem)] max-w-[400px] rounded-3xl p-6 border-none shadow-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold">Copy Meals</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 pt-2">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Source Date</label>
-                <Input
-                  type="date"
-                  value={copyDate}
-                  onChange={(e) => setCopyDate(e.target.value)}
-                  className="rounded-xl h-12 bg-muted/30 border-none font-bold text-foreground"
-                />
-              </div>
-              <Button onClick={handleCopyFromDate} className="w-full h-12 text-md font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/20">
-                Copy to {currentDate === todayStr() ? "Today" : currentDate}
+    <BoneyardSkeleton name="home-screen" loading={logLoading || settingsLoading}>
+      <div className="space-y-6">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => shiftDate(-1)}
+                className="h-8 w-8 text-muted-foreground transition-all hover:bg-muted active:scale-90"
+                disabled={currentDate <= (user?.created_at?.split("T")[0] || todayStr())}
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+              <h1 className="text-xl font-bold text-foreground min-w-[110px] text-center" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                {currentDate === todayStr()
+                  ? "Today"
+                  : new Date(currentDate).toLocaleDateString(undefined, {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    })}
+              </h1>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => shiftDate(1)}
+                className="h-8 w-8 text-muted-foreground transition-all hover:bg-muted active:scale-90"
+                disabled={currentDate >= todayStr()}
+              >
+                <ChevronRight className="h-5 w-5" />
               </Button>
             </div>
-          </DialogContent>
-        </Dialog>
-    </div>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => setShowCopy(true)}
+              className="h-9 w-9 rounded-xl border-primary/20 bg-background/50 backdrop-blur-sm transition-all active:scale-95 shadow-lg shadow-black/5 text-primary"
+              title="Copy"
+            >
+              <Copy className="h-4 w-4" /> 
+            </Button>
+          </div>
+
+          <div className="flex justify-around py-2" data-tour="macro-rings">
+            <MacroRing 
+              label="Calories" current={totals.calories} target={targets.calories} color="hsl(var(--primary))" 
+              isSelected={expandedMacro === "Calories"} onClick={() => setExpandedMacro(expandedMacro === "Calories" ? null : "Calories")}
+            />
+            <MacroRing 
+              label="Protein" current={totals.protein} target={targets.protein} color="hsl(18, 82%, 41%)" 
+              isSelected={expandedMacro === "Protein"} onClick={() => setExpandedMacro(expandedMacro === "Protein" ? null : "Protein")}
+            />
+            <MacroRing 
+              label="Carbs" current={totals.carbs} target={targets.carbs} color="hsl(220, 13%, 38%)" 
+              isSelected={expandedMacro === "Carbs"} onClick={() => setExpandedMacro(expandedMacro === "Carbs" ? null : "Carbs")}
+            />
+            <MacroRing 
+              label="Fats" current={totals.fats} target={targets.fats} color="hsl(0, 0%, 60%)" 
+              isSelected={expandedMacro === "Fats"} onClick={() => setExpandedMacro(expandedMacro === "Fats" ? null : "Fats")}
+            />
+          </div>
+
+          {expandedMacro && (
+            <div className="bg-card/40 backdrop-blur-md rounded-2xl p-5 border border-primary/10 animate-in slide-in-from-top-4 duration-500 overflow-hidden relative">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary">{expandedMacro} Breakdown</h3>
+                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                  {Math.round(totals[expandedMacro.toLowerCase() as keyof typeof totals])} / {targets[expandedMacro.toLowerCase() as keyof typeof targets]} {expandedMacro === "Calories" ? "KCAL" : "G"}
+                </div>
+              </div>
+              <div className="space-y-3 pr-1">
+                {macroDetails.length > 0 ? (
+                  macroDetails.map((m, idx) => (
+                    <div key={idx} className="flex justify-between items-center group">
+                      <span className="text-sm font-medium text-foreground/80">{m.name}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 w-24 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-primary/60 transition-all duration-1000"
+                            style={{ width: `${Math.min((m.amount / totals[expandedMacro!.toLowerCase() as keyof typeof totals]) * 100, 100)}%` }}
+                          />
+                        </div>
+                        <span className="text-[11px] font-black text-primary/80 min-w-[40px] text-right">
+                          {Math.round(m.amount)}{expandedMacro === "Calories" ? "" : "g"}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-4 text-xs font-medium italic text-muted-foreground">
+                    No {expandedMacro.toLowerCase()} sources logged yet.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="px-1">
+            <CampusRewardsCard />
+          </div>
+
+          {/* AI Recommendations */}
+          <div className="px-1 space-y-4">
+            <div className="bg-gradient-to-br from-primary/20 via-background to-secondary/10 rounded-3xl p-6 border border-primary/20 relative overflow-hidden group shadow-xl shadow-primary/5">
+              <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-40 transition-opacity">
+                <Sparkles className="h-16 w-16 text-primary rotate-12" />
+              </div>
+              
+              <div className="relative z-10 flex flex-col gap-3">
+                <div className="flex items-center gap-2 text-primary">
+                  <Sparkles className="h-4 w-4" />
+                  <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">AI Recommendation Engine</h2>
+                </div>
+                
+                <div className="space-y-1">
+                  <h3 className="text-xl font-bold text-foreground">Grilled Chicken & Quinoa</h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed italic">
+                    "Our AI engine dynamically adapts food recommendations."
+                  </p>
+                  <p className="text-muted-foreground text-[10px] leading-relaxed">
+                    Based on your <span className="text-primary font-medium uppercase font-black">DNA Profile</span> and <span className="text-foreground italic">moderate caffeine intake</span>.
+                  </p>
+                </div>
+
+                <div className="flex gap-4 pt-2">
+                  <div className="bg-background/50 backdrop-blur-sm px-3 py-2 rounded-xl border border-border/50">
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Protein</p>
+                    <p className="text-sm font-black text-primary">42g</p>
+                  </div>
+                  <div className="bg-background/50 backdrop-blur-sm px-3 py-2 rounded-xl border border-border/50">
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Calories</p>
+                    <p className="text-sm font-black text-primary">580</p>
+                  </div>
+                </div>
+
+                {settings?.cycle_tracking_enabled && (
+                  <div className="flex items-center gap-2 bg-pink-500/10 text-pink-500 px-3 py-1.5 rounded-lg border border-pink-500/20 mt-2">
+                    <Thermometer className="h-3 w-3" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Follicular Phase: Increase complex carbs</span>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 bg-amber-500/10 text-amber-500 px-3 py-1.5 rounded-lg border border-amber-500/20 mt-1">
+                  <AlertCircle className="h-3 w-3" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Warning: High sodium content detected</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Student Insights Row */}
+          <div className="grid grid-cols-2 gap-4 px-1">
+            <div className="bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex flex-col gap-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <IndianRupee className="h-4 w-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Budget</span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-lg font-black text-foreground">₹2,450 <span className="text-[10px] text-muted-foreground font-medium">left</span></p>
+                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-primary/60" style={{ width: "45%" }} />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-card rounded-2xl p-4 border border-border/50 shadow-sm flex flex-col gap-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Day 12</span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-lg font-black text-foreground">Cycle <span className="text-[10px] text-pink-500 font-black uppercase">Tracking</span></p>
+                <p className="text-[10px] text-muted-foreground font-medium italic">Peak Energy Window</p>
+              </div>
+            </div>
+          </div>
+
+          {enabledSupplements.length > 0 && (
+            <div className="bg-card rounded-xl p-4 space-y-3 shadow-md border border-primary/5">
+              <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em]">Supplements</h2>
+              {enabledSupplements.map((s) => (
+                <div key={s.id} className="flex items-center justify-between">
+                  <span className="text-card-foreground font-medium">{s.name}</span>
+                  <button
+                    onClick={() => toggleCustomSupplement.mutate(s.id)}
+                    className={`h-7 w-7 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ease-out ${
+                      supplementsTaken[s.id]
+                        ? "bg-primary border-primary text-primary-foreground scale-110 shadow-lg shadow-primary/20"
+                        : "bg-muted/30 border-muted-foreground/20 text-transparent scale-100"
+                    }`}
+                  >
+                    <Check strokeWidth={3.5} className={`h-4 w-4 transition-transform duration-300 ${supplementsTaken[s.id] ? "scale-100" : "scale-0"}`} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="space-y-4 pb-4">
+            <h2 className="text-xs font-bold text-primary uppercase tracking-[0.2em] px-1">Campus Cafe Activity</h2>
+            {entriesLoading ? (
+              <Skeleton className="h-20 w-full rounded-xl" />
+            ) : entries.length === 0 ? (
+              <div className="bg-card/50 backdrop-blur-sm border border-dashed border-primary/20 rounded-2xl p-6 text-center">
+                <p className="text-muted-foreground text-sm font-medium italic">No cafe visits logged yet. Grab a bite! 🍔</p>
+              </div>
+            ) : (
+              Object.entries(
+                entries.reduce((acc: Record<string, typeof entries>, e) => {
+                  (acc[e.meal_type] = acc[e.meal_type] || []).push(e);
+                  return acc;
+                }, {})
+              ).map(([type, items]) => {
+                const config = mealTypeConfig[type] || { label: type, icon: Coffee };
+                const Icon = config.icon;
+                
+                return (
+                  <div key={type} className="bg-card rounded-2xl p-4 shadow-sm border border-primary/5 space-y-3">
+                    <div className="flex items-center gap-2 text-primary">
+                      <Icon className="h-4 w-4" />
+                      <h3 className="text-[10px] font-black uppercase tracking-widest">{config.label}</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {items.map((item) => (
+                        <div 
+                          key={item.id} 
+                          onClick={() => setDeletingEntryId(deletingEntryId === item.id ? null : item.id)}
+                          className="flex justify-between items-center text-sm border-l-2 border-primary/20 pl-3 cursor-pointer group hover:border-primary/50 transition-colors"
+                        >
+                          <span className="text-foreground font-medium">{item.food_name}</span>
+                          <div className="flex items-center gap-3 relative h-6 w-24 justify-end overflow-hidden">
+                            <div className={`flex items-center gap-3 transition-opacity duration-300 ${deletingEntryId === item.id ? "opacity-0" : "opacity-100"}`}>
+                              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">×{item.quantity}</span>
+                              <span className="text-[11px] font-black italic text-primary/70">{Math.round((item.calories || 0) * item.quantity)} KCAL</span>
+                            </div>
+                            <button
+                              disabled={removeEntry.isPending}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeEntry.mutate(item.id, {
+                                  onSuccess: () => {
+                                    setDeletingEntryId(null);
+                                    toast({
+                                      title: "Meal Removed",
+                                      description: "Your daily nutrition log has been updated.",
+                                    });
+                                  }
+                                });
+                              }}
+                              className={`absolute right-0 p-2 flex items-center justify-center text-red-500 hover:text-red-400 transition-all duration-500 transform ${
+                                deletingEntryId === item.id ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
+                              } ${removeEntry.isPending ? "opacity-50 cursor-not-allowed" : ""}`}
+                              title="Delete"
+                            >
+                              <Trash2 className={`h-5 w-5 ${removeEntry.isPending ? "animate-pulse" : ""}`} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Copy Dialog */}
+          <Dialog open={showCopy} onOpenChange={setShowCopy}>
+            <DialogContent className="w-[calc(100%-2.5rem)] max-w-[400px] rounded-3xl p-6 border-none shadow-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold">Copy Meals</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-2">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Select Source Date</label>
+                  <Input
+                    type="date"
+                    value={copyDate}
+                    onChange={(e) => setCopyDate(e.target.value)}
+                    className="rounded-xl h-12 bg-muted/30 border-none font-bold text-foreground"
+                  />
+                </div>
+                <Button onClick={handleCopyFromDate} className="w-full h-12 text-md font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-primary/20">
+                  Copy to {currentDate === todayStr() ? "Today" : currentDate}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+      </div>
+    </BoneyardSkeleton>
   );
+
 };
 
 export default Index;
