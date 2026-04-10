@@ -3,6 +3,7 @@ import { AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tool
 import { ShoppingBag, Users, FileText, BadgeDollarSign, Heart } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import api from '../utils/api';
+import { supabase } from '../utils/supabase';
 
 const COLORS = ['#e83e8c', '#8b5cf6', '#fdf2f8', '#10b981'];
 
@@ -11,6 +12,7 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     Promise.all([
@@ -25,6 +27,30 @@ const Dashboard = () => {
       setErrorMsg(err.message || 'Unknown error');
       setLoading(false);
     });
+
+    // Set up real-time subscription for new orders
+    const channel = supabase
+      .channel('public:orders')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'orders' },
+        (payload) => {
+          console.log('New order received:', payload);
+          setNotification({ 
+            message: `Order #${payload.new.order_id || payload.new.id || 'Unknown'} was placed.`,
+            time: new Date().toLocaleTimeString()
+          });
+          
+          setTimeout(() => {
+             setNotification(null);
+          }, 5000);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>;
@@ -33,7 +59,37 @@ const Dashboard = () => {
   const popularPie = data.popularItems.slice(0, 3).map((item) => ({ name: item.name, value: item.sold }));
   
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in" style={{ position: 'relative' }}>
+      {/* Real-time Order Notification Toast */}
+      {notification && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          background: 'var(--accent-primary)',
+          color: '#fff',
+          padding: '1rem 1.5rem',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.25rem',
+          animation: 'fade-in 0.3s ease-out'
+        }}>
+          <div style={{ fontWeight: '600', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '1.2rem' }}>🔔</span>
+            New Order Received!
+          </div>
+          <div style={{ fontSize: '0.875rem', opacity: 0.9 }}>
+            {notification.message}
+            <span style={{ display: 'block', fontSize: '0.75rem', marginTop: '0.125rem', opacity: 0.7 }}>
+              {notification.time}
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className="grid-cols-4" style={{ marginBottom: '1.5rem' }}>
         <MetricCard title="Meals Sold" value={data.totalMealsToday || 0} icon={<ShoppingBag size={20} />} />
         <MetricCard title="Transactions" value={data.totalTransactions || 0} icon={<Users size={20} />} />

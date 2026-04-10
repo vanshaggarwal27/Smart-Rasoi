@@ -6,7 +6,7 @@ import { supabase } from '../utils/supabase';
 const MenuManagement = () => {
   const [menu, setMenu] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ name: '', category: 'Breakfast', price: '', status: 'available', image_url: '', calories: '', protein: '', carbs: '', fats: '' });
+  const [formData, setFormData] = useState({ name: '', category: 'Breakfast', price: '', is_available: true, image_url: '', calories: '', protein: '', carbs: '', fats: '' });
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ const MenuManagement = () => {
   const fetchMenu = async () => {
     // Always try Supabase first; only fall back on actual connection error
     try {
-      const { data, error } = await supabase.from('menu_items').select('*');
+      const { data, error } = await supabase.from('food_items').select('*');
       if (error) throw error;
       setMenu(data || []);
       return;
@@ -30,28 +30,29 @@ const MenuManagement = () => {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    // Build clean payload — never send 'id' to Supabase on insert
-    const { id: _ignoreId, ...baseData } = formData;
+    // Build clean payload — never send 'food_id' to Supabase on insert
+    const { food_id: _ignoreId, ...baseData } = formData;
     const dataToSave = {
-      ...baseData,
+      name: baseData.name,
+      category: baseData.category,
       price: Number(baseData.price) || 0,
       calories: Number(baseData.calories) || 0,
       protein: Number(baseData.protein) || 0,
       carbs: Number(baseData.carbs) || 0,
       fats: Number(baseData.fats) || 0,
-      image_url: baseData.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60',
+      is_available: baseData.is_available ?? true,
     };
 
     try {
       // 1. Sync to Supabase
       if (editingId) {
-        const { error } = await supabase.from('menu_items').update(dataToSave).eq('id', editingId);
+        const { error } = await supabase.from('food_items').update(dataToSave).eq('food_id', editingId);
         if (error) {
           alert(`Supabase update failed: ${error.message}`);
           console.error("Supabase update error:", error);
         }
       } else {
-        const { error } = await supabase.from('menu_items').insert([dataToSave]);
+        const { error } = await supabase.from('food_items').insert([dataToSave]);
         if (error) {
           alert(`Supabase insert failed: ${error.message}`);
           console.error("Supabase insert error:", error);
@@ -79,12 +80,12 @@ const MenuManagement = () => {
 
   const openEdit = (item) => {
     setFormData(item);
-    setEditingId(item.id);
+    setEditingId(item.food_id);
     setShowModal(true);
   };
 
   const openAdd = () => {
-    setFormData({ name: '', category: 'Breakfast', price: '', status: 'available', image_url: '', calories: '', protein: '', carbs: '', fats: '' });
+    setFormData({ name: '', category: 'Breakfast', price: '', is_available: true, image_url: '', calories: '', protein: '', carbs: '', fats: '' });
     setEditingId(null);
     setShowModal(true);
   };
@@ -93,12 +94,12 @@ const MenuManagement = () => {
     if(window.confirm('Delete this item?')) {
       // 1. Delete from Supabase
       try {
-         await supabase.from('menu_items').delete().eq('id', id);
+         await supabase.from('food_items').delete().eq('food_id', id);
       } catch (err) {
          console.warn("Could not delete from Supabase");
       }
-      // 2. Delete from local Node API
-      api.delete(`/menu/${id}`).then(() => fetchMenu());
+      // 2. Also try local API (non-critical)
+      api.delete(`/menu/${id}`).then(() => fetchMenu()).catch(() => fetchMenu());
     }
   };
 
@@ -129,7 +130,7 @@ const MenuManagement = () => {
           </thead>
           <tbody>
             {menu.map(item => (
-              <tr key={item.id}>
+              <tr key={item.food_id}>
                 <td>
                   <img src={item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60'} onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60'; }} alt={item.name} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover' }} />
                 </td>
@@ -144,17 +145,17 @@ const MenuManagement = () => {
                 </td>
                 <td>
                   <span style={{ 
-                    color: item.status === 'available' ? 'var(--success)' : 'var(--danger)',
-                    background: item.status === 'available' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                    color: item.is_available ? 'var(--success)' : 'var(--danger)',
+                    background: item.is_available ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
                     padding: '0.25rem 0.5rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '600'
                   }}>
-                    {item.status.toUpperCase()}
+                    {item.is_available ? 'AVAILABLE' : 'UNAVAILABLE'}
                   </span>
                 </td>
                 <td>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <button className="btn btn-outline" style={{ padding: '0.5rem' }} onClick={() => openEdit(item)}><Edit2 size={16} /></button>
-                    <button className="btn btn-outline" style={{ padding: '0.5rem', color: 'var(--danger)' }} onClick={() => handleDelete(item.id)}><Trash2 size={16} /></button>
+                    <button className="btn btn-outline" style={{ padding: '0.5rem', color: 'var(--danger)' }} onClick={() => handleDelete(item.food_id)}><Trash2 size={16} /></button>
                   </div>
                 </td>
               </tr>
@@ -190,9 +191,9 @@ const MenuManagement = () => {
               <div className="grid-cols-2" style={{ gap: '1rem' }}>
                 <div>
                   <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Status</label>
-                  <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
-                    <option value="available">Available</option>
-                    <option value="unavailable">Unavailable</option>
+                  <select value={formData.is_available ? 'true' : 'false'} onChange={e => setFormData({...formData, is_available: e.target.value === 'true'})}>
+                    <option value="true">Available</option>
+                    <option value="false">Unavailable</option>
                   </select>
                 </div>
                 <div>
