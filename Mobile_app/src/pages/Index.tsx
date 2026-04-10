@@ -5,6 +5,8 @@ import { TutorialFlow } from "@/components/TutorialFlow";
 import { useDailyLog } from "@/hooks/useDailyLog";
 import { useMealEntries } from "@/hooks/useMealEntries";
 import { useSettings, Supplement } from "@/hooks/useSettings";
+import { useFoods } from "@/hooks/useFoods";
+import { generateMealPlan, UserProfile, MenuItem, MealPlanResult } from "@/lib/mealPlanner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Check, Sunrise, Sun, Moon, Coffee, ChevronLeft, ChevronRight, Copy, Trash2 } from "lucide-react";
 import { CampusRewardsCard } from "@/components/CampusRewardsCard";
@@ -63,6 +65,7 @@ const Index = () => {
   const { log, isLoading: logLoading, toggleCustomSupplement, ensureLog } = useDailyLog(currentDate);
   const { entries, isLoading: entriesLoading, removeEntry } = useMealEntries(log?.id);
   const { settings, isLoading: settingsLoading } = useSettings();
+  const { foods } = useFoods();
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -75,6 +78,46 @@ const Index = () => {
   const [showCopy, setShowCopy] = useState(false);
   const [copyDate, setCopyDate] = useState("");
   const [deletingEntryId, setDeletingEntryId] = useState<string | null>(null);
+  
+  const [mealPlan, setMealPlan] = useState<MealPlanResult | null>(null);
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+
+  const handleGeneratePlan = () => {
+    setIsGeneratingPlan(true);
+    setTimeout(() => {
+      try {
+        if (!settings || !user) return;
+        
+        const userProfile: UserProfile = {
+          age: Number(settings.age) || 20,
+          weight: Number(settings.weight_kg) || 70,
+          height: Number(settings.height_cm) || 170,
+          gender: (settings as any).gender === "female" ? "female" : "male",
+          goal: ((settings as any).goal as any) || "bulk",
+          activity_level: Number((settings as any).activity_level) as any || 1.375,
+          budget: (Number((settings as any).monthly_budget) || 5000) / 30, // daily budget
+        };
+        
+        const menuItems: MenuItem[] = foods.map((f) => ({
+          id: f.id,
+          name: f.name,
+          calories: Number(f.calories) || 0,
+          protein: Number(f.protein) || 0,
+          carbs: Number(f.carbs) || 0,
+          fats: Number(f.fats) || 0,
+          price: Math.max(10, Math.round((Number(f.calories) / 15) + (Number(f.protein) * 1.5))),
+          category: f.category,
+        }));
+
+        const plan = generateMealPlan(userProfile, menuItems, 3);
+        setMealPlan(plan);
+      } catch (err) {
+        console.error("Plan Generation Error", err);
+      } finally {
+        setIsGeneratingPlan(false);
+      }
+    }, 50); // slight delay to allow UI to breathe
+  };
 
   const shiftDate = (days: number) => {
     const d = new Date(currentDate);
@@ -315,31 +358,72 @@ const Index = () => {
             </div>
             
             <div className="relative z-10 flex flex-col gap-3">
-              <div className="flex items-center gap-2 text-primary">
-                <Sparkles className="h-4 w-4" />
-                <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">AI Recommendation Engine</h2>
+              <div className="flex items-center justify-between text-primary">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  <h2 className="text-[10px] font-black uppercase tracking-[0.2em]">AI Recommendation Engine</h2>
+                </div>
+                {!mealPlan && (
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="h-7 text-[9px] font-black uppercase tracking-widest border-primary/20 hover:bg-primary hover:text-primary-foreground transition-colors relative z-20"
+                    onClick={handleGeneratePlan}
+                    disabled={isGeneratingPlan || foods.length === 0}
+                  >
+                    {isGeneratingPlan ? "ANALYZING..." : "GENERATE"}
+                  </Button>
+                )}
               </div>
               
-              <div className="space-y-1">
-                <h3 className="text-xl font-bold text-foreground">Grilled Chicken & Quinoa</h3>
-                <p className="text-muted-foreground text-xs leading-relaxed italic">
-                   "Our AI engine dynamically adapts food recommendations."
-                </p>
-                <p className="text-muted-foreground text-[10px] leading-relaxed">
-                   Based on your <span className="text-primary font-medium uppercase font-black">DNA Profile</span> and <span className="text-foreground italic">moderate caffeine intake</span>.
-                </p>
-              </div>
+              {!mealPlan ? (
+                <div className="space-y-1">
+                  <h3 className="text-xl font-bold text-foreground">Awaiting Initialization</h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed italic">
+                     "Our AI engine dynamically adapts food recommendations to your goals."
+                  </p>
+                  <p className="text-muted-foreground text-[10px] leading-relaxed">
+                     Tap generate to find the optimal combination for your <span className="text-primary font-medium uppercase font-black">Goals</span> and <span className="text-foreground italic">Budget</span>.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-1">
+                    <h3 className="text-lg font-bold text-foreground leading-tight">
+                      {mealPlan.selected_food_items.map((i) => i.name).join(" + ")}
+                    </h3>
+                    <p className="text-muted-foreground text-[10px] leading-relaxed italic text-primary">
+                       AI: {mealPlan.explanation}
+                    </p>
+                  </div>
 
-              <div className="flex gap-4 pt-2">
-                <div className="bg-background/50 backdrop-blur-sm px-3 py-2 rounded-xl border border-border/50">
-                  <p className="text-[10px] text-muted-foreground uppercase font-bold">Protein</p>
-                  <p className="text-sm font-black text-primary">42g</p>
-                </div>
-                <div className="bg-background/50 backdrop-blur-sm px-3 py-2 rounded-xl border border-border/50">
-                  <p className="text-[10px] text-muted-foreground uppercase font-bold">Calories</p>
-                  <p className="text-sm font-black text-primary">580</p>
-                </div>
-              </div>
+                  <div className="flex gap-4 pt-2">
+                    <div className="bg-background/50 backdrop-blur-sm px-3 py-2 rounded-xl border border-border/50 flex-1">
+                      <p className="text-[10px] text-muted-foreground uppercase font-bold">Protein</p>
+                      <p className={`text-sm font-black ${mealPlan.constraints_met.protein_target_met ? "text-green-500" : "text-amber-500"}`}>{mealPlan.total_protein}g</p>
+                    </div>
+                    <div className="bg-background/50 backdrop-blur-sm px-3 py-2 rounded-xl border border-border/50 flex-1">
+                      <p className="text-[10px] text-muted-foreground uppercase font-bold">Calories</p>
+                      <p className={`text-sm font-black ${mealPlan.constraints_met.calories_within_10_percent ? "text-green-500" : "text-amber-500"}`}>{mealPlan.total_calories}</p>
+                    </div>
+                    <div className="bg-background/50 backdrop-blur-sm px-3 py-2 rounded-xl border border-border/50 flex-1">
+                      <p className="text-[10px] text-muted-foreground uppercase font-bold">Price</p>
+                      <p className={`text-sm font-black ${mealPlan.constraints_met.within_budget ? "text-green-500" : "text-red-500"}`}>₹{mealPlan.total_price}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-2 group relative z-20">
+                     <Button 
+                       size="sm"
+                       onClick={handleGeneratePlan}
+                       disabled={isGeneratingPlan}
+                       className="bg-primary/20 text-primary hover:bg-primary hover:text-primary-foreground text-[10px] uppercase font-black tracking-widest h-8"
+                     >
+                        {isGeneratingPlan ? "..." : "Re-Roll Plan"}
+                     </Button>
+                  </div>
+                </>
+              )}
 
               {settings?.cycle_tracking_enabled && (
                 <div className="flex items-center gap-2 bg-pink-500/10 text-pink-500 px-3 py-1.5 rounded-lg border border-pink-500/20 mt-2">
@@ -347,11 +431,6 @@ const Index = () => {
                    <span className="text-[10px] font-bold uppercase tracking-wider">Follicular Phase: Increase complex carbs</span>
                 </div>
               )}
-
-              <div className="flex items-center gap-2 bg-amber-500/10 text-amber-500 px-3 py-1.5 rounded-lg border border-amber-500/20 mt-1">
-                 <AlertCircle className="h-3 w-3" />
-                 <span className="text-[10px] font-bold uppercase tracking-wider">Warning: High sodium content detected</span>
-              </div>
             </div>
           </div>
         </div>
@@ -414,7 +493,7 @@ const Index = () => {
             </div>
           ) : (
             Object.entries(
-              entries.reduce((acc: Record<string, typeof entries>, e) => {
+              entries.reduce<Record<string, typeof entries>>((acc, e) => {
                 (acc[e.meal_type] = acc[e.meal_type] || []).push(e);
                 return acc;
               }, {})

@@ -4,7 +4,7 @@ import { Skeleton as BoneyardSkeleton } from "boneyard-js/react";
 
 import { useFoods, Food } from "@/hooks/useFoods";
 import { useSettings } from "@/hooks/useSettings";
-import { generateMealPlan, UserProfile, MenuItem as MealMenuItem } from "@/lib/mealPlanner";
+import { generateMealPlan, UserProfile, MenuItem as MealMenuItem, MenuItem, MealPlanResult } from "@/lib/mealPlanner";
 import { useDailyLog } from "@/hooks/useDailyLog";
 import { useMealEntries } from "@/hooks/useMealEntries";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, ChevronRight, Sunrise, Sun, Moon, Coffee, Search, Trash2, Wand2, ChefHat, ArrowLeft } from "lucide-react";
+import { Plus, ChevronRight, Sunrise, Sun, Moon, Coffee, Search, Trash2, Wand2, ChefHat, ArrowLeft, Sparkles, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Category = "All" | "Fruits" | "Drinks" | "Snacks" | "Meals";
@@ -75,7 +75,7 @@ const CafeMenu = () => {
   const [isPlanning, setIsPlanning] = useState(false);
   const [planMealType, setPlanMealType] = useState("lunch");
 
-  const { isGuest } = useAuth();
+  const { isGuest, user } = useAuth();
   const [showGuestPrompt, setShowGuestPrompt] = useState(false);
   const [loggingFood, setLoggingFood] = useState<Food | null>(null);
   const [logForm, setLogForm] = useState({ quantity: "1", mealType: "breakfast" });
@@ -126,6 +126,9 @@ const CafeMenu = () => {
   const cartItemsCount = useMemo(() => 
     Object.values(cart).reduce((sum, item) => sum + item.quantity, 0),
   [cart]);
+
+  const [mealPlan, setMealPlan] = useState<MealPlanResult | null>(null);
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("diet_preference", isVegOnly ? "veg" : "non-veg");
@@ -334,6 +337,54 @@ const CafeMenu = () => {
     return (selectedSource === "preset" ? MOCK_FOODS : foods).find(f => f.id === editId) || null;
   }, [editId, selectedSource, foods]);
 
+  const handleGenerateAICombo = async () => {
+    setIsGeneratingPlan(true);
+    try {
+      if (!settings || !user) {
+        toast({ title: "Profile Required", description: "Please complete your profile to use AI recommendations." });
+        return;
+      }
+      
+      const userProfile: UserProfile = {
+        age: Number(settings.age) || 20,
+        weight: Number(settings.weight_kg) || 70,
+        height: Number(settings.height_cm) || 170,
+        gender: (settings as any).gender === "female" ? "female" : "male",
+        goal: ((settings as any).goal as any) || "bulk",
+        activity_level: Number((settings as any).activity_level) as any || 1.375,
+        budget: (Number((settings as any).monthly_budget) || 5000) / 30, // daily budget
+      };
+      
+      const menuItems: MenuItem[] = filtered.map((f) => ({
+        id: f.id,
+        name: f.name,
+        calories: Number(f.calories) || 0,
+        protein: Number(f.protein) || 0,
+        carbs: Number(f.carbs) || 0,
+        fats: Number(f.fats) || 0,
+        price: Math.max(10, Math.round((Number(f.calories) / 15) + (Number(f.protein) * 1.5))),
+        category: f.category,
+      }));
+
+      const res = await fetch("http://localhost:5001/api/recommend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_profile: userProfile, menu_items: menuItems })
+      });
+
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+      
+      const plan = await res.json();
+      setMealPlan(plan);
+    } catch (err) {
+      console.error("Plan Generation Error", err);
+      toast({ title: "ML Service Error", description: "Could not generate meal plan.", variant: "destructive" });
+    } finally {
+      setIsGeneratingPlan(false);
+    }
+  };
   const canDelete = editId && currentFood && currentFood.source !== "preset";
 
   return (
@@ -351,6 +402,16 @@ const CafeMenu = () => {
             >
               <Wand2 className="h-4 w-4" />
             </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleGenerateAICombo}
+              disabled={isGeneratingPlan || filtered.length === 0}
+              className="h-9 px-3 rounded-xl border-primary/30 bg-primary/10 text-primary shadow-sm hover:bg-primary hover:text-primary-foreground transition-all"
+            >
+              <Sparkles className="h-4 w-4 mr-2" />
+              {isGeneratingPlan ? "ANALYZING..." : "AI COMBO"}
+            </Button>
             {selectedSource !== "preset" && (
               <Button
                 size="icon"
@@ -363,6 +424,49 @@ const CafeMenu = () => {
             )}
           </div>
         </div>
+
+        {/* AI Meal Plan Result UI */}
+        {mealPlan && (
+          <div className="px-1 relative">
+            <div className="bg-gradient-to-br from-primary/20 to-background rounded-2xl p-4 border border-primary/30 relative overflow-hidden shadow-xl shadow-primary/5">
+              <button 
+                onClick={() => setMealPlan(null)} 
+                className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors z-10"
+              >
+                <X className="h-4 w-4" />
+              </button>
+              
+              <div className="flex items-center gap-2 text-primary mb-2">
+                <Sparkles className="h-4 w-4" />
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Suggested Combination</h3>
+              </div>
+              
+              <div className="space-y-1">
+                <h4 className="text-sm font-bold leading-tight">
+                   {mealPlan.selected_food_items.map(i => i.name).join(" + ")}
+                </h4>
+                <p className="text-muted-foreground text-[10px] italic leading-relaxed">
+                   {mealPlan.explanation}
+                </p>
+              </div>
+
+              <div className="flex gap-2 pt-3">
+                <div className="bg-background/60 backdrop-blur-sm px-2 py-1.5 rounded-lg border border-border/50 flex-1">
+                  <p className="text-[9px] text-muted-foreground uppercase font-bold">Protein</p>
+                  <p className={`text-xs font-black ${mealPlan.constraints_met.protein_target_met ? "text-green-500" : "text-amber-500"}`}>{mealPlan.total_protein}g</p>
+                </div>
+                <div className="bg-background/60 backdrop-blur-sm px-2 py-1.5 rounded-lg border border-border/50 flex-1">
+                  <p className="text-[9px] text-muted-foreground uppercase font-bold">Calories</p>
+                  <p className={`text-xs font-black ${mealPlan.constraints_met.calories_within_10_percent ? "text-green-500" : "text-amber-500"}`}>{mealPlan.total_calories}</p>
+                </div>
+                <div className="bg-background/60 backdrop-blur-sm px-2 py-1.5 rounded-lg border border-border/50 flex-1">
+                  <p className="text-[9px] text-muted-foreground uppercase font-bold">Price</p>
+                  <p className={`text-xs font-black ${mealPlan.constraints_met.within_budget ? "text-green-500" : "text-red-500"}`}>₹{mealPlan.total_price}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Source Filter */}
         <div className="flex gap-2 w-full px-1">
