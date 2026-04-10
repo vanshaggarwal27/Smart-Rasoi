@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="public/fitnutt-logo.png" width="200" height="200" alt="FitNutt Logo">
+  <img src="public/nutrisense-logo.png" width="200" height="200" alt="Nutri Sense Logo">
 </p>
 
-<h1 align="center">FitNutt</h1>
+<h1 align="center">Nutri Sense</h1>
 
 <p align="center">
-  <strong>Stop overcomplicating your fitness. Track your fuel and training with precision.</strong>
+  <strong>The ultimate student health and cafeteria portal. Manage your wellness and campus funds in one place.</strong>
 </p>
 
 <p align="center">
-  <a href="https://fitnutt.netlify.app">Launch App</a> •
+  <a href="https://nutrisense.netlify.app">Launch App</a> •
   <a href="#-installation-instructions">Installation</a> •
   <a href="#-features">Features</a>
 </p>
@@ -18,35 +18,35 @@
 
 ## 🚀 Overview
 
-**FitNutt** is a mobile-first Progressive Web App (PWA) designed for serious lifters. Track your macros, meals, and supplements to ensure you're on track for your next PR. No fluff, just gains.
+**Nutri Sense** is a mobile-first student portal designed for the academic ecosystem. Seamlessly track your nutrition, check campus cafeteria menus, and manage your digital health wallet for instant payments.
 
 ## ✨ Features
 
-- 📊 **Macro Tracking**: Detailed breakdown of Proteins, Carbs, and Fats with visual progress.
-- 🥗 **Meal Logging**: Log your nutrition in seconds to stay on top of your fuel.
-- 💊 **Supplement Reminders**: Integrated system to ensure you never miss your creatine or whey.
-- 📈 **Progress Cards**: Generate and share beautiful, social-ready "Story Style" cards of your daily stats.
-- 🔥 **Pump Levels**: Gamified experience that tracks your consistency and levels you up.
+- 🥡 **Cafeteria Integration**: View live menus and place orders directly from the app.
+- 💳 **Student Wallet**: Secure digital wallet for quick cafeteria payments and reward points management.
+- 📊 **Nutrition Tracking**: Detailed breakdown of your daily macros focused on student wellness.
+- 📅 **Academic Planner**: Integrated schedule tracking to manage your classes and meals.
+- 📈 **Scholar Levels**: Gamified experience that tracks your healthy habits and rewards academic consistency.
 
 ## 📲 Installation Instructions
 
-FitNutt is a PWA (Progressive Web App), giving you a native app experience without the app store clutter.
+Nutri Sense is a PWA (Progressive Web App), giving you a native app experience without the app store clutter.
 
 ### **iOS (iPhone/iPad)**
 
-1. Open [fitnutt.netlify.app](https://fitnutt.netlify.app) in **Safari**.
+1. Open [nutrisense.netlify.app](https://nutrisense.netlify.app) in **Safari**.
 2. Tap the **Share** button (square with up arrow) at the bottom.
 3. Scroll down and tap **"Add to Home Screen"**.
 4. Confirm by tapping **Add**.
 
 ### **Android**
 
-1. Open [fitnutt.netlify.app](https://fitnutt.netlify.app) in **Chrome**.
+1. Open [nutrisense.netlify.app](https://nutrisense.netlify.app) in **Chrome**.
 2. Tap the **Menu** (three dots) in the top right.
 3. Tap **"Add to Home screen"** or **"Install app"**.
 4. Confirm the installation.
 
 ---
 
-Built by 🥜
-[fitnutt.netlify.app](https://fitnutt.netlify.app)
+Built for Students 🎓
+[nutrisense.netlify.app](https://nutrisense.netlify.app)

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Skeleton as BoneyardSkeleton } from "boneyard-js/react";
 import { useNavigate } from "react-router-dom";
 import { useSettings, Supplement } from "@/hooks/useSettings";
 import { useAuth } from "@/contexts/AuthContext";
@@ -189,7 +190,8 @@ const Profile = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <BoneyardSkeleton name="profile-screen" loading={isLoading}>
+      <div className="space-y-6">
       <div className="space-y-1">
         <h1 className="text-2xl font-black text-foreground uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
           HEALTH PROFILE
@@ -710,6 +712,7 @@ const Profile = () => {
         <LogOut className="h-4 w-4" /> Sign Out
       </Button>
     </div>
+    </BoneyardSkeleton>
   );
 };
 

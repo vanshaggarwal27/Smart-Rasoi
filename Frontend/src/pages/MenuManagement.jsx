@@ -1,29 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import api from '../utils/api';
+import { supabase } from '../utils/supabase';
 
 const MenuManagement = () => {
   const [menu, setMenu] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ name: '', category: 'Breakfast', price: '', status: 'available', image_url: '' });
+  const [formData, setFormData] = useState({ name: '', category: 'Breakfast', price: '', status: 'available', image_url: '', calories: '', protein: '', carbs: '', fats: '' });
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
     fetchMenu();
   }, []);
 
-  const fetchMenu = () => api.get('/menu').then(res => setMenu(res.data));
+  const fetchMenu = async () => {
+    // Always try Supabase first; only fall back on actual connection error
+    try {
+      const { data, error } = await supabase.from('menu_items').select('*');
+      if (error) throw error;
+      setMenu(data || []);
+      return;
+    } catch (err) {
+      console.warn("Supabase unavailable, falling back to local Node API:", err.message);
+    }
+    // Fallback to local SQLite API
+    api.get('/menu').then(res => setMenu(res.data)).catch(console.error);
+  };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      api.put(`/menu/{editingId}`, formData).then(() => { fetchMenu(); setShowModal(false); });
-    } else {
-      const dataToSave = { 
-        ...formData, 
-        image_url: formData.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60'
-      };
-      api.post('/menu', dataToSave).then(() => { fetchMenu(); setShowModal(false); });
+
+    // Build clean payload — never send 'id' to Supabase on insert
+    const { id: _ignoreId, ...baseData } = formData;
+    const dataToSave = {
+      ...baseData,
+      price: Number(baseData.price) || 0,
+      calories: Number(baseData.calories) || 0,
+      protein: Number(baseData.protein) || 0,
+      carbs: Number(baseData.carbs) || 0,
+      fats: Number(baseData.fats) || 0,
+      image_url: baseData.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60',
+    };
+
+    try {
+      // 1. Sync to Supabase
+      if (editingId) {
+        const { error } = await supabase.from('menu_items').update(dataToSave).eq('id', editingId);
+        if (error) {
+          alert(`Supabase update failed: ${error.message}`);
+          console.error("Supabase update error:", error);
+        }
+      } else {
+        const { error } = await supabase.from('menu_items').insert([dataToSave]);
+        if (error) {
+          alert(`Supabase insert failed: ${error.message}`);
+          console.error("Supabase insert error:", error);
+        }
+      }
+
+      // 2. Also sync to local Node/SQLite API
+      try {
+        if (editingId) {
+          await api.put(`/menu/${editingId}`, dataToSave);
+        } else {
+          await api.post('/menu', dataToSave);
+        }
+      } catch (localErr) {
+        console.warn("Local API sync failed (non-critical):", localErr.message);
+      }
+
+      await fetchMenu();
+      setShowModal(false);
+    } catch (err) {
+      console.error("Save failed:", err);
+      alert(`Save failed: ${err.message}`);
     }
   };
 
@@ -34,14 +84,21 @@ const MenuManagement = () => {
   };
 
   const openAdd = () => {
-    setFormData({ name: '', category: 'Breakfast', price: '', status: 'available', image_url: '' });
+    setFormData({ name: '', category: 'Breakfast', price: '', status: 'available', image_url: '', calories: '', protein: '', carbs: '', fats: '' });
     setEditingId(null);
     setShowModal(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if(window.confirm('Delete this item?')) {
-      api.delete(`/menu/{id}`).then(() => fetchMenu());
+      // 1. Delete from Supabase
+      try {
+         await supabase.from('menu_items').delete().eq('id', id);
+      } catch (err) {
+         console.warn("Could not delete from Supabase");
+      }
+      // 2. Delete from local Node API
+      api.delete(`/menu/${id}`).then(() => fetchMenu());
     }
   };
 
@@ -65,6 +122,7 @@ const MenuManagement = () => {
               <th>Food Name</th>
               <th>Category</th>
               <th>Price</th>
+              <th>Nutrition</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -73,11 +131,17 @@ const MenuManagement = () => {
             {menu.map(item => (
               <tr key={item.id}>
                 <td>
-                  <img src={item.image_url} alt={item.name} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover' }} />
+                  <img src={item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60'} onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60'; }} alt={item.name} style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover' }} />
                 </td>
                 <td style={{ fontWeight: '500' }}>{item.name}</td>
                 <td><span style={{ padding: '0.25rem 0.5rem', background: 'var(--bg-primary)', borderRadius: '12px', fontSize: '0.75rem' }}>{item.category}</span></td>
                 <td>₹{(Number(item.price)).toFixed(2)}</td>
+                <td>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-color)' }}>
+                    <strong>{item.calories || 0}</strong> kcal<br/>
+                    <span className="text-muted">P:{item.protein || 0}g C:{item.carbs || 0}g F:{item.fats || 0}g</span>
+                  </div>
+                </td>
                 <td>
                   <span style={{ 
                     color: item.status === 'available' ? 'var(--success)' : 'var(--danger)',
@@ -134,6 +198,25 @@ const MenuManagement = () => {
                 <div>
                   <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Image URL (optional)</label>
                   <input type="text" placeholder="https://..." value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginTop: '1rem' }}>
+                <div>
+                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Calories</label>
+                  <input type="number" required value={formData.calories} onChange={e => setFormData({...formData, calories: Number(e.target.value)})} />
+                </div>
+                <div>
+                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Protein (g)</label>
+                  <input type="number" required value={formData.protein} onChange={e => setFormData({...formData, protein: Number(e.target.value)})} />
+                </div>
+                <div>
+                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Carbs (g)</label>
+                  <input type="number" required value={formData.carbs} onChange={e => setFormData({...formData, carbs: Number(e.target.value)})} />
+                </div>
+                <div>
+                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Fats (g)</label>
+                  <input type="number" required value={formData.fats} onChange={e => setFormData({...formData, fats: Number(e.target.value)})} />
                 </div>
               </div>
 

@@ -13,6 +13,7 @@ export interface Food {
   fats: number;
   category: string;
   is_veg: boolean;
+  price?: number;
   source: "user" | "preset" | "barcode";
   barcode?: string | null;
   user_id?: string | null;

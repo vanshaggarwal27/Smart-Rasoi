@@ -14,18 +14,18 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: "autoUpdate",
       devOptions: { enabled: false },
-      includeAssets: ["fitnutt-logo.png"],
+      includeAssets: ["nutrisense-logo.png"],
       manifest: {
-        name: "FitNutt — Fitness Tracker",
-        short_name: "FitNutt",
-        description: "Track your macros, meals and supplements for a successful cut or bulk. Mobile-first PWA built for gains.",
+        name: "Nutri Sense — Student Health & Wallet",
+        short_name: "Nutri Sense",
+        description: "Your student health and cafeteria wallet portal. Track nutrition, check menus, and manage your campus funds.",
         theme_color: "#EA5C1F",
         background_color: "#F5F5F5",
         display: "standalone",
         start_url: "/",
         icons: [
-          { src: "/fitnutt-logo.png", sizes: "192x192", type: "image/png" },
-          { src: "/fitnutt-logo.png", sizes: "512x512", type: "image/png" },
+          { src: "/nutrisense-logo.png", sizes: "192x192", type: "image/png" },
+          { src: "/nutrisense-logo.png", sizes: "512x512", type: "image/png" },
         ],
       },
       workbox: {

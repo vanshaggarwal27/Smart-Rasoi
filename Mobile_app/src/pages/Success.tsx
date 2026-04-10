@@ -1,14 +1,22 @@
-import { useNavigationType, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Home, Receipt, Wallet } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
+import { Skeleton as BoneyardSkeleton } from 'boneyard-js/react';
 
 const Success = () => {
   const navigate = useNavigate();
-  const { settings } = useSettings();
+  const { settings, isLoading } = useSettings();
+
+  useEffect(() => {
+    // Clear pending cart upon successful payment
+    localStorage.removeItem("stitch_pending_cart");
+  }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-8 animate-in fade-in duration-500">
+    <BoneyardSkeleton name="payment-success-screen" loading={isLoading}>
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 space-y-8 animate-in fade-in duration-500">
       <div className="relative">
         <div className="absolute inset-0 bg-green-500/20 blur-3xl rounded-full" />
         <div className="relative w-24 h-24 bg-green-500 rounded-full flex items-center justify-center shadow-2xl shadow-green-500/40">
@@ -65,6 +73,7 @@ const Success = () => {
         </Button>
       </div>
     </div>
+    </BoneyardSkeleton>
   );
 };
 

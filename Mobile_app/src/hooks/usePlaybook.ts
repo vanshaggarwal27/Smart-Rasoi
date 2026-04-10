@@ -54,7 +54,7 @@ const DEFAULT_SCHEDULE: PlaybookSchedule = {
   Sunday: { title: "Recovery", exercises: [{ name: "Total Rest", sets: "—" }] },
 };
 
-const STORAGE_KEY = "fitnutt_playbook";
+const STORAGE_KEY = "nutri_sense_academic_plan";
 
 const load = (): PlaybookSchedule => {
   try {
@@ -103,5 +103,7 @@ export const usePlaybook = () => {
     setSchedule(DEFAULT_SCHEDULE);
   }, []);
 
-  return { schedule, updateDayTitle, addExercise, updateExercise, deleteExercise, resetToDefault };
+  const [isLoading, setIsLoading] = useState(false);
+
+  return { schedule, isLoading, updateDayTitle, addExercise, updateExercise, deleteExercise, resetToDefault };
 };

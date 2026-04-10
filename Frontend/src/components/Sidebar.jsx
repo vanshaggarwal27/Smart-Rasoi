@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, UtensilsCrossed, ShoppingBag, Users, LineChart, MessageSquare, Settings, Trash2 } from 'lucide-react';
+import { LayoutDashboard, UtensilsCrossed, ShoppingBag, Users, LineChart, MessageSquare, Settings, Trash2, ClipboardList } from 'lucide-react';
 
 const Sidebar = () => {
   return (
@@ -13,6 +13,10 @@ const Sidebar = () => {
         <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end>
           <LayoutDashboard size={20} />
           Dashboard
+        </NavLink>
+        <NavLink to="/orders" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+          <ClipboardList size={20} />
+          Order Tracking
         </NavLink>
         <NavLink to="/menu" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
           <UtensilsCrossed size={20} />

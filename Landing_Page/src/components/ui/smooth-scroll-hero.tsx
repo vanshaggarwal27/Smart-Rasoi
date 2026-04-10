@@ -16,12 +16,12 @@ export interface ISmoothScrollHeroProps {
 	scrollHeight?: number;
 	/**
 	 * Background image URL for desktop view
-	 * @default "https://images.unsplash.com/photo-1511884642898-4c92249e20b6"
+	 * @default "https://unsplash.com/photos/bowl-of-vegetable-salads-IGfIGP5ONV0"
 	 */
 	desktopImage?: string;
 	/**
 	 * Background image URL for mobile view
-	 * @default "https://images.unsplash.com/photo-1511207538754-e8555f2bc187?q=80&w=2412&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+	 * @default "https://unsplash.com/photos/bowl-of-vegetable-salads-IGfIGP5ONV0"
 	 */
 	mobileImage?: string;
 	/**
@@ -36,7 +36,7 @@ export interface ISmoothScrollHeroProps {
 	finalClipPercentage?: number;
 }
 
-interface ISmoothScrollHeroBackgroundProps extends Required<ISmoothScrollHeroProps> {}
+interface ISmoothScrollHeroBackgroundProps extends Required<ISmoothScrollHeroProps> { }
 
 const SmoothScrollHeroBackground: React.FC<ISmoothScrollHeroBackgroundProps> = ({
 	scrollHeight,
@@ -68,7 +68,7 @@ const SmoothScrollHeroBackground: React.FC<ISmoothScrollHeroBackgroundProps> = (
 
 	return (
 		<motion.div
-			className="sticky top-0 h-screen w-full bg-black z-0"
+			className="sticky top-0 h-screen w-full bg-beige z-0"
 			style={{
 				clipPath,
 				willChange: "transform, opacity",
@@ -122,24 +122,28 @@ export const SmoothScrollHero: React.FC<ISmoothScrollHeroProps> = ({
 				initialClipPercentage={initialClipPercentage}
 				finalClipPercentage={finalClipPercentage}
 			/>
-            
-            {/* Overlay UI components can go here inside the scrolling Hero container */}
-            <div className="absolute inset-0 z-10 pointer-events-none flex flex-col items-center justify-center">
-                <h1 className="text-4xl md:text-7xl font-bold text-white text-center drop-shadow-lg tracking-tight">
-                    Eat Smarter, <br/><span className="text-green-400">Not Faster</span>
-                </h1>
-                <p className="mt-6 text-lg md:text-xl text-gray-200 drop-shadow-md text-center max-w-2xl px-4">
-                    Your AI-powered cafeteria system that understands your health, habits, and goals.
-                </p>
-                <div className="mt-8 flex gap-4 pointer-events-auto">
-                    <button className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all shadow-lg">
-                        Login to System
-                    </button>
-                    <button className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 rounded-lg font-medium transition-all shadow-lg">
-                        Create Account
-                    </button>
-                </div>
-            </div>
+
+			{/* Overlay UI components can go here inside the scrolling Hero container */}
+			<div className="absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center">
+				<h1 className="text-5xl md:text-8xl font-black text-black text-center tracking-tight" style={{ 
+					textShadow: '0 4px 12px rgba(255,255,255,0.9), 0 0 40px rgba(255,255,255,1), 0 0 80px rgba(255,255,255,1)' 
+				}}>
+					Eat Smarter, <br /><span className="text-moss">Not Faster</span>
+				</h1>
+				<p className="mt-6 text-lg md:text-2xl text-black font-semibold text-center max-w-2xl px-4" style={{ 
+					textShadow: '0 2px 8px rgba(255,255,255,1), 0 0 20px rgba(255,255,255,0.9)' 
+				}}>
+					Your AI-powered cafeteria system that understands your health, habits, and goals.
+				</p>
+				<div className="mt-8 flex gap-4 pointer-events-auto">
+					<button className="px-8 py-4 bg-moss hover:bg-moss-hover text-midnight-darkest rounded-full font-bold transition-all shadow-lg text-lg">
+						Login to System
+					</button>
+					<button className="px-8 py-4 bg-midnight/60 hover:bg-midnight/80 backdrop-blur-md text-beige border border-white/20 rounded-full font-bold transition-all shadow-lg text-lg">
+						Create Account
+					</button>
+				</div>
+			</div>
 		</div>
 	);
 };

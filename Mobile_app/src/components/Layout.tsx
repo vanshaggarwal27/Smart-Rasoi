@@ -14,6 +14,7 @@ import {
   Image as ImageIcon,
   Loader2,
   ChevronRight,
+  Camera,
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { AnimatedLogo } from "./AnimatedLogo";
@@ -297,7 +298,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   };
 
   const handleInviteFriends = () => {
-    const text = `Join the Campus Health Portal. Track your nutrition, check the cafe menu, and unlock student perks. 🎓
+    const text = `Join the Nutrisense Student Portal. Track your nutrition, check the cafe menu, and unlock student perks. 🎓
  
 Join the community: https://fitnutt.netlify.app
  
@@ -389,7 +390,7 @@ Android - Browser Menu > Add to Homescreen > Install`;
               className="font-bold text-lg text-foreground uppercase tracking-tight"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              Student Portal
+              Nutrisense
             </span>
           </div>
           <button
@@ -476,7 +477,7 @@ Android - Browser Menu > Add to Homescreen > Install`;
                 onClick={() => setEasterEggMessage(null)}
                 className="w-full h-12 rounded-2xl font-black uppercase tracking-widest text-sm shadow-lg shadow-primary/20"
               >
-                LIGHT WEIGHT BABY! 🦾
+                ACADEMIC EXCELLENCE! 🎓
               </Button>
             </div>
           </div>
@@ -564,14 +565,14 @@ Android - Browser Menu > Add to Homescreen > Install`;
             );
           })}
 
-          {/* Centre Scan Button */}
+          {/* Centre AI Vision Button */}
           <button
-            onClick={() => navigate("/scan")}
+            onClick={() => navigate("/vision-scan")}
             className="flex flex-col items-center justify-end pb-1 relative z-20"
-            aria-label="Scan Barcode"
+            aria-label="AI Vision Scan"
           >
             <div className="-mt-5 flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/40 transition-all active:scale-95 hover:brightness-110">
-              <ScanBarcode className="h-6 w-6" />
+              <Camera className="h-6 w-6" />
             </div>
           </button>
 

@@ -18,6 +18,26 @@ module.exports = {
     },
     extend: {
       colors: {
+        moss: {
+          DEFAULT: '#839958',
+          hover: '#6a7d45',
+        },
+        beige: {
+          DEFAULT: '#F7F4D5',
+          dark: '#e3dfbd',
+        },
+        rosy: {
+          DEFAULT: '#D3968C',
+          hover: '#b57b72',
+        },
+        midnight: {
+          DEFAULT: '#105666',
+          darker: '#0b3944',
+          darkest: '#062026',
+        },
+        forest: {
+          DEFAULT: '#0A3323',
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

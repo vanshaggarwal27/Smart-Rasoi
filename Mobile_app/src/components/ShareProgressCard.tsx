@@ -82,7 +82,7 @@ export const ShareProgressCard = forwardRef<HTMLDivElement, ShareProgressCardPro
             <img src={logoUrl || "/fitnutt-logo.png"} alt="Logo" className="h-[100px] w-auto shadow-2xl flex-shrink-0" />
             <div className="space-y-2 min-w-0">
               <h1 className="text-7xl font-black italic tracking-tighter text-white whitespace-nowrap">
-                FIT<span className="text-primary">NUTT</span>
+                NUTRI<span className="text-primary">SENSE</span>
               </h1>
               <p className="text-2xl font-black uppercase tracking-[0.4em] text-white/40 whitespace-nowrap">{today}</p>
             </div>
@@ -114,7 +114,7 @@ export const ShareProgressCard = forwardRef<HTMLDivElement, ShareProgressCardPro
             </div>
             <div className="space-y-2">
               <h2 className="text-5xl font-black text-white uppercase italic">{rank}</h2>
-              <p className="text-2xl font-bold text-white/40 uppercase tracking-[0.3em]">Pump Level {pumpLevel}</p>
+              <p className="text-2xl font-bold text-white/40 uppercase tracking-[0.3em]">Scholar Level {pumpLevel}</p>
             </div>
           </div>
           <div className="flex flex-col items-end gap-2">
@@ -128,7 +128,7 @@ export const ShareProgressCard = forwardRef<HTMLDivElement, ShareProgressCardPro
 
         {/* Footer */}
         <div className="text-center z-10 opacity-30">
-          <p className="text-2xl font-black uppercase tracking-[0.8em] text-white">FITNUTT.NETLIFY.APP</p>
+          <p className="text-2xl font-black uppercase tracking-[0.8em] text-white">NUTRISENSE.APP</p>
         </div>
       </div>
     );

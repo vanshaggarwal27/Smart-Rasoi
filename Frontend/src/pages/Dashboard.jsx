@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [data, setData] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -21,12 +22,13 @@ const Dashboard = () => {
       setLoading(false);
     }).catch(err => {
       console.error("Error fetching overview", err);
+      setErrorMsg(err.message || 'Unknown error');
       setLoading(false);
     });
   }, []);
 
   if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>;
-  if (!data) return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--danger)' }}>Failed to load data</div>;
+  if (!data) return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--danger)' }}>Failed to load data: {errorMsg}</div>;
 
   const popularPie = data.popularItems.slice(0, 3).map((item) => ({ name: item.name, value: item.sold }));
   
@@ -137,7 +139,7 @@ const Dashboard = () => {
                       </div>
                    </div>
                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-                      <img src={item.image_url} alt={item.name} style={{ width: '120px', height: '100px', objectFit: 'cover', borderRadius: '12px' }} />
+                      <img src={item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60'} onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60'; }} alt={item.name} style={{ width: '120px', height: '100px', objectFit: 'cover', borderRadius: '12px' }} />
                    </div>
                    <h4 style={{ fontSize: '0.875rem', marginBottom: '0.5rem', minHeight: '40px' }}>{item.name}</h4>
                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -192,7 +194,7 @@ const Dashboard = () => {
              {data.popularItems.slice(0, 4).map((item, idx) => (
                <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <img src={item.image_url} alt="" style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover' }} />
+                    <img src={item.image_url || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60'} onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60'; }} alt="" style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover' }} />
                     <div>
                       <div style={{ fontWeight: '600', fontSize: '0.875rem' }}>{item.name}</div>
                       <div className="text-muted" style={{ fontSize: '0.75rem' }}>₹{Number(item.price).toFixed(2)} · {item.sold}x Orders</div>

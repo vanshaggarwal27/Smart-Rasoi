@@ -59,7 +59,7 @@ async function createJwt(audience: string, privateKey: CryptoKey): Promise<strin
   const payload = {
     aud: audience,
     exp: now + 86400,
-    sub: "mailto:noreply@fitnutt.netlify.app",
+    sub: "mailto:noreply@nutrisense.netlify.app",
   };
 
   const enc = new TextEncoder();
@@ -201,9 +201,9 @@ Deno.serve(async (req) => {
     for (const user of usersToNotify) {
       const userSubs = subs.filter((s: any) => s.user_id === user.user_id);
       const body = JSON.stringify({
-        title: "FitNutt Supplement Reminder",
+        title: "Nutri Sense Reminder",
         body: user.messages.join(" "),
-        icon: "/fitnutt-logo.png",
+        icon: "/nutrisense-logo.png",
         url: "/",
       });
 

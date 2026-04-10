@@ -18,7 +18,7 @@ export const useTheme = () => useContext(ThemeContext);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
-    const saved = localStorage.getItem("fitnutt-theme");
+    const saved = localStorage.getItem("portal-theme");
     return (saved === "dark" ? "dark" : "light") as Theme;
   });
 
@@ -29,7 +29,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     } else {
       root.classList.remove("dark");
     }
-    localStorage.setItem("fitnutt-theme", theme);
+    localStorage.setItem("portal-theme", theme);
   }, [theme]);
 
   const toggleTheme = () => setThemeState((t) => (t === "light" ? "dark" : "light"));

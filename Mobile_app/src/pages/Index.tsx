@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { Skeleton as BoneyardSkeleton } from "boneyard-js/react";
 import { useDate } from "@/contexts/DateContext";
 import { TutorialFlow } from "@/components/TutorialFlow";
 import { useDailyLog } from "@/hooks/useDailyLog";
@@ -165,13 +166,15 @@ const Index = () => {
 
   if (logLoading || settingsLoading) {
     return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48" />
-        <div className="flex justify-around">
-          {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-20 w-20 rounded-full" />)}
+      <BoneyardSkeleton name="home-screen" loading={true}>
+        <div className="space-y-6">
+          <Skeleton className="h-8 w-48" />
+          <div className="flex justify-around">
+            {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-20 w-20 rounded-full" />)}
+          </div>
+          <Skeleton className="h-24 w-full rounded-xl" />
         </div>
-        <Skeleton className="h-24 w-full rounded-xl" />
-      </div>
+      </BoneyardSkeleton>
     );
   }
 
@@ -189,7 +192,8 @@ const Index = () => {
     .sort((a, b) => (b.amount || 0) - (a.amount || 0));
 
   return (
-    <div className="space-y-6">
+    <BoneyardSkeleton name="home-screen" loading={logLoading || settingsLoading}>
+      <div className="space-y-6">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-1">
             <Button
@@ -488,9 +492,10 @@ const Index = () => {
                 Copy to {currentDate === todayStr() ? "Today" : currentDate}
               </Button>
             </div>
-          </DialogContent>
-        </Dialog>
-    </div>
+            </DialogContent>
+          </Dialog>
+      </div>
+    </BoneyardSkeleton>
   );
 };
 
