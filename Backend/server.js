@@ -1,246 +1,169 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { createClient } = require('@supabase/supabase-js');
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error("Missing Supabase credentials in .env");
-  process.exit(1);
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-console.log('Connected to Supabase PostgreSQL Database.');
+const dbPath = path.resolve(__dirname, 'cafeteria.db');
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) console.error('Database connection error:', err);
+  else console.log('Connected to SQLite database.');
+});
 
 // --- API Endpoints ---
 
 // Dashboard Overview
-app.get('/api/dashboard/overview', async (req, res) => {
-  try {
-    const today = new Date().toISOString().split('T')[0];
+app.get('/api/dashboard/overview', (req, res) => {
+  const todayDate = new Date().toISOString().split('T')[0];
 
-    // Fetch transactions with menu_items join
-    const { data: txns, error: txnsError } = await supabase
-      .from('transactions')
-      .select('quantity, timestamp, menu_items(name, image_url, price)');
+  const queries = {
+    totalMealsToday: `SELECT SUM(quantity) as count FROM transactions WHERE date(timestamp) = ? OR date(timestamp) = date('now')`,
+    totalTransactions: `SELECT COUNT(*) as count FROM transactions`,
+    wasteToday: `SELECT SUM(quantity_wasted) as count FROM food_waste WHERE date = ? OR date = date('now')`,
+    popularItems: `
+      SELECT m.name, m.image_url, m.price, SUM(t.quantity) as sold 
+      FROM transactions t 
+      JOIN menu_items m ON t.item_id = m.id 
+      GROUP BY t.item_id ORDER BY sold DESC LIMIT 5
+    `,
+    dailyConsumption: `
+      SELECT date(timestamp) as date, SUM(quantity) as meals 
+      FROM transactions 
+      GROUP BY date(timestamp) ORDER BY date ASC LIMIT 7
+    `,
+    wasteByCategory: `
+      SELECT m.category, SUM(f.quantity_wasted) as waste 
+      FROM food_waste f
+      JOIN menu_items m ON f.item_id = m.id
+      GROUP BY m.category
+    `
+  };
 
-    if (txnsError) throw txnsError;
+  let results = {
+    totalMealsToday: 0,
+    totalTransactions: 0,
+    wasteToday: 0,
+    popularItems: [],
+    dailyConsumption: [],
+    wasteByCategory: []
+  };
 
-    // Fetch food waste with menu_items join
-    const { data: waste, error: wasteError } = await supabase
-      .from('food_waste')
-      .select('quantity_wasted, date, menu_items(category)');
-
-    if (wasteError) throw wasteError;
-
-    // 1. totalTransactions
-    const totalTransactions = txns.length;
-
-    // 2. totalMealsToday
-    let totalMealsToday = 0;
-    txns.forEach(t => {
-      const tDate = t.timestamp.split('T')[0];
-      if (tDate === today) totalMealsToday += t.quantity;
+  db.get(queries.totalMealsToday, [todayDate], (err, row) => {
+    if (row && row.count) results.totalMealsToday = row.count;
+    db.get(queries.totalTransactions, [], (err, row) => {
+      if (row && row.count) results.totalTransactions = row.count;
+      db.get(queries.wasteToday, [todayDate], (err, row) => {
+        if (row && row.count) results.wasteToday = row.count;
+        db.all(queries.popularItems, [], (err, rows) => {
+          if (rows) results.popularItems = rows;
+          db.all(queries.dailyConsumption, [], (err, rows) => {
+            if (rows) results.dailyConsumption = rows;
+            db.all(queries.wasteByCategory, [], (err, rows) => {
+              if (rows) results.wasteByCategory = rows;
+              res.json(results);
+            });
+          });
+        });
+      });
     });
-
-    // 3. wasteToday
-    let wasteToday = 0;
-    waste.forEach(w => {
-      if (w.date === today) wasteToday += w.quantity_wasted;
-    });
-
-    // 4. popularItems
-    const itemSales = {};
-    txns.forEach(t => {
-      if (t.menu_items) {
-        const name = t.menu_items.name;
-        if (!itemSales[name]) {
-          itemSales[name] = { name, image_url: t.menu_items.image_url, price: Number(t.menu_items.price), sold: 0 };
-        }
-        itemSales[name].sold += t.quantity;
-      }
-    });
-    const popularItems = Object.values(itemSales).sort((a, b) => b.sold - a.sold).slice(0, 5);
-
-    // 5. dailyConsumption (last 7 days)
-    const consumptionMap = {};
-    const d = new Date();
-    d.setDate(d.getDate() - 6);
-    const startDate = d.toISOString().split('T')[0];
-
-    txns.forEach(t => {
-      const tDate = t.timestamp.split('T')[0];
-      if (tDate >= startDate) {
-        consumptionMap[tDate] = (consumptionMap[tDate] || 0) + t.quantity;
-      }
-    });
-    // Ensure all 7 days exist
-    const dailyConsumption = [];
-    for (let c = new Date(d); c <= new Date(); c.setDate(c.getDate() + 1)) {
-        const dt = c.toISOString().split('T')[0];
-        dailyConsumption.push({ date: dt.slice(5), meals: consumptionMap[dt] || 0 });
-    }
-
-    // 6. wasteByCategory
-    const wasteCatMap = {};
-    waste.forEach(w => {
-      if (w.menu_items) {
-        const cat = w.menu_items.category;
-        wasteCatMap[cat] = (wasteCatMap[cat] || 0) + w.quantity_wasted;
-      }
-    });
-    const wasteByCategory = Object.keys(wasteCatMap).map(k => ({ category: k, waste: wasteCatMap[k] }));
-
-    res.json({
-      totalMealsToday,
-      totalTransactions,
-      wasteToday,
-      popularItems,
-      dailyConsumption,
-      wasteByCategory
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
-  }
+  });
 });
 
 // Menu Management
-app.get('/api/menu', async (req, res) => {
-  const { data, error } = await supabase.from('menu_items').select('*').order('id', { ascending: true });
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+app.get('/api/menu', (req, res) => {
+  db.all(`SELECT * FROM menu_items`, (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
 });
 
-app.post('/api/menu', async (req, res) => {
-  const { name, category, price, status, image_url } = req.body;
-  const { data, error } = await supabase
-    .from('menu_items')
-    .insert([{ name, category, price, status, image_url }])
-    .select();
-    
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data[0]);
+app.post('/api/menu', (req, res) => {
+  const { name, category, price, status, image_url, calories, protein, carbs, fats } = req.body;
+  db.run(`INSERT INTO menu_items (name, category, price, status, image_url, calories, protein, carbs, fats) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+    [name, category, price, status, image_url, calories || 0, protein || 0, carbs || 0, fats || 0], function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ id: this.lastID, name, category, price, status, image_url, calories, protein, carbs, fats });
+  });
 });
 
-app.put('/api/menu/:id', async (req, res) => {
-  const { name, category, price, status, image_url } = req.body;
-  const { error } = await supabase
-    .from('menu_items')
-    .update({ name, category, price, status, image_url })
-    .eq('id', req.params.id);
-
-  if (error) return res.status(500).json({ error: error.message });
-  res.json({ success: true });
+app.put('/api/menu/:id', (req, res) => {
+  const { name, category, price, status, image_url, calories, protein, carbs, fats } = req.body;
+  db.run(`UPDATE menu_items SET name=?, category=?, price=?, status=?, image_url=?, calories=?, protein=?, carbs=?, fats=? WHERE id=?`, 
+    [name, category, price, status, image_url, calories || 0, protein || 0, carbs || 0, fats || 0, req.params.id], function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ success: true });
+  });
 });
 
-app.delete('/api/menu/:id', async (req, res) => {
-  const { error } = await supabase.from('menu_items').delete().eq('id', req.params.id);
-  if (error) return res.status(500).json({ error: error.message });
-  res.json({ success: true });
+app.delete('/api/menu/:id', (req, res) => {
+  db.run(`DELETE FROM menu_items WHERE id=?`, [req.params.id], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ success: true });
+  });
 });
 
 // Consumption Tracking (Transactions)
-app.get('/api/transactions', async (req, res) => {
-  const { data, error } = await supabase
-    .from('transactions')
-    .select('id, student_id, quantity, total_price, meal_category, timestamp, menu_items(name)')
-    .order('timestamp', { ascending: false });
-
-  if (error) return res.status(500).json({ error: error.message });
-  
-  // Flatten response
-  const formatted = data.map(t => ({
-    id: t.id,
-    student_id: t.student_id,
-    quantity: t.quantity,
-    total_price: t.total_price,
-    meal_category: t.meal_category,
-    timestamp: t.timestamp,
-    food_item: t.menu_items ? t.menu_items.name : 'Unknown'
-  }));
-  res.json(formatted);
+app.get('/api/transactions', (req, res) => {
+  db.all(`
+    SELECT t.id, t.student_id, m.name as food_item, t.quantity, t.total_price, t.meal_category, t.timestamp
+    FROM transactions t
+    JOIN menu_items m ON t.item_id = m.id
+    ORDER BY t.timestamp DESC
+  `, (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
 });
 
-app.get('/api/consumption/analytics', async (req, res) => {
-  try {
-    const { data: txns, error } = await supabase
-      .from('transactions')
-      .select('quantity, meal_category, menu_items(name)');
-      
-    if (error) throw error;
-
-    // Pie Data
-    const pieMap = {};
-    txns.forEach(t => {
-      pieMap[t.meal_category] = (pieMap[t.meal_category] || 0) + t.quantity;
+app.get('/api/consumption/analytics', (req, res) => {
+  db.all(`
+    SELECT meal_category as name, SUM(quantity) as value
+    FROM transactions
+    GROUP BY meal_category
+  `, (err, pieData) => {
+    if (err) return res.status(500).json({ error: err.message });
+    db.all(`
+      SELECT m.name, SUM(t.quantity) as sold
+      FROM transactions t
+      JOIN menu_items m ON t.item_id = m.id
+      GROUP BY t.item_id ORDER BY sold DESC LIMIT 10
+    `, (err, barData) => {
+      res.json({ pieData, barData });
     });
-    const pieData = Object.keys(pieMap).map(k => ({ name: k, value: pieMap[k] }));
-
-    // Bar Data (Top 10)
-    const barMap = {};
-    txns.forEach(t => {
-      if (t.menu_items) {
-        const name = t.menu_items.name;
-        barMap[name] = (barMap[name] || 0) + t.quantity;
-      }
-    });
-    const barData = Object.keys(barMap)
-      .map(k => ({ name: k, sold: barMap[k] }))
-      .sort((a, b) => b.sold - a.sold)
-      .slice(0, 10);
-
-    res.json({ pieData, barData });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  });
 });
 
 // Food Waste Tracking
-app.get('/api/waste', async (req, res) => {
-  const { data, error } = await supabase
-    .from('food_waste')
-    .select('id, quantity_prepared, quantity_sold, quantity_wasted, reason, date, menu_items(name)')
-    .order('date', { ascending: false });
-
-  if (error) return res.status(500).json({ error: error.message });
-  
-  const formatted = data.map(w => ({
-    id: w.id,
-    quantity_prepared: w.quantity_prepared,
-    quantity_sold: w.quantity_sold,
-    quantity_wasted: w.quantity_wasted,
-    reason: w.reason,
-    date: w.date,
-    food_item: w.menu_items ? w.menu_items.name : 'Unknown'
-  }));
-  res.json(formatted);
+app.get('/api/waste', (req, res) => {
+  db.all(`
+    SELECT w.id, m.name as food_item, w.quantity_prepared, w.quantity_sold, w.quantity_wasted, w.reason, w.date
+    FROM food_waste w
+    JOIN menu_items m ON w.item_id = m.id
+    ORDER BY w.date DESC
+  `, (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
 });
 
-app.post('/api/waste', async (req, res) => {
+app.post('/api/waste', (req, res) => {
   const { item_id, quantity_prepared, quantity_sold, quantity_wasted, reason, date } = req.body;
-  const { data, error } = await supabase
-    .from('food_waste')
-    .insert([{ item_id, quantity_prepared, quantity_sold, quantity_wasted, reason, date }])
-    .select();
-    
-  if (error) return res.status(500).json({ error: error.message });
-  res.json({ id: data[0].id, success: true });
+  db.run(`INSERT INTO food_waste (item_id, quantity_prepared, quantity_sold, quantity_wasted, reason, date) VALUES (?, ?, ?, ?, ?, ?)`, 
+    [item_id, quantity_prepared, quantity_sold, quantity_wasted, reason, date], function(err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ id: this.lastID, success: true });
+  });
 });
 
 // Staff Management
-app.get('/api/staff', async (req, res) => {
-  const { data, error } = await supabase.from('users').select('id, name, email, role');
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+app.get('/api/staff', (req, res) => {
+  db.all(`SELECT id, name, email, role FROM users`, (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
 });
 
 const PORT = 5000;

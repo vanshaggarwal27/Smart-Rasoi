@@ -5,7 +5,7 @@ import api from '../utils/api';
 const MenuManagement = () => {
   const [menu, setMenu] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ name: '', category: 'Breakfast', price: '', status: 'available', image_url: '' });
+  const [formData, setFormData] = useState({ name: '', category: 'Breakfast', price: '', status: 'available', image_url: '', calories: '', protein: '', carbs: '', fats: '' });
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const MenuManagement = () => {
   };
 
   const openAdd = () => {
-    setFormData({ name: '', category: 'Breakfast', price: '', status: 'available', image_url: '' });
+    setFormData({ name: '', category: 'Breakfast', price: '', status: 'available', image_url: '', calories: '', protein: '', carbs: '', fats: '' });
     setEditingId(null);
     setShowModal(true);
   };
@@ -65,6 +65,7 @@ const MenuManagement = () => {
               <th>Food Name</th>
               <th>Category</th>
               <th>Price</th>
+              <th>Nutrition</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -78,6 +79,12 @@ const MenuManagement = () => {
                 <td style={{ fontWeight: '500' }}>{item.name}</td>
                 <td><span style={{ padding: '0.25rem 0.5rem', background: 'var(--bg-primary)', borderRadius: '12px', fontSize: '0.75rem' }}>{item.category}</span></td>
                 <td>₹{(Number(item.price)).toFixed(2)}</td>
+                <td>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-color)' }}>
+                    <strong>{item.calories || 0}</strong> kcal<br/>
+                    <span className="text-muted">P:{item.protein || 0}g C:{item.carbs || 0}g F:{item.fats || 0}g</span>
+                  </div>
+                </td>
                 <td>
                   <span style={{ 
                     color: item.status === 'available' ? 'var(--success)' : 'var(--danger)',
@@ -134,6 +141,25 @@ const MenuManagement = () => {
                 <div>
                   <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Image URL (optional)</label>
                   <input type="text" placeholder="https://..." value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginTop: '1rem' }}>
+                <div>
+                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Calories</label>
+                  <input type="number" required value={formData.calories} onChange={e => setFormData({...formData, calories: Number(e.target.value)})} />
+                </div>
+                <div>
+                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Protein (g)</label>
+                  <input type="number" required value={formData.protein} onChange={e => setFormData({...formData, protein: Number(e.target.value)})} />
+                </div>
+                <div>
+                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Carbs (g)</label>
+                  <input type="number" required value={formData.carbs} onChange={e => setFormData({...formData, carbs: Number(e.target.value)})} />
+                </div>
+                <div>
+                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Fats (g)</label>
+                  <input type="number" required value={formData.fats} onChange={e => setFormData({...formData, fats: Number(e.target.value)})} />
                 </div>
               </div>
 

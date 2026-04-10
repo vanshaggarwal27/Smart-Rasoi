@@ -10,6 +10,7 @@ const Dashboard = () => {
   const [data, setData] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -21,12 +22,13 @@ const Dashboard = () => {
       setLoading(false);
     }).catch(err => {
       console.error("Error fetching overview", err);
+      setErrorMsg(err.message || 'Unknown error');
       setLoading(false);
     });
   }, []);
 
   if (loading) return <div style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>;
-  if (!data) return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--danger)' }}>Failed to load data</div>;
+  if (!data) return <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--danger)' }}>Failed to load data: {errorMsg}</div>;
 
   const popularPie = data.popularItems.slice(0, 3).map((item) => ({ name: item.name, value: item.sold }));
   

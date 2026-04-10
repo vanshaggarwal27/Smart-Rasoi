@@ -9,6 +9,7 @@ import WasteTracking from './pages/WasteTracking';
 import StaffManagement from './pages/StaffManagement';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
+import OrderTracking from './pages/OrderTracking';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -33,6 +34,7 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login onLogin={() => setIsAuthenticated(true)} />} />
       <Route path="/" element={<ProtectedRoute element={<Dashboard />} />} />
+      <Route path="/orders" element={<ProtectedRoute element={<OrderTracking />} />} />
       <Route path="/menu" element={<ProtectedRoute element={<MenuManagement />} />} />
       <Route path="/consumption" element={<ProtectedRoute element={<Consumption />} />} />
       <Route path="/waste" element={<ProtectedRoute element={<WasteTracking />} />} />
