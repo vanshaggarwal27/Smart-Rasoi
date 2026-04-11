@@ -259,7 +259,7 @@ const VisionScan = () => {
           </Button>
           <div className="space-y-0.5">
             <h1 className="text-xl font-black uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>AI Vision Scan</h1>
-            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Powered by Nutrisense Engine</p>
+            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Powered by SmartRasoi Engine</p>
           </div>
         </div>
 

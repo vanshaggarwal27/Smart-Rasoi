@@ -1,5 +1,5 @@
 -- ============================================================
--- Smart Cafeteria: Full Supabase Migration
+-- Smart Rasoi: Full Supabase Migration
 -- Run this in: Supabase Dashboard > SQL Editor > New Query
 -- ============================================================
 

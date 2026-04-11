@@ -6,7 +6,7 @@ const Sidebar = () => {
   return (
     <div className="sidebar" style={{ border: 'none' }}>
       <div style={{ marginBottom: '2.5rem', padding: '0.5rem 1rem' }}>
-        <h2 style={{ fontSize: '1.75rem', margin: 0, fontWeight: '800', color: 'var(--accent-primary)' }}>SmartCafe.</h2>
+        <h2 style={{ fontSize: '1.75rem', margin: 0, fontWeight: '800', color: 'var(--accent-primary)' }}>SmartRasoi.</h2>
       </div>
 
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>

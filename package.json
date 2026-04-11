@@ -1,7 +1,7 @@
 {
   "name": "nmims_hackathon",
   "version": "1.0.0",
-  "description": "Smart Cafeteria System Root",
+  "description": "Smart Rasoi System Root",
   "scripts": {
     "dev": "concurrently \"npm run start --prefix Backend\" \"npm run dev --prefix Frontend\"",
     "frontend": "npm run dev --prefix Frontend",

@@ -23,7 +23,7 @@ const Login = ({ onLogin }) => {
             <LogIn size={32} />
           </div>
           <h2 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Welcome Back</h2>
-          <p className="text-muted">Sign in to Smart Cafe Admin Panel</p>
+          <p className="text-muted">Sign in to SmartRasoi Admin Panel</p>
         </div>
         
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

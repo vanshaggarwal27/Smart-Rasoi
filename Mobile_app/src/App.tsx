@@ -10,6 +10,8 @@ import { TutorialProvider } from "@/contexts/TutorialContext";
 import { useSettings } from "@/hooks/useSettings";
 import { DateProvider } from "@/contexts/DateContext";
 import { Layout } from "@/components/Layout";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import Index from "./pages/Index";
 import FoodLibrary from "./pages/FoodLibrary";
 import Schedule from "./pages/Schedule";
@@ -32,6 +34,50 @@ const ProtectedRoute = ({ children, allowGuest = false }: { children: React.Reac
   const { user, isGuest } = useAuth();
   if (!user && !allowGuest) return <Navigate to="/auth" replace />;
   return <>{children}</>;
+};
+
+const GlobalOrderListener = () => {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Listen for updates to the user's orders
+    const channel = supabase
+      .channel('public:orders:status')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'orders' },
+        (payload) => {
+          // The edge function inserts student_id as user.email split by @ in uppercase
+          const expectedStudentId = user.email ? user.email.split('@')[0].toUpperCase() : null;
+
+          if (
+            (payload.new.user_id && payload.new.user_id === user.id) || 
+            (payload.new.student_id && payload.new.student_id === expectedStudentId) ||
+            (payload.new.student_id && payload.new.student_id === user.id)
+          ) {
+             const status = payload.new.status;
+             let message = `Your order #${payload.new.order_id} status changed to ${status}`;
+             
+             if (status === 'Prepare') message = "🧑‍🍳 We've started preparing your food!";
+             else if (status === 'Process') message = "🚚 Your order is on the move!";
+             else if (status === 'Deliver') message = "✅ Your order is ready to be picked up/delivered!";
+
+             toast.success(message, {
+               description: "Check 'My Orders' for more details"
+             });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
+  return null;
 };
 
 const GlobalSplash = ({ children }: { children: React.ReactNode }) => {
@@ -107,6 +153,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <GlobalOrderListener />
           <GlobalSplash>
             <BrowserRouter>
               <DateProvider>

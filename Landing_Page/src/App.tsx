@@ -1,25 +1,25 @@
 import React from "react";
-import { 
-  motion, 
-  useScroll, 
-  useTransform, 
-  AnimatePresence 
+import {
+  motion,
+  useScroll,
+  useTransform,
+  AnimatePresence
 } from "framer-motion";
 import SmoothScrollHero from "@/components/ui/smooth-scroll-hero";
 import { GlowCard } from "@/components/ui/spotlight-card";
 import { MinimalFooter } from "@/components/ui/minimal-footer";
 import { NavBar } from "@/components/ui/tube-light-navbar";
 import { TestimonialsColumn } from "@/components/ui/testimonials-columns-1";
-import { 
+import {
   Home, Sparkles, BrainCircuit, TrendingUp, MessageSquare,
-  Activity, QrCode, Leaf, Droplet, UserCircle2, 
-  Pointer, CreditCard, GraduationCap, Building2, 
-  CheckCircle2, LogIn, Bell 
+  Activity, QrCode, Leaf, Droplet, UserCircle2,
+  Pointer, CreditCard, GraduationCap, Building2,
+  CheckCircle2, LogIn, Bell
 } from "lucide-react";
 
-const nutrisenseTestimonials = [
+const smartrasoiTestimonials = [
   {
-    text: "NutriSense completely changed how I eat on campus. The AI suggestions are surprisingly accurate and I've lost 4kg without trying hard!",
+    text: "SmartRasoi completely changed how I eat on campus. The AI suggestions are surprisingly accurate and I've lost 4kg without trying hard!",
     image: "https://randomuser.me/api/portraits/women/44.jpg",
     name: "Priya Sharma",
     role: "CS Student, Year 2",
@@ -37,7 +37,7 @@ const nutrisenseTestimonials = [
     role: "Medical Student",
   },
   {
-    text: "Managing the cafeteria used to be chaotic. With NutriSense analytics, we cut food waste by nearly 30% in the first month.",
+    text: "Managing the cafeteria used to be chaotic. With SmartRasoi analytics, we cut food waste by nearly 30% in the first month.",
     image: "https://randomuser.me/api/portraits/men/55.jpg",
     name: "Suresh Kumar",
     role: "Cafeteria Manager",
@@ -49,7 +49,7 @@ const nutrisenseTestimonials = [
     role: "MBA Student",
   },
   {
-    text: "The calorie and macro tracking is seamless. I don't have to manually log anything — NutriSense does it automatically at checkout.",
+    text: "The calorie and macro tracking is seamless. I don't have to manually log anything — SmartRasoi does it automatically at checkout.",
     image: "https://randomuser.me/api/portraits/women/22.jpg",
     name: "Divya Nair",
     role: "Nutrition & Dietetics Student",
@@ -74,9 +74,9 @@ const nutrisenseTestimonials = [
   },
 ];
 
-const firstColumnTestimonials = nutrisenseTestimonials.slice(0, 3);
-const secondColumnTestimonials = nutrisenseTestimonials.slice(3, 6);
-const thirdColumnTestimonials = nutrisenseTestimonials.slice(6, 9);
+const firstColumnTestimonials = smartrasoiTestimonials.slice(0, 3);
+const secondColumnTestimonials = smartrasoiTestimonials.slice(3, 6);
+const thirdColumnTestimonials = smartrasoiTestimonials.slice(6, 9);
 
 const navItems = [
   { name: 'Home', url: '#', icon: Home },
@@ -111,7 +111,7 @@ function App() {
 
       <section className="py-24 px-6 bg-white" id="about">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-[#1C4D35]">Welcome to NutriSense</h2>
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-[#1C4D35]">Welcome to SmartRasoi</h2>
           <p className="text-lg text-[#1C4D35]/80 leading-relaxed font-medium">
             We use data-driven AI to suggest meals that align with your body metrics and daily schedule. This isn't just a food menu—it's a personalized health system directly integrated into your campus cafeteria.
           </p>
@@ -165,7 +165,7 @@ function App() {
       <section className="relative px-6 bg-white" id="how-it-works">
         {/* Sticky Container */}
         <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row items-center justify-center overflow-hidden">
-          
+
           {/* Left Side: Device Visual */}
           <div className="relative w-full md:w-1/2 flex justify-center items-center h-full">
             <div className="relative w-[280px] h-[580px] bg-forest rounded-[3rem] border-[8px] border-forest/10 shadow-[0_0_60px_rgba(28,77,53,0.3)] flex flex-col overflow-hidden">
@@ -238,7 +238,7 @@ function App() {
               Testimonials
             </div>
             <h2 className="text-3xl md:text-5xl font-bold text-center text-[#1C4D35]">
-              Real Stories from NMIMS
+              Real Stories from Users
             </h2>
           </div>
           <div className="flex justify-center gap-6 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)] max-h-[750px] overflow-hidden">
@@ -271,10 +271,23 @@ function App() {
 
 function ExperienceScreenSwitcher() {
   const { scrollYProgress } = useScroll();
-  
+  const [index, setIndex] = React.useState(0);
+  const [menuItems, setMenuItems] = React.useState<any[]>([]);
+
   // Map scroll progress (0 to 1) to screen index (0 to 3)
   const screenIndex = useTransform(scrollYProgress, [0.4, 0.55, 0.7, 0.85], [0, 1, 2, 3]);
-  const [index, setIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    // Fetch real recommendations from backend
+    fetch('http://localhost:5000/api/menu')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setMenuItems(data.slice(0, 3));
+        }
+      })
+      .catch(err => console.error("Failed to fetch menu:", err));
+  }, []);
 
   React.useEffect(() => {
     return screenIndex.on("change", (latest) => {
@@ -288,15 +301,15 @@ function ExperienceScreenSwitcher() {
       title: "Tap to Begin",
       content: (
         <div className="flex flex-col items-center justify-center h-full gap-6">
-          <div className="w-32 h-32 bg-moss/20 rounded-3xl flex items-center justify-center relative">
-            <motion.div 
-               animate={{ scale: [1, 1.2, 1] }} 
-               transition={{ duration: 2, repeat: Infinity }}
-               className="absolute inset-0 bg-moss/10 rounded-3xl"
+          <div className="w-32 h-32 bg-moss/20 rounded-3xl flex items-center justify-center relative shadow-[0_0_30px_rgba(147,171,99,0.2)]">
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="absolute inset-0 bg-moss/10 rounded-3xl"
             />
             <QrCode className="w-16 h-16 text-moss" />
           </div>
-          <p className="text-center text-forest/40 text-xs font-bold uppercase tracking-widest mt-4">Scanner Active</p>
+          <p className="text-center text-[#1C4D35]/40 text-[10px] font-bold uppercase tracking-[0.25em] mt-4">Scanner Active</p>
         </div>
       )
     },
@@ -304,104 +317,175 @@ function ExperienceScreenSwitcher() {
       id: "analysis",
       title: "AI Analysis",
       content: (
-        <div className="flex flex-col h-full gap-4">
-          <div className="flex items-center gap-3 p-3 bg-moss/10 rounded-xl border border-moss/20">
-            <BrainCircuit className="w-6 h-6 text-moss" />
-            <div className="text-sm font-bold text-forest">Scanning Biometrics...</div>
+        <div className="flex flex-col h-full gap-4 pt-4">
+          <div className="flex items-center gap-3 p-4 bg-forest rounded-2xl border border-moss/30 shadow-lg">
+            <div className="p-2 bg-moss/20 rounded-lg">
+              <BrainCircuit className="w-5 h-5 text-moss" />
+            </div>
+            <div className="text-sm font-bold text-white">Analyzing Biometrics...</div>
           </div>
-          {[1, 2, 3].map(i => (
-            <motion.div 
-              key={i}
-              initial={{ width: 0 }}
-              animate={{ width: "100%" }}
-              transition={{ delay: i * 0.2 }}
-              className="h-2 bg-forest/5 rounded-full overflow-hidden"
-            >
-              <div className="h-full bg-moss w-2/3" />
-            </motion.div>
-          ))}
-          <div className="mt-auto p-4 bg-forest rounded-2xl text-white">
-            <div className="text-[10px] uppercase font-bold text-moss mb-1">Recommendation</div>
-            <div className="text-sm font-bold">Suggested: Protein-Rich Thali</div>
+
+          <div className="space-y-4 px-1">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="space-y-1.5">
+                <div className="flex justify-between text-[10px] uppercase font-bold text-[#1C4D35]/60 tracking-wider">
+                  <span>{i === 1 ? 'Protein Needs' : i === 2 ? 'Activity Level' : 'Metabolic Rate'}</span>
+                  <span>{i === 1 ? '72g' : i === 2 ? 'High' : 'Normal'}</span>
+                </div>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ delay: i * 0.2, duration: 1 }}
+                  className="h-1.5 bg-[#1C4D35]/10 rounded-full overflow-hidden"
+                >
+                  <motion.div
+                    initial={{ x: "-100%" }}
+                    animate={{ x: "0%" }}
+                    transition={{ delay: i * 0.2 + 0.5, duration: 0.8 }}
+                    className="h-full bg-moss w-3/4"
+                  />
+                </motion.div>
+              </div>
+            ))}
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2 }}
+            className="mt-auto p-4 bg-forest rounded-2xl border border-moss/20 shadow-xl"
+          >
+            <div className="text-[9px] uppercase font-bold text-moss mb-1 tracking-widest">Optimal Choice</div>
+            <div className="text-sm font-bold text-white">Suggested: {menuItems[0]?.name || "High Protein Meal"}</div>
+          </motion.div>
         </div>
       )
     },
     {
       id: "selection",
-      title: "Choose Plate",
+      title: "Your Options",
       content: (
-        <div className="flex flex-col h-full gap-3 overflow-y-auto">
-          {[
-            { name: "Healthy Bowl", cal: "450", p: "High" },
-            { name: "Kadhai Paneer", cal: "620", p: "Med" },
-            { name: "Fruit Salad", cal: "210", p: "Low" }
-          ].map((item, i) => (
-            <div key={i} className="p-3 border border-forest/10 rounded-xl flex justify-between items-center hover:bg-forest hover:text-white transition-colors cursor-pointer group">
-              <div>
-                <div className="text-sm font-bold">{item.name}</div>
-                <div className="text-[10px] opacity-60 uppercase font-bold tracking-tighter">{item.cal} CAL • Protein: {item.p}</div>
-              </div>
-              <div className="w-6 h-6 rounded-full border border-forest/20 group-hover:border-white/40" />
-            </div>
-          ))}
-          <div className="mt-auto pt-4 border-t border-forest/5">
-             <button className="w-full py-3 bg-moss text-forest font-bold rounded-xl text-sm shadow-lg">Confirm Selection</button>
+        <div className="flex flex-col h-full gap-3">
+          <div className="mb-2 text-[10px] font-bold text-[#1C4D35]/40 uppercase tracking-widest">Personalized for you</div>
+          <div className="flex flex-col gap-2.5 overflow-y-auto pr-1">
+            {(menuItems.length > 0 ? menuItems : [
+              { name: "Healthy Bowl", price: 120, calories: 450 },
+              { name: "Kadhai Paneer", price: 160, calories: 620 },
+              { name: "Fruit Salad", price: 60, calories: 210 }
+            ]).map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.1 }}
+                className="p-3 bg-white border border-[#1C4D35]/5 rounded-2xl flex justify-between items-center hover:bg-forest hover:text-white transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-moss/10 flex items-center justify-center group-hover:bg-white/10">
+                    {item.calories > 400 ? <Activity size={18} className="text-moss" /> : <Leaf size={18} className="text-moss" />}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold leading-none mb-1">{item.name}</div>
+                    <div className="text-[9px] opacity-50 uppercase font-black tracking-tight">{item.calories || 350} CAL • ₹{item.price}</div>
+                  </div>
+                </div>
+                <div className="w-5 h-5 rounded-full border-2 border-[#1C4D35]/10 group-hover:border-white/30 flex items-center justify-center">
+                  <div className="w-2 h-2 rounded-full bg-moss opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <div className="mt-auto pt-4">
+            <button className="w-full py-3.5 bg-forest text-white font-bold rounded-2xl text-xs shadow-[0_10px_20px_rgba(28,77,53,0.2)] hover:bg-forest/90 transition-all flex items-center justify-center gap-2">
+              <CheckCircle2 size={14} /> Confirm Selection
+            </button>
           </div>
         </div>
       )
     },
     {
       id: "stats",
-      title: "Impact",
+      title: "Macro Impact",
       content: (
-        <div className="flex flex-col h-full items-center justify-center gap-6">
-           <div className="text-center">
-             <div className="text-5xl font-black text-forest mb-2">92<span className="text-2xl">%</span></div>
-             <div className="text-[10px] font-bold text-moss uppercase tracking-widest">Health Score</div>
-           </div>
-           
-           <div className="w-full space-y-3">
-             <div className="flex justify-between text-[10px] font-bold text-forest/40 uppercase">
-               <span>Calories</span>
-               <span>520/2200</span>
-             </div>
-             <div className="h-2 bg-forest/5 rounded-full overflow-hidden">
-               <div className="h-full bg-midnight w-1/4" />
-             </div>
-           </div>
+        <div className="flex flex-col h-full bg-forest rounded-[2rem] p-6 text-white overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-moss/10 rounded-full blur-3xl -mr-16 -mt-16" />
 
-           <div className="p-4 bg-moss/10 rounded-2xl border border-moss/20 w-full">
-              <div className="flex items-center gap-3 text-forest">
-                <CheckCircle2 className="w-5 h-5 text-moss" />
-                <span className="text-xs font-bold">Plate Optimized for Focus</span>
+          <div className="relative z-10 text-center mb-8">
+            <div className="text-xs font-bold text-moss uppercase tracking-widest mb-2">Daily Progress</div>
+            <div className="text-6xl font-black mb-1">92<span className="text-2xl text-moss">%</span></div>
+            <div className="text-[10px] font-bold opacity-60 uppercase tracking-[0.2em]">Metabolic Fit</div>
+          </div>
+
+          <div className="relative z-10 space-y-6 w-full">
+            <div className="space-y-2">
+              <div className="flex justify-between text-[9px] font-black uppercase tracking-widest opacity-60">
+                <span>Calories</span>
+                <span>520/2200</span>
               </div>
-           </div>
+              <div className="h-2.5 bg-white/10 rounded-full overflow-hidden p-0.5">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "24%" }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                  className="h-full bg-moss rounded-full"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
+                <div className="text-[8px] uppercase font-bold text-moss mb-1">Protein</div>
+                <div className="text-sm font-black">45<span className="text-[10px] font-medium opacity-60 ml-0.5">g</span></div>
+              </div>
+              <div className="p-3 bg-white/5 rounded-2xl border border-white/10">
+                <div className="text-[8px] uppercase font-bold text-moss mb-1">Wallet</div>
+                <div className="text-sm font-black">₹{1240}<span className="text-[10px] font-medium opacity-60 ml-0.5">rem.</span></div>
+              </div>
+            </div>
+          </div>
+
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-auto p-4 bg-white/10 rounded-2xl border border-white/10 backdrop-blur-md"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-moss flex items-center justify-center">
+                <CheckCircle2 className="w-4 h-4 text-forest" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-tight">Plate Optimized for Peak Focus</span>
+            </div>
+          </motion.div>
         </div>
       )
     }
   ];
 
   return (
-    <div className="h-full flex flex-col pt-4">
-      <div className="flex justify-between items-center mb-8 px-2">
-        <h4 className="font-black text-forest uppercase tracking-tighter text-lg">{screens[index].title}</h4>
-        <div className="flex gap-1">
+    <div className="h-full flex flex-col pt-2">
+      <div className="flex justify-between items-center mb-6 px-4">
+        <h4 className="font-black text-forest uppercase tracking-tighter text-base">{screens[index].title}</h4>
+        <div className="flex gap-1.5">
           {screens.map((_, i) => (
-             <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === index ? 'w-4 bg-moss' : 'w-1.5 bg-forest/10'}`} />
+            <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ease-out ${i === index ? 'w-6 bg-moss' : 'w-1.5 bg-forest/10'}`} />
           ))}
         </div>
       </div>
-      
-      <div className="flex-1 relative">
+
+      <div className="flex-1 relative px-4 pb-4">
         <AnimatePresence mode="wait">
           <motion.div
             key={index}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-            className="absolute inset-0"
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30
+            }}
+            className="absolute inset-x-4 inset-y-0"
           >
             {screens[index].content}
           </motion.div>

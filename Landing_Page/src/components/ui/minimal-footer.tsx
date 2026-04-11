@@ -100,7 +100,7 @@ export function MinimalFooter() {
 							<Grid2X2Plus className="size-8 text-moss" />
 						</a>
 						<p className="text-beige/80 font-medium max-w-sm font-mono text-sm text-balance">
-							An AI-powered Smart Cafeteria System optimizing health and eliminating food waste.
+							An AI-powered Smart Rasoi System optimizing health and eliminating food waste.
 						</p>
 						<div className="flex gap-2">
 							{socialLinks.map((item, i) => (
@@ -149,7 +149,7 @@ export function MinimalFooter() {
 				<div className="bg-moss/20 absolute inset-x-0 h-px w-full" />
 				<div className="flex max-w-6xl mx-auto flex-col justify-between gap-2 pt-6 pb-8 px-10 md:px-16">
 					<p className="text-beige/60 font-medium text-center">
-						© <a href="#" className="hover:text-moss transition-colors font-medium">NutriSense</a>. All rights
+						© <a href="#" className="hover:text-moss transition-colors font-medium">SmartRasoi</a>. All rights
 						reserved {year}
 					</p>
 				</div>

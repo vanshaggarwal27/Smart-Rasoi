@@ -332,7 +332,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   };
 
   const handleInviteFriends = () => {
-    const text = `Join the Nutrisense Student Portal. Track your nutrition, check the cafe menu, and unlock student perks. 🎓
+    const text = `Join the SmartRasoi Student Portal. Track your nutrition, check the cafe menu, and unlock student perks. 🎓
  
 Join the community: https://fitnutt.netlify.app
  
@@ -424,7 +424,7 @@ Android - Browser Menu > Add to Homescreen > Install`;
               className="font-bold text-lg text-foreground uppercase tracking-tight"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
             >
-              Nutrisense
+              SmartRasoi
             </span>
           </div>
           <button

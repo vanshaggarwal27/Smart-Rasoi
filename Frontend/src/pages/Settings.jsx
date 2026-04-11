@@ -6,7 +6,7 @@ const Settings = () => {
     <div className="animate-fade-in">
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '1.875rem', marginBottom: '0.5rem' }}>System Settings</h1>
-        <p className="text-muted">Configure the Smart Cafeteria Dashboard parameters and preferences.</p>
+        <p className="text-muted">Configure the Smart Rasoi Dashboard parameters and preferences.</p>
       </div>
 
       <div className="grid-cols-2" style={{ gap: '2rem' }}>

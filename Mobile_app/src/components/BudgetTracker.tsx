@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 
-const COLORS = ['#ea5c1f', '#3b82f6', '#10b981', '#f59e0b'];
+const COLORS = ['#1C4D35', '#93AB63', '#839958', '#F0F4EE'];
 
 export const BudgetTracker = () => {
   const { user } = useAuth();

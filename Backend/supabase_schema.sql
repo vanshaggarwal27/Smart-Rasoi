@@ -1,4 +1,4 @@
--- PostgreSQL Schema for Smart Cafeteria Dashboard
+-- PostgreSQL Schema for Smart Rasoi Dashboard
 
 -- 1. Create Users Table
 CREATE TABLE public.users (

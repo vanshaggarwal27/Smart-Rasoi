@@ -33,18 +33,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
     });
 
-    // Then get the initial session — this is the authoritative first load
-    // Setting loading=false only here avoids a race condition where
-    // onAuthStateChange fires INITIAL_SESSION(null) before the real session resolves
+    // Timeout fallback for white-screen safety
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        console.warn("Supabase session fetch timed out - defaulting to guest mode.");
+        setLoading(false);
+      }
+    }, 3000);
+
+    // Then get the initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      clearTimeout(timeoutId);
       setSession(session);
       setLoading(false);
     }).catch((err) => {
+      clearTimeout(timeoutId);
       console.error("Supabase getSession error:", err);
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(timeoutId);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = async () => {

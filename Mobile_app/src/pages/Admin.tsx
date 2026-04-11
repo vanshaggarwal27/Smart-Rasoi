@@ -122,7 +122,7 @@ const Admin = () => {
           <div className="h-8 w-8 rounded-xl bg-primary flex items-center justify-center">
             <Utensils className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-black tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Nutrisense.</span>
+          <span className="text-xl font-black tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>SmartRasoi.</span>
         </div>
 
         <nav className="flex-1 space-y-1">
@@ -362,7 +362,7 @@ const Admin = () => {
         </BoneyardSkeleton>
 
         <footer className="pt-10 border-t border-border/40 flex justify-between items-center px-4">
-          <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-[0.2em]">SmartCafe Unified Portal v3.2</p>
+          <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-[0.2em]">SmartRasoi Unified Portal v3.2</p>
           <div className="flex items-center gap-2 text-[10px] text-primary font-bold animate-pulse">
             <div className="h-1.5 w-1.5 rounded-full bg-primary" /> INSTITUTIONAL LINK ESTABLISHED
           </div>

@@ -5,7 +5,7 @@ import MetricCard from '../components/MetricCard';
 import api from '../utils/api';
 import { supabase } from '../utils/supabase';
 
-const COLORS = ['#e83e8c', '#8b5cf6', '#fdf2f8', '#10b981'];
+const COLORS = ['#1C4D35', '#93AB63', '#839958', '#F0F4EE'];
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
@@ -17,10 +17,10 @@ const Dashboard = () => {
   useEffect(() => {
     Promise.all([
       api.get('/dashboard/overview'),
-      api.get('/transactions')
-    ]).then(([resData, resTxn]) => {
+      supabase.from('orders').select('*').order('order_time', { ascending: false }).limit(10)
+    ]).then(([resData, resSupabase]) => {
       setData(resData.data);
-      setTransactions(resTxn.data);
+      setTransactions(resSupabase.data || []);
       setLoading(false);
     }).catch(err => {
       console.error("Error fetching overview", err);
@@ -40,6 +40,9 @@ const Dashboard = () => {
             message: `Order #${payload.new.order_id || payload.new.id || 'Unknown'} was placed.`,
             time: new Date().toLocaleTimeString()
           });
+          
+          // Update the list of recent transactions
+          setTransactions(prev => [payload.new, ...prev.slice(0, 9)]);
           
           setTimeout(() => {
              setNotification(null);
@@ -223,15 +226,15 @@ const Dashboard = () => {
                      <div style={{ width: '40px', height: '40px', background: 'var(--bg-hover)', borderRadius: '8px' }}></div>
                    </td>
                    <td style={{ padding: '0.75rem 0' }}>
-                     <div style={{ fontWeight: '600', fontSize: '0.875rem' }}>{t.food_item}</div>
+                     <div style={{ fontWeight: '600', fontSize: '0.875rem' }}>{t.food_items || t.food_item}</div>
                      <div className="text-muted" style={{ fontSize: '0.75rem' }}>{t.student_id}</div>
                    </td>
                    <td style={{ padding: '0.75rem 0', fontWeight: '500', fontSize: '0.875rem' }}>
-                     ₹{Number(t.total_price).toFixed(2)}
+                     ₹{Number(t.total_amount || t.total_price || 0).toFixed(2)}
                    </td>
                    <td style={{ padding: '0.75rem 0', textAlign: 'right' }}>
                      <span style={{ background: '#fef3c7', color: '#d97706', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '600' }}>
-                       Pending
+                       {t.status || 'Pending'}
                      </span>
                    </td>
                  </tr>

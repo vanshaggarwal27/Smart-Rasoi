@@ -50,6 +50,22 @@ const defaultForm: FoodForm = {
   is_veg: true,
 };
 
+export const MOCK_FOODS: Food[] = [
+  { id: "mock-1", name: "Masala Dosa", calories: 350, protein: 8, carbs: 55, fats: 12, serving_size: 1, serving_unit: "pc", category: "Meals", is_veg: true, source: "preset", price: 120 },
+  { id: "mock-2", name: "Paneer Butter Masala", calories: 380, protein: 14, carbs: 12, fats: 28, serving_size: 1, serving_unit: "bowl", category: "Meals", is_veg: true, source: "preset", price: 160 },
+  { id: "mock-3", name: "Veg Biryani", calories: 420, protein: 10, carbs: 65, fats: 14, serving_size: 1, serving_unit: "plate", category: "Meals", is_veg: true, source: "preset", price: 180 },
+  { id: "mock-4", name: "Chole Bhature", calories: 520, protein: 12, carbs: 60, fats: 25, serving_size: 1, serving_unit: "set", category: "Meals", is_veg: true, source: "preset", price: 110 },
+  { id: "mock-5", name: "Rajma Chawal", calories: 450, protein: 16, carbs: 70, fats: 10, serving_size: 1, serving_unit: "plate", category: "Meals", is_veg: true, source: "preset", price: 90 },
+  { id: "mock-6", name: "Samosa", calories: 190, protein: 3, carbs: 22, fats: 10, serving_size: 1, serving_unit: "pc", category: "Snacks", is_veg: true, source: "preset", price: 20 },
+  { id: "mock-7", name: "Aloo Paratha", calories: 280, protein: 6, carbs: 40, fats: 12, serving_size: 1, serving_unit: "pc", category: "Meals", is_veg: true, source: "preset", price: 60 },
+  { id: "mock-8", name: "Pav Bhaji", calories: 400, protein: 8, carbs: 55, fats: 18, serving_size: 1, serving_unit: "plate", category: "Meals", is_veg: true, source: "preset", price: 100 },
+  { id: "mock-9", name: "Veg Pulao", calories: 320, protein: 6, carbs: 55, fats: 8, serving_size: 1, serving_unit: "plate", category: "Meals", is_veg: true, source: "preset", price: 130 },
+  { id: "mock-10", name: "Masala Chai", calories: 75, protein: 2, carbs: 10, fats: 3, serving_size: 150, serving_unit: "ml", category: "Drinks", is_veg: true, source: "preset", price: 40 },
+  { id: "mock-11", name: "Filter Coffee", calories: 60, protein: 2, carbs: 8, fats: 2, serving_size: 150, serving_unit: "ml", category: "Drinks", is_veg: true, source: "preset", price: 50 },
+  { id: "mock-12", name: "Lassi", calories: 180, protein: 6, carbs: 25, fats: 6, serving_size: 250, serving_unit: "ml", category: "Drinks", is_veg: true, source: "preset", price: 60 },
+  { id: "mock-13", name: "Buttermilk", calories: 45, protein: 3, carbs: 5, fats: 2, serving_size: 250, serving_unit: "ml", category: "Drinks", is_veg: true, source: "preset", price: 30 },
+];
+
 const CafeMenu = () => {
   const { foods, isLoading: foodsLoading, addFood, updateFood, deleteFood } = useFoods();
   const { settings } = useSettings();
@@ -176,16 +192,14 @@ const CafeMenu = () => {
           budget: parseFloat(budget) || 400
         };
         
-        const cafeteria_menu: MealMenuItem[] = foods
-          .filter(f => f.source === "preset" || f.source === "user")
-          .map(f => ({
+        const cafeteria_menu: MealMenuItem[] = MOCK_FOODS.map(f => ({
             id: f.id,
             name: f.name,
             calories: f.calories,
             protein: f.protein,
             carbs: f.carbs,
             fats: f.fats,
-            price: Math.round(f.calories * 0.15) || 50 // Mocking price for now
+            price: f.price || Math.round(f.calories * 0.15) || 50
           }));
           
           if(cafeteria_menu.length === 0) throw new Error("No foods available");
@@ -303,21 +317,7 @@ const CafeMenu = () => {
     setLoggingFood(null);
   };
 
-  const MOCK_FOODS: Food[] = [
-    { id: "mock-1", name: "Masala Dosa", calories: 350, protein: 8, carbs: 55, fats: 12, serving_size: 1, serving_unit: "pc", category: "Meals", is_veg: true, source: "preset", price: 120 },
-    { id: "mock-2", name: "Paneer Butter Masala", calories: 380, protein: 14, carbs: 12, fats: 28, serving_size: 1, serving_unit: "bowl", category: "Meals", is_veg: true, source: "preset", price: 160 },
-    { id: "mock-3", name: "Veg Biryani", calories: 420, protein: 10, carbs: 65, fats: 14, serving_size: 1, serving_unit: "plate", category: "Meals", is_veg: true, source: "preset", price: 180 },
-    { id: "mock-4", name: "Chole Bhature", calories: 520, protein: 12, carbs: 60, fats: 25, serving_size: 1, serving_unit: "set", category: "Meals", is_veg: true, source: "preset", price: 110 },
-    { id: "mock-5", name: "Rajma Chawal", calories: 450, protein: 16, carbs: 70, fats: 10, serving_size: 1, serving_unit: "plate", category: "Meals", is_veg: true, source: "preset", price: 90 },
-    { id: "mock-6", name: "Samosa", calories: 190, protein: 3, carbs: 22, fats: 10, serving_size: 1, serving_unit: "pc", category: "Snacks", is_veg: true, source: "preset", price: 20 },
-    { id: "mock-7", name: "Aloo Paratha", calories: 280, protein: 6, carbs: 40, fats: 12, serving_size: 1, serving_unit: "pc", category: "Meals", is_veg: true, source: "preset", price: 60 },
-    { id: "mock-8", name: "Pav Bhaji", calories: 400, protein: 8, carbs: 55, fats: 18, serving_size: 1, serving_unit: "plate", category: "Meals", is_veg: true, source: "preset", price: 100 },
-    { id: "mock-9", name: "Veg Pulao", calories: 320, protein: 6, carbs: 55, fats: 8, serving_size: 1, serving_unit: "plate", category: "Meals", is_veg: true, source: "preset", price: 130 },
-    { id: "mock-10", name: "Masala Chai", calories: 75, protein: 2, carbs: 10, fats: 3, serving_size: 150, serving_unit: "ml", category: "Drinks", is_veg: true, source: "preset", price: 40 },
-    { id: "mock-11", name: "Filter Coffee", calories: 60, protein: 2, carbs: 8, fats: 2, serving_size: 150, serving_unit: "ml", category: "Drinks", is_veg: true, source: "preset", price: 50 },
-    { id: "mock-12", name: "Lassi", calories: 180, protein: 6, carbs: 25, fats: 6, serving_size: 250, serving_unit: "ml", category: "Drinks", is_veg: true, source: "preset", price: 60 },
-    { id: "mock-13", name: "Buttermilk", calories: 45, protein: 3, carbs: 5, fats: 2, serving_size: 250, serving_unit: "ml", category: "Drinks", is_veg: true, source: "preset", price: 30 },
-  ];
+
 
   const filtered = useMemo(() => {
     const displayFoods = selectedSource === "preset" ? MOCK_FOODS : foods;

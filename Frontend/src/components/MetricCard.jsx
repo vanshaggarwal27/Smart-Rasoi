@@ -1,7 +1,7 @@
 import React from 'react';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 
-const MetricCard = ({ title, value, icon, colorHex = '#e83e8c', data = [] }) => {
+const MetricCard = ({ title, value, icon, colorHex = '#1C4D35', data = [] }) => {
   // Default dummy trend data to match UI if none provided
   const chartData = data.length ? data : [
     { v: 10 }, { v: 40 }, { v: 25 }, { v: 60 }, { v: 45 }, { v: 80 }

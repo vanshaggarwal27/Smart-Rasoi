@@ -59,7 +59,7 @@ async function createJwt(audience: string, privateKey: CryptoKey): Promise<strin
   const payload = {
     aud: audience,
     exp: now + 86400,
-    sub: "mailto:noreply@nutrisense.netlify.app",
+    sub: "mailto:noreply@smartrasoi.netlify.app",
   };
 
   const enc = new TextEncoder();
@@ -203,7 +203,7 @@ Deno.serve(async (req) => {
       const body = JSON.stringify({
         title: "Nutri Sense Reminder",
         body: user.messages.join(" "),
-        icon: "/nutrisense-logo.png",
+        icon: "/smartrasoi-logo.png",
         url: "/",
       });
 

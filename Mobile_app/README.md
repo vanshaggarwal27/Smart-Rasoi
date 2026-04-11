@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/nutrisense-logo.png" width="200" height="200" alt="Nutri Sense Logo">
+  <img src="public/smartrasoi-logo.png" width="200" height="200" alt="Smart Rasoi Logo">
 </p>
 
 <h1 align="center">Nutri Sense</h1>
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://nutrisense.netlify.app">Launch App</a> •
+  <a href="https://smartrasoi.netlify.app">Launch App</a> •
   <a href="#-installation-instructions">Installation</a> •
   <a href="#-features">Features</a>
 </p>
@@ -34,14 +34,14 @@ Nutri Sense is a PWA (Progressive Web App), giving you a native app experience w
 
 ### **iOS (iPhone/iPad)**
 
-1. Open [nutrisense.netlify.app](https://nutrisense.netlify.app) in **Safari**.
+1. Open [smartrasoi.netlify.app](https://smartrasoi.netlify.app) in **Safari**.
 2. Tap the **Share** button (square with up arrow) at the bottom.
 3. Scroll down and tap **"Add to Home Screen"**.
 4. Confirm by tapping **Add**.
 
 ### **Android**
 
-1. Open [nutrisense.netlify.app](https://nutrisense.netlify.app) in **Chrome**.
+1. Open [smartrasoi.netlify.app](https://smartrasoi.netlify.app) in **Chrome**.
 2. Tap the **Menu** (three dots) in the top right.
 3. Tap **"Add to Home screen"** or **"Install app"**.
 4. Confirm the installation.
@@ -49,4 +49,4 @@ Nutri Sense is a PWA (Progressive Web App), giving you a native app experience w
 ---
 
 Built for Students 🎓
-[nutrisense.netlify.app](https://nutrisense.netlify.app)
+[smartrasoi.netlify.app](https://smartrasoi.netlify.app)
