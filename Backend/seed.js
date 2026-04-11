@@ -68,19 +68,19 @@ db.serialize(() => {
   const insertMenu = db.prepare(`INSERT INTO menu_items (name, category, price, status, image_url, calories, protein, carbs, fats) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`);
   
   const menuList = [
-    { name: 'Masala Dosa', category: 'Breakfast', price: 120, status: 'available', image_url: 'https://images.unsplash.com/photo-1589301760014-d929f39ce9b1?w=500&auto=format&fit=crop&q=60', calories: 280, protein: 7, carbs: 45, fats: 8 },
-    { name: 'Paneer Butter Masala', category: 'Lunch', price: 160, status: 'available', image_url: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc0?w=500&auto=format&fit=crop&q=60', calories: 420, protein: 14, carbs: 12, fats: 35 },
-    { name: 'Veg Biryani', category: 'Lunch', price: 180, status: 'available', image_url: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=500&auto=format&fit=crop&q=60', calories: 350, protein: 8, carbs: 55, fats: 10 },
-    { name: 'Chole Bhature', category: 'Lunch', price: 110, status: 'available', image_url: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=500&auto=format&fit=crop&q=60', calories: 510, protein: 12, carbs: 62, fats: 25 },
-    { name: 'Rajma Chawal', category: 'Lunch', price: 90, status: 'available', image_url: 'https://images.unsplash.com/photo-1645009773766-3b60350488f2?w=500&auto=format&fit=crop&q=60', calories: 380, protein: 15, carbs: 70, fats: 5 },
-    { name: 'Samosa', category: 'Snack', price: 20, status: 'available', image_url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&auto=format&fit=crop&q=60', calories: 260, protein: 4, carbs: 32, fats: 14 },
-    { name: 'Aloo Paratha', category: 'Breakfast', price: 60, status: 'available', image_url: 'https://images.unsplash.com/photo-1596560548464-f187ee09eec8?w=500&auto=format&fit=crop&q=60', calories: 310, protein: 8, carbs: 48, fats: 12 },
-    { name: 'Pav Bhaji', category: 'Snack', price: 100, status: 'available', image_url: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=500&auto=format&fit=crop&q=60', calories: 400, protein: 10, carbs: 55, fats: 18 },
-    { name: 'Veg Pulao', category: 'Lunch', price: 130, status: 'available', image_url: 'https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=500&auto=format&fit=crop&q=60', calories: 290, protein: 6, carbs: 50, fats: 7 },
-    { name: 'Masala Chai', category: 'Beverage', price: 40, status: 'available', image_url: 'https://images.unsplash.com/photo-1561336313-0bd5e0b27ec8?w=500&auto=format&fit=crop&q=60', calories: 120, protein: 3, carbs: 18, fats: 4 },
-    { name: 'Filter Coffee', category: 'Beverage', price: 50, status: 'available', image_url: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=500&auto=format&fit=crop&q=60', calories: 90, protein: 2, carbs: 15, fats: 3 },
-    { name: 'Lassi', category: 'Beverage', price: 60, status: 'available', image_url: 'https://images.unsplash.com/photo-1624806992066-5fffeeb04990?w=500&auto=format&fit=crop&q=60', calories: 220, protein: 8, carbs: 35, fats: 5 },
-    { name: 'Buttermilk', category: 'Beverage', price: 30, status: 'available', image_url: 'https://images.unsplash.com/photo-1624806992066-5fffeeb04990?w=500&auto=format&fit=crop&q=60', calories: 60, protein: 4, carbs: 8, fats: 1 }
+    { name: 'Masala Dosa', category: 'Breakfast', price: 120, status: 'available', image_url: 'https://images.unsplash.com/photo-1668236543090-52ee0101295b?w=800&auto=format&fit=crop', calories: 280, protein: 7, carbs: 45, fats: 8 },
+    { name: 'Paneer Butter Masala', category: 'Lunch', price: 160, status: 'available', image_url: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800&auto=format&fit=crop', calories: 420, protein: 14, carbs: 12, fats: 35 },
+    { name: 'Veg Biryani', category: 'Lunch', price: 180, status: 'available', image_url: 'https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?w=800&auto=format&fit=crop', calories: 350, protein: 8, carbs: 55, fats: 10 },
+    { name: 'Chole Bhature', category: 'Lunch', price: 110, status: 'available', image_url: 'https://images.unsplash.com/photo-1596797038558-9daa3f8b59ee?w=800&auto=format&fit=crop', calories: 510, protein: 12, carbs: 62, fats: 25 },
+    { name: 'Rajma Chawal', category: 'Lunch', price: 90, status: 'available', image_url: 'https://images.unsplash.com/photo-1664115163032-47535b91f16c?w=800&auto=format&fit=crop', calories: 380, protein: 15, carbs: 70, fats: 5 },
+    { name: 'Samosa', category: 'Snack', price: 20, status: 'available', image_url: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800&auto=format&fit=crop', calories: 260, protein: 4, carbs: 32, fats: 14 },
+    { name: 'Aloo Paratha', category: 'Breakfast', price: 60, status: 'available', image_url: 'https://images.unsplash.com/photo-1626776878841-f51393847aa3?w=800&auto=format&fit=crop', calories: 310, protein: 8, carbs: 48, fats: 12 },
+    { name: 'Pav Bhaji', category: 'Snack', price: 100, status: 'available', image_url: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=800&auto=format&fit=crop', calories: 400, protein: 10, carbs: 55, fats: 18 },
+    { name: 'Veg Pulao', category: 'Lunch', price: 130, status: 'available', image_url: 'https://images.unsplash.com/photo-1589301760014-d929f39ce9b1?w=800&auto=format&fit=crop', calories: 290, protein: 6, carbs: 50, fats: 7 },
+    { name: 'Masala Chai', category: 'Beverage', price: 40, status: 'available', image_url: 'https://images.unsplash.com/photo-1594631252845-29fc45862d6c?w=800&auto=format&fit=crop', calories: 120, protein: 3, carbs: 18, fats: 4 },
+    { name: 'Filter Coffee', category: 'Beverage', price: 50, status: 'available', image_url: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=800&auto=format&fit=crop', calories: 90, protein: 2, carbs: 15, fats: 3 },
+    { name: 'Lassi', category: 'Beverage', price: 60, status: 'available', image_url: 'https://images.unsplash.com/photo-1630985223075-efb9e1458e0a?w=800&auto=format&fit=crop', calories: 220, protein: 8, carbs: 35, fats: 5 },
+    { name: 'Buttermilk', category: 'Beverage', price: 30, status: 'available', image_url: 'https://images.unsplash.com/photo-1626154316986-e30d9703f8a0?w=800&auto=format&fit=crop', calories: 60, protein: 4, carbs: 8, fats: 1 }
   ];
 
   menuList.forEach(m => insertMenu.run(m.name, m.category, m.price, m.status, m.image_url, m.calories, m.protein, m.carbs, m.fats));

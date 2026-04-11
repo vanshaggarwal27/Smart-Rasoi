@@ -17,6 +17,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 // Dashboard Overview
 app.get('/api/dashboard/overview', (req, res) => {
+  console.log('Fetching dashboard overview...');
   const todayDate = new Date().toISOString().split('T')[0];
 
   const queries = {
@@ -51,18 +52,37 @@ app.get('/api/dashboard/overview', (req, res) => {
     wasteByCategory: []
   };
 
+  console.log('Running totalMealsToday...');
   db.get(queries.totalMealsToday, [todayDate], (err, row) => {
+    if (err) console.error('Error totalMealsToday:', err);
     if (row && row.count) results.totalMealsToday = row.count;
+    
+    console.log('Running totalTransactions...');
     db.get(queries.totalTransactions, [], (err, row) => {
+      if (err) console.error('Error totalTransactions:', err);
       if (row && row.count) results.totalTransactions = row.count;
+      
+      console.log('Running wasteToday...');
       db.get(queries.wasteToday, [todayDate], (err, row) => {
+        if (err) console.error('Error wasteToday:', err);
         if (row && row.count) results.wasteToday = row.count;
+        
+        console.log('Running popularItems...');
         db.all(queries.popularItems, [], (err, rows) => {
+          if (err) console.error('Error popularItems:', err);
           if (rows) results.popularItems = rows;
+          
+          console.log('Running dailyConsumption...');
           db.all(queries.dailyConsumption, [], (err, rows) => {
+            if (err) console.error('Error dailyConsumption:', err);
             if (rows) results.dailyConsumption = rows;
+            
+            console.log('Running wasteByCategory...');
             db.all(queries.wasteByCategory, [], (err, rows) => {
+              if (err) console.error('Error wasteByCategory:', err);
               if (rows) results.wasteByCategory = rows;
+              
+              console.log('Overview fetch complete.');
               res.json(results);
             });
           });

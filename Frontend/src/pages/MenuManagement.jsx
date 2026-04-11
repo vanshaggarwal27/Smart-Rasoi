@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import api from '../utils/api';
 import { supabase } from '../utils/supabase';
@@ -164,72 +165,73 @@ const MenuManagement = () => {
         </table>
       </div>
 
-      {showModal && (
+      {showModal && ReactDOM.createPortal(
         <div className="modal-overlay">
-          <div className="modal-content animate-fade-in">
-            <h2 style={{ marginBottom: '1.5rem' }}>{editingId ? 'Edit Item' : 'Add New Item'}</h2>
+          <div className="modal-content animate-fade-in" style={{ padding: '1.25rem' }}>
+            <h2 style={{ marginBottom: '0.75rem', fontSize: '1.2rem' }}>{editingId ? 'Edit Item' : 'Add New Item'}</h2>
             <form onSubmit={handleSave}>
-              <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Food Name</label>
-              <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
-              
-              <div className="grid-cols-2" style={{ gap: '1rem' }}>
+
+              {/* Row 1: Name */}
+              <div style={{ marginBottom: '0.6rem' }}>
+                <label className="text-muted" style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem' }}>Food Name</label>
+                <input type="text" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} style={{ margin: 0, padding: '0.45rem 0.75rem' }} />
+              </div>
+
+              {/* Row 2: Category + Price */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.6rem' }}>
                 <div>
-                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Category</label>
-                  <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}>
+                  <label className="text-muted" style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem' }}>Category</label>
+                  <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} style={{ margin: 0, padding: '0.45rem 0.75rem' }}>
                     <option value="Breakfast">Breakfast</option>
                     <option value="Lunch">Lunch</option>
                     <option value="Dinner">Dinner</option>
+                    <option value="Snack">Snack</option>
                     <option value="Beverage">Beverage</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Price (₹)</label>
-                  <input type="number" step="0.01" required value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} />
+                  <label className="text-muted" style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem' }}>Price (₹)</label>
+                  <input type="number" step="0.01" required value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} style={{ margin: 0, padding: '0.45rem 0.75rem' }} />
                 </div>
               </div>
 
-              <div className="grid-cols-2" style={{ gap: '1rem' }}>
+              {/* Row 3: Status + Image URL */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.6rem' }}>
                 <div>
-                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Status</label>
-                  <select value={formData.is_available ? 'true' : 'false'} onChange={e => setFormData({...formData, is_available: e.target.value === 'true'})}>
+                  <label className="text-muted" style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem' }}>Status</label>
+                  <select value={formData.is_available ? 'true' : 'false'} onChange={e => setFormData({...formData, is_available: e.target.value === 'true'})} style={{ margin: 0, padding: '0.45rem 0.75rem' }}>
                     <option value="true">Available</option>
                     <option value="false">Unavailable</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Image URL (optional)</label>
-                  <input type="text" placeholder="https://..." value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} />
+                  <label className="text-muted" style={{ display: 'block', fontSize: '0.75rem', marginBottom: '0.25rem' }}>Image URL (optional)</label>
+                  <input type="text" placeholder="https://..." value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} style={{ margin: 0, padding: '0.45rem 0.75rem' }} />
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginTop: '1rem' }}>
-                <div>
-                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Calories</label>
-                  <input type="number" required value={formData.calories} onChange={e => setFormData({...formData, calories: Number(e.target.value)})} />
-                </div>
-                <div>
-                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Protein (g)</label>
-                  <input type="number" required value={formData.protein} onChange={e => setFormData({...formData, protein: Number(e.target.value)})} />
-                </div>
-                <div>
-                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Carbs (g)</label>
-                  <input type="number" required value={formData.carbs} onChange={e => setFormData({...formData, carbs: Number(e.target.value)})} />
-                </div>
-                <div>
-                  <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Fats (g)</label>
-                  <input type="number" required value={formData.fats} onChange={e => setFormData({...formData, fats: Number(e.target.value)})} />
-                </div>
+              {/* Row 4: Nutrition — 4 columns */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem', marginBottom: '0.6rem' }}>
+                {[['Calories', 'calories'], ['Protein (g)', 'protein'], ['Carbs (g)', 'carbs'], ['Fats (g)', 'fats']].map(([lbl, key]) => (
+                  <div key={key}>
+                    <label className="text-muted" style={{ display: 'block', fontSize: '0.72rem', marginBottom: '0.25rem' }}>{lbl}</label>
+                    <input type="number" required value={formData[key]} onChange={e => setFormData({...formData, [key]: Number(e.target.value)})} style={{ margin: 0, padding: '0.45rem 0.5rem' }} />
+                  </div>
+                ))}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1.5rem' }}>
+              {/* Actions */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.75rem' }}>
                 <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>Cancel</button>
                 <button type="submit" className="btn btn-primary">Save Changes</button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
+
   );
 };
 

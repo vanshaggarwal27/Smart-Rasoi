@@ -5,7 +5,7 @@ import MetricCard from '../components/MetricCard';
 import api from '../utils/api';
 import { supabase } from '../utils/supabase';
 
-const COLORS = ['#e83e8c', '#8b5cf6', '#fdf2f8', '#10b981'];
+const COLORS = ['#1C4D35', '#93AB63', '#839958', '#F0F4EE'];
 
 const Dashboard = () => {
   const [data, setData] = useState(null);

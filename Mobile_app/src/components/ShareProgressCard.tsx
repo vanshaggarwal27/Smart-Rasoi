@@ -96,20 +96,20 @@ export const ShareProgressCard = forwardRef<HTMLDivElement, ShareProgressCardPro
         <div className="w-full space-y-24 z-10 flex flex-col items-center">
           <MacroCircle 
             label="Calories" current={totals.calories} target={targets.calories} 
-            color="#EA5C1F" size={550} 
+            color="#93AB63" size={550} 
           />
 
           <div className="grid grid-cols-3 w-full gap-8">
-            <MacroCircle label="Protein" current={totals.protein} target={targets.protein} color="#B45309" size={280} />
-            <MacroCircle label="Carbs" current={totals.carbs} target={targets.carbs} color="#4B5563" size={280} />
-            <MacroCircle label="Fats" current={totals.fats} target={targets.fats} color="#9CA3AF" size={280} />
+            <MacroCircle label="Protein" current={totals.protein} target={targets.protein} color="#1C4D35" size={280} />
+            <MacroCircle label="Carbs" current={totals.carbs} target={targets.carbs} color="#839958" size={280} />
+            <MacroCircle label="Fats" current={totals.fats} target={targets.fats} color="#A7BA8D" size={280} />
           </div>
         </div>
 
         {/* Level Card */}
         <div className="w-full bg-white/5 border border-white/10 p-12 rounded-[50px] backdrop-blur-2xl z-10 flex items-center justify-between">
           <div className="flex items-center gap-10">
-            <div className="h-28 w-28 bg-primary rounded-3xl flex items-center justify-center shadow-[0_0_50px_rgba(234,92,31,0.5)]">
+            <div className="h-28 w-28 bg-primary rounded-3xl flex items-center justify-center shadow-[0_0_50px_rgba(28,77,53,0.5)]">
               <Trophy className="text-white" size={60} strokeWidth={2.5} />
             </div>
             <div className="space-y-2">

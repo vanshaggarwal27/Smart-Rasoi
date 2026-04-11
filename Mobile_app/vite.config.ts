@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-oxc";
+import react from "@vitejs/plugin-react";
 import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 
@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
         name: "Nutri Sense — Student Health & Wallet",
         short_name: "Nutri Sense",
         description: "Your student health and cafeteria wallet portal. Track nutrition, check menus, and manage your campus funds.",
-        theme_color: "#EA5C1F",
+        theme_color: "#1C4D35",
         background_color: "#F5F5F5",
         display: "standalone",
         start_url: "/",
