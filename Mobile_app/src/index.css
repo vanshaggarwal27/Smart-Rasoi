@@ -206,21 +206,21 @@
     height: 850px;
     background-color: #0b0b0b;
     border-radius: 60px;
-    /* Simulate a thick, 3D titanium frame using multi-layered box shadows */
     box-shadow: 
-      inset 0 0 4px rgba(255, 255, 255, 0.2), /* Subtle glass edge */
-      0 0 0 3px #18181b,  /* Inner rim transition */
-      0 0 0 5px #71717a,  /* Core metallic titanium frame */
-      0 0 0 7px #a1a1aa,  /* Highlight on titanium */
-      0 0 0 9px #3f3f46,  /* Outer dark rim for 3D depth */
-      25px 35px 60px -10px rgba(0, 0, 0, 0.4), /* Ground shadow */
+      inset 0 0 4px rgba(255, 255, 255, 0.2),
+      0 0 0 3px #18181b,
+      0 0 0 5px #71717a,
+      0 0 0 7px #a1a1aa,
+      0 0 0 9px #3f3f46,
+      25px 35px 60px -10px rgba(0, 0, 0, 0.4),
       0 15px 25px -5px rgba(0, 0, 0, 0.2);
-    padding: 16px; /* Width of the black inner screen bezel */
+    padding: 16px; 
     display: flex;
     flex-direction: column;
-    /* Slightly scaled for standard laptop screens */
     transform-origin: center;
-    scale: 0.92;
+    /* Proportional scaling to ensure it fits the screen height without squashing */
+    transform: scale(min(0.9, calc(100vh / 950)));
+    transition: transform 0.3s ease;
   }
 
   /* Glass Reflection for screen realism */
@@ -245,7 +245,7 @@
     box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
     /* Make #root the containing block for fixed positioning */
     transform: translateZ(0);
-    /* Enforce border-radius clipping on children in Safari/WebKit */
+    mask-image: radial-gradient(white, black);
     -webkit-mask-image: -webkit-radial-gradient(white, black);
   }
 
