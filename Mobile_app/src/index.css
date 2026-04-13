@@ -182,3 +182,173 @@
   30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
   40%, 60% { transform: translate3d(4px, 0, 0); }
 }
+
+/* --- iPhone 17 Mockup Styles --- */
+.mobile-mockup-wrapper {
+  background-color: #f3f4f6; /* bg-gray-100 */
+}
+
+/* For screens larger than a phone, show the mockup */
+@media (min-width: 640px) {
+  body {
+    background-color: #ececec;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  
+  .iphone-17-mockup {
+    position: relative;
+    width: 400px;
+    height: 850px;
+    background-color: #0b0b0b;
+    border-radius: 60px;
+    /* Simulate a thick, 3D titanium frame using multi-layered box shadows */
+    box-shadow: 
+      inset 0 0 4px rgba(255, 255, 255, 0.2), /* Subtle glass edge */
+      0 0 0 3px #18181b,  /* Inner rim transition */
+      0 0 0 5px #71717a,  /* Core metallic titanium frame */
+      0 0 0 7px #a1a1aa,  /* Highlight on titanium */
+      0 0 0 9px #3f3f46,  /* Outer dark rim for 3D depth */
+      25px 35px 60px -10px rgba(0, 0, 0, 0.4), /* Ground shadow */
+      0 15px 25px -5px rgba(0, 0, 0, 0.2);
+    padding: 16px; /* Width of the black inner screen bezel */
+    display: flex;
+    flex-direction: column;
+    /* Slightly scaled for standard laptop screens */
+    transform-origin: center;
+    scale: 0.92;
+  }
+
+  /* Glass Reflection for screen realism */
+  .iphone-17-mockup::after {
+    content: '';
+    position: absolute;
+    top: 16px; left: 16px; right: 16px; bottom: 16px;
+    border-radius: 44px;
+    background: linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 30%, rgba(0,0,0,0) 100%);
+    pointer-events: none;
+    z-index: 99;
+  }
+
+  #root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    border-radius: 44px;
+    background-color: hsl(var(--background));
+    /* Soft inset shadow inside the screen for deep LCD feel */
+    box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
+    /* Make #root the containing block for fixed positioning */
+    transform: translateZ(0);
+    /* Enforce border-radius clipping on children in Safari/WebKit */
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+  }
+
+  /* Hide all scrollbars effectively anywhere within the mocked app boundaries */
+  .iphone-17-mockup *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  .iphone-17-mockup * {
+    -ms-overflow-style: none !important;  /* IE and Edge */
+    scrollbar-width: none !important;  /* Firefox */
+  }
+
+
+
+  /* Bottom Home Indicator */
+  .home-indicator {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 135px;
+    height: 5px;
+    background-color: #222;
+    border-radius: 10px;
+    z-index: 100;
+    backdrop-filter: invert(100%);
+    mix-blend-mode: difference;
+  }
+
+  /* Content area adjustment */
+  .iphone-17-mockup #root {
+    padding-top: 0;
+    padding-bottom: 25px;
+  }
+
+  /* Hardware Side Buttons using metallic gradients */
+  .volume-up, .volume-down, .action-button, .power-button {
+    position: absolute;
+    /* Realistic metallic look */
+    background: linear-gradient(to right, #71717a, #3f3f46);
+    border: 1px solid #18181b;
+    box-shadow: inset 1px 0 2px rgba(255,255,255,0.4), inset -1px 0 1px rgba(0,0,0,0.5);
+    z-index: -1;
+  }
+
+  .action-button {
+    width: 4px;
+    height: 28px;
+    left: -11px; /* Extend outside the 9px outer shadow */
+    top: 155px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-right: none;
+  }
+
+  .volume-up {
+    width: 4px;
+    height: 65px;
+    left: -11px;
+    top: 215px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-right: none;
+  }
+
+  .volume-down {
+    width: 4px;
+    height: 65px;
+    left: -11px;
+    top: 295px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-right: none;
+  }
+
+  .power-button {
+    width: 4px;
+    height: 90px;
+    right: -11px;
+    top: 235px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-left: none;
+    background: linear-gradient(to left, #71717a, #3f3f46);
+  }
+}
+
+/* For actual mobile screens, we just want it full width/height without the mockup styling */
+@media (max-width: 639.9px) {
+  .iphone-17-mockup {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .notch-island, .home-indicator, .volume-up, .volume-down, .action-button, .power-button {
+    display: none;
+  }
+  #root {
+    flex: 1;
+    width: 100%;
+    min-height: 100vh;
+  }
+}
