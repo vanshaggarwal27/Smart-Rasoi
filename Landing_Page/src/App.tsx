@@ -14,7 +14,7 @@ import {
   Home, Sparkles, BrainCircuit, TrendingUp, MessageSquare,
   Activity, QrCode, Leaf, Droplet, UserCircle2,
   Pointer, CreditCard, GraduationCap, Building2,
-  CheckCircle2, LogIn, Bell
+  CheckCircle2, LogIn, Bell, Smartphone
 } from "lucide-react";
 
 const nutrisenseTestimonials = [
@@ -93,7 +93,13 @@ function App() {
         <NavBar items={navItems} className="pointer-events-auto" />
         <div className="ml-auto flex items-center gap-3">
           <a
-            href="http://localhost:3001/"
+            href={import.meta.env.VITE_MOBILE_URL || "http://localhost:5173/"}
+            className="px-6 py-2.5 text-sm font-bold text-[#1C4D35] rounded-full bg-white border border-[#1C4D35]/10 hover:bg-beige transition-all duration-200 pointer-events-auto flex items-center gap-2"
+          >
+            <Smartphone className="w-4 h-4" /> Mobile App
+          </a>
+          <a
+            href={import.meta.env.VITE_DASHBOARD_URL || "http://localhost:3001/"}
             className="px-6 py-2.5 text-sm font-bold text-white rounded-full bg-[#1C4D35] hover:bg-[#1C4D35]/90 shadow-lg shadow-[#1C4D35]/20 transition-all duration-200 pointer-events-auto flex items-center gap-2"
           >
             <Activity className="w-4 h-4" /> Dashboard
@@ -253,11 +259,14 @@ function App() {
         <div className="max-w-4xl mx-auto text-center p-12 rounded-3xl bg-[#1C4D35] border border-white/20 shadow-2xl">
           <h2 className="text-4xl font-bold mb-4 text-white">Start Your Smart Eating Journey</h2>
           <p className="text-white/80 font-medium mb-8 max-w-2xl mx-auto">Access your personalized health dashboard and make every meal count.</p>
-          <div className="flex gap-4 justify-center">
-            <a href="http://localhost:3001/" className="px-8 py-4 bg-white hover:bg-beige text-[#1C4D35] rounded-full font-bold transition-all shadow-lg flex items-center gap-2">
+          <div className="flex flex-wrap gap-4 justify-center">
+            <a href={import.meta.env.VITE_DASHBOARD_URL || "http://localhost:3001/"} className="px-8 py-4 bg-white hover:bg-beige text-[#1C4D35] rounded-full font-bold transition-all shadow-lg flex items-center gap-2">
               <LogIn className="w-5 h-5" /> Login to Dashboard
             </a>
-            <a href="http://localhost:3001/" className="flex items-center px-8 py-4 bg-[#93AB63] hover:bg-[#93AB63]/90 text-[#1C4D35] rounded-full font-bold transition-all shadow-lg">
+            <a href={import.meta.env.VITE_MOBILE_URL || "http://localhost:5173/"} className="px-8 py-4 bg-transparent border-2 border-white/20 hover:bg-white/10 text-white rounded-full font-bold transition-all shadow-lg flex items-center gap-2">
+              <Smartphone className="w-5 h-5" /> Connect Mobile App
+            </a>
+            <a href={import.meta.env.VITE_DASHBOARD_URL || "http://localhost:3001/"} className="flex items-center px-8 py-4 bg-[#93AB63] hover:bg-[#93AB63]/90 text-[#1C4D35] rounded-full font-bold transition-all shadow-lg">
               Create Account
             </a>
           </div>

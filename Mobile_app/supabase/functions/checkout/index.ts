@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
 
     // 2. Create Stripe Session
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
+      payment_method_types: ['card', 'upi'],
       line_items,
       mode: 'payment',
       success_url: `${req.headers.get('origin')}/payment-success`,
