@@ -23,8 +23,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, ChevronRight, Sunrise, Sun, Moon, Coffee, Search, Trash2, Wand2, ChefHat, ArrowLeft, Sparkles, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-type Category = "All" | "Fruits" | "Drinks" | "Snacks" | "Meals";
-const categories: Category[] = ["All", "Fruits", "Drinks", "Snacks", "Meals"];
+type Category = "All" | "Breakfast" | "Lunch" | "Dinner" | "Snacks" | "Drinks" | "Fruits" | "Meals";
+const categories: Category[] = ["All", "Breakfast", "Lunch", "Dinner", "Snacks", "Drinks", "Fruits", "Meals"];
 
 interface FoodForm {
   name: string;

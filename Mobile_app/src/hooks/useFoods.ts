@@ -27,17 +27,53 @@ export const useFoods = () => {
     queryKey: ["foods", user?.id],
     enabled: true,
     queryFn: async () => {
-      let query = (supabase.from("foods" as any) as any).select("*");
-      
+      // Fetch user-defined foods
+      let userFoodsQuery = (supabase.from("foods" as any) as any).select("*");
       if (user) {
-        query = query.or(`user_id.eq.${user.id},source.eq.preset`);
+        userFoodsQuery = userFoodsQuery.eq("user_id", user.id);
       } else {
-        query = query.eq("source", "preset");
+        // Just empty if no user for private foods
+        userFoodsQuery = userFoodsQuery.eq("id", "none");
       }
 
-      const { data, error } = await query.order("name");
-      if (error) throw error;
-      return (data || []) as unknown as Food[];
+      // Fetch official cafeteria items
+      const { data: cafData, error: cafError } = await supabase
+        .from("food_items")
+        .select("*");
+
+      const { data: userData, error: userError } = await userFoodsQuery.order("name");
+
+      if (cafError) console.error("Error fetching cafeteria items:", cafError);
+      if (userError) throw userError;
+
+      // Transform cafeteria items to match Food interface
+      const translatedCaf: Food[] = (cafData || []).map(item => ({
+        id: item.food_id.toString(),
+        name: item.name,
+        serving_size: 1,
+        serving_unit: "pc",
+        calories: Number(item.calories),
+        protein: Number(item.protein),
+        carbs: Number(item.carbs),
+        fats: Number(item.fats),
+        category: item.category,
+        is_veg: true, // Assuming mostly veg for NMIMS or adding a check
+        price: item.price,
+        source: "preset",
+        image_url: item.image_url
+      }));
+
+      // Transform user items
+      const translatedUser: Food[] = (userData || []).map(item => ({
+        ...item,
+        calories: Number(item.calories),
+        protein: Number(item.protein),
+        carbs: Number(item.carbs),
+        fats: Number(item.fats),
+        source: item.source || "user"
+      }));
+
+      return [...translatedCaf, ...translatedUser];
     },
   });
 

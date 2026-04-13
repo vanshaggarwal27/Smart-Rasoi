@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Nut3lla } from "./Nut3lla";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSettings } from "@/hooks/useSettings";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useTutorial } from "@/contexts/TutorialContext";
@@ -206,7 +207,7 @@ export const TutorialFlow = ({ onComplete }: { onComplete: () => void }) => {
 
   return (
     <div id="tutorial-overlay" className="fixed inset-0 z-[150] overflow-hidden pointer-events-none">
-      <svg className="absolute inset-0 w-full h-full pointer-events-auto">
+      <svg className="absolute inset-0 w-full h-full pointer-events-none">
         <defs>
           <filter id="glow">
             <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
